@@ -85,6 +85,21 @@ export default {
                             ]
                         }
                     ]
+                },
+                {
+                    icon: 'el-icon-time',
+                    index: 'AppointmentList',
+                    title: '预约管理',
+                    subs: [
+                        {
+                            index: 'AppointmentList',
+                            title: '预约列表'
+                        },
+                        {
+                            index: 'EvaluateList',
+                            title: '预约列表'
+                        }
+                    ]
                 }
             ]
         };

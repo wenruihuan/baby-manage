@@ -40,6 +40,16 @@ export default new Router({
                     meta: { title: '员工排班' }
                 },
                 {
+                    path: '/AppointmentList',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/appointment/appointmentList.vue'),
+                    meta: { title: '预约列表' }
+                },
+                {
+                    path: '/EvaluateList',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/appointment/evaluateList.vue'),
+                    meta: { title: '预约评价' }
+                },
+                {
                     path: '/icon',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/Icon.vue'),
                     meta: { title: '自定义图标' }
