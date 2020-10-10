@@ -1,17 +1,17 @@
 <template>
     <div class="AddEmployees">
         <el-form ref="form" :model="form" label-width="130px">
-            <el-form-item label="归属门店:">
+            <el-form-item label="归属门店:" prop="name" :rules="[{ required: true, message: '请输入归属门店', trigger: 'blur' } ]">
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
-            <el-form-item label="职位名称:">
+            <el-form-item label="职位名称:" prop="name" :rules="[{ required: true, message: '请输入职位名称', trigger: 'blur' } ]">
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
-            <el-form-item label="职位描述：">
+            <el-form-item label="职位描述:" prop="desc" :rules="[{ required: true, message: '请输入职位描述', trigger: 'blur' } ]">
                 <el-input type="textarea" v-model="form.desc"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="onSubmit">保存</el-button>
+                <el-button type="primary" @click="onSubmit('form')">保存</el-button>
                 <el-button @click="onCancel">取消</el-button>
             </el-form-item>
         </el-form>
@@ -36,8 +36,15 @@ export default {
         }
     },
     methods: {
-        onSubmit() {
-            console.log('submit!');
+        onSubmit(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    alert('submit!');
+                } else {
+                    console.log('error submit!!');
+                    return false;
+                }
+            });
         },
         onCancel () {
             this.$parent.handleClose();
