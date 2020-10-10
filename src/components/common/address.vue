@@ -14,7 +14,7 @@
 
 <script>
 export default {
-    name: 'address',
+    name: 'pathAddress',
     props: {
         breadcrumbList: {
             default: [],
