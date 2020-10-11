@@ -185,3 +185,17 @@ a {
     margin-top: 20px;
     text-align: right;
 }
+.common-title-one {
+    position: relative;
+    background: #F2F2F2;
+    height: 45px;
+    padding: 10px;
+}
+.common-title-one:before{
+    background: #409EFF;
+    width: 5px;
+    height: 20px;
+    position: absolute;
+    display: block;
+    content: '';
+}
