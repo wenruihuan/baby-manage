@@ -71,6 +71,7 @@
 
 <script>
 import breadcrumb from '../../common/address'
+import * as api from '../../../api/index'
 export default {
     name: 'index',
     components: {
@@ -103,6 +104,14 @@ export default {
                 ]
             }
         }
+    },
+    created () {
+        this.getFormData();
+    },
+    methods: {
+        async getFormData () {
+            await api.shopInfo();
+        },
     }
 };
 </script>

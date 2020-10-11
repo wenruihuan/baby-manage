@@ -1,8 +1,8 @@
 import request from '../utils/request';
-const IP = 'http://127.0.0.1:7001';
-export const fetchData = query => {
+const IP = 'https://result.eolinker.com/BxxMFUV803ea48c63410d63327c3ad2f649e76860d89dfd?uri=';
+export const shopInfo = query => {
     return request({
-        url: './table.json',
+        url: `${IP}/admin/shop/info`,
         method: 'get',
         params: query
     });
