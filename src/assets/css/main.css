@@ -185,3 +185,21 @@ a {
     margin-top: 20px;
     text-align: right;
 }
+.info-title {
+    display: flex;
+    height: 50px;
+    font-size: 16px;
+    align-items: center;
+    position: relative;
+    background-color: #EBEEF5;
+    padding-left: 25px;
+  }
+  .info-title::before {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 20px;
+    left: 10px;
+    top: 15px;
+    background-color: #409EFF;
+  }
