@@ -8,10 +8,10 @@
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
             <el-form-item label="系统账号:">
-                <el-input v-model="form.name"></el-input>
+                <el-input v-model="form.acount"></el-input>
             </el-form-item>
             <el-form-item label="联系电话:">
-                <el-input v-model="form.name"></el-input>
+                <el-input v-model="form.tel"></el-input>
             </el-form-item>
             <el-form-item label="选择职位:">
                 <el-select v-model="form.region" placeholder="请选择活动区域">
@@ -36,7 +36,7 @@
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
             </el-form-item>
-            <el-form-item label="特殊资源">
+            <el-form-item label="性别">
                 <el-radio-group v-model="form.resource">
                     <el-radio label="男"></el-radio>
                     <el-radio label="女"></el-radio>
@@ -53,6 +53,7 @@
     </div>
 </template>
 <script>
+import * as api from '../../../../../api/index'
 export default {
     name: 'AddEmployees',
     data() {
@@ -70,7 +71,13 @@ export default {
             imageUrl: ''
         }
     },
+    props: {
+        employeesId: ''
+    },
     methods: {
+        getInfoData (value) {
+            this.form = value.row;
+        },
         onSubmit() {
             console.log('submit!');
         },

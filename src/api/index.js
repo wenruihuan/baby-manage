@@ -35,3 +35,56 @@ export const shopSave = query => {
         params: query
     });
 };
+
+// 获取员工列表
+export const staffList = query => {
+    return request({
+        url: IP + `/admin/staff/list`,
+        method: 'get',
+        params: query
+    });
+};
+
+
+// 添加（编辑）员工
+export const staffSave = query => {
+    return request({
+        url: IP + `/admin/staff/save`,
+        method: 'post',
+        params: query
+    });
+};
+
+
+// 禁用（恢复）员工账号
+export const staffSetDisable = query => {
+    return request({
+        url: IP + `/admin/staff/setDisable`,
+        method: 'post',
+        params: query
+    });
+};
+// 获取职位列表
+export const positionList = query => {
+    return request({
+        url: IP + `/admin/position/list`,
+        method: 'get',
+        params: query
+    });
+};
+// 删除职位
+export const positionDelete = query => {
+    return request({
+        url: IP + `/admin/position/delete`,
+        method: 'post',
+        params: query
+    });
+};
+// 获取角色列表
+export const roleList = query => {
+    return request({
+        url: IP + `/admin/role/list`,
+        method: 'get',
+        params: query
+    });
+};

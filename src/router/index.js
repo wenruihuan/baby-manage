@@ -35,6 +35,11 @@ export default new Router({
                     meta: { title: '员工列表' }
                 },
                 {
+                    path: '/roleManagement/addRole',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/store/employees/roleManagement/addRole.vue'),
+                    meta: { title: '员工列表' }
+                },
+                {
                     path: '/Box/list',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/box'),
                     meta: { title: '包厢列表' },
