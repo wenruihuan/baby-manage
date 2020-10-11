@@ -185,17 +185,22 @@ a {
     margin-top: 20px;
     text-align: right;
 }
-.common-title-one {
+
+.info-title {
+    display: flex;
+    height: 50px;
+    font-size: 16px;
+    align-items: center;
     position: relative;
-    background: #F2F2F2;
-    height: 45px;
-    padding: 10px;
-}
-.common-title-one:before{
-    background: #409EFF;
+    background-color: #EBEEF5;
+    padding-left: 25px;
+  }
+  .info-title::before {
+    content: '';
+    position: absolute;
     width: 5px;
     height: 20px;
-    position: absolute;
-    display: block;
-    content: '';
-}
+    left: 10px;
+    top: 15px;
+    background-color: #409EFF;
+  }
