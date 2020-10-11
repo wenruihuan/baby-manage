@@ -4,10 +4,9 @@
             <div class="handle-box">
                 <el-row>
                     <el-button
-                            type="primary"
-                            icon="el-icon-delete"
-                            class="handle-del mr10"
-                            @click="isAddEmployees1 = true"
+                        type="primary"
+                        class="handle-del mr10"
+                        @click="addRole"
                     >添加职位</el-button>
                 </el-row>
 
@@ -24,27 +23,27 @@
         </div>
         <div class="table">
             <el-table
-                    :data="tableData"
-                    border
-                    style="width: 100%"
+                :data="tableData"
+                border
+                style="width: 100%"
             >
                 <el-table-column
-                        prop="date"
-                        label="职位名称"
+                    prop="name"
+                    label="职位名称"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="描述"
+                    prop="desc"
+                    label="描述"
                 >
                 </el-table-column>
                 <el-table-column
-                    prop="province"
+                    prop="staff_count"
                     label="员工数量"
                 >
                 </el-table-column>
                 <el-table-column
-                    prop="city"
+                    prop="create_time"
                     label="添加时间"
                 >
                 </el-table-column>
@@ -91,6 +90,7 @@
 </template>
 
 <script>
+    import * as api from '../../../../../api/index'
     import operationPosition from './operationPosition'
     export default {
         name: '',
@@ -106,38 +106,16 @@
                 dialogVisible: false,
                 // 是否显示新增
                 isAddEmployees: false,
-                tableData: [{
-                    date: '2016-05-02',
-                    name: '王小虎',
-                    province: '上海',
-                    city: '普陀区',
-                    address: '上海市普陀区金沙江路 1518 弄',
-                    zip: 200333
-                }, {
-                    date: '2016-05-04',
-                    name: '王小虎',
-                    province: '上海',
-                    city: '普陀区',
-                    address: '上海市普陀区金沙江路 1517 弄',
-                    zip: 200333
-                }, {
-                    date: '2016-05-01',
-                    name: '王小虎',
-                    province: '上海',
-                    city: '普陀区',
-                    address: '上海市普陀区金沙江路 1519 弄',
-                    zip: 200333
-                }, {
-                    date: '2016-05-03',
-                    name: '王小虎',
-                    province: '上海',
-                    city: '普陀区',
-                    address: '上海市普陀区金沙江路 1516 弄',
-                    zip: 200333
-                }],
+                tableData: [],
             }
         },
+        created () {
+            this.getFormData();
+        },
         methods: {
+            addRole () {
+                this.$router.push({ path: '/roleManagement/addRole'});
+            },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
             },
@@ -147,6 +125,11 @@
             handleClick () {},
             handleClose () {
                 this.isAddEmployees = false;
+            },
+            async getFormData () {
+                const { data } = await api.roleList();
+                this.tableData = data.data;
+                this.page.total = data.all_count;
             }
         }
     };

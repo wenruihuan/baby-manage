@@ -107,6 +107,7 @@
 </template>
 
 <script>
+import * as api from '../../../../../api/index'
 import AddEmployees from '../staffManagement/AddEmployees'
 export default {
     name: '',
@@ -153,6 +154,10 @@ export default {
             }],
         }
     },
+    created () {
+        alert(123);
+        this.getFormData();
+    },
     methods: {
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
@@ -163,6 +168,9 @@ export default {
         handleClick () {},
         handleClose () {
             this.isAddEmployees = false;
+        },
+        async getFormData () {
+            await api.staffList();
         }
     }
 };

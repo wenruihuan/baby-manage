@@ -4,10 +4,10 @@
             <div class="handle-box">
                 <el-row>
                     <el-button
-                            type="primary"
-                            icon="el-icon-delete"
-                            class="handle-del mr10"
-                            @click="isAddEmployees = true"
+                        type="primary"
+                        icon="el-icon-delete"
+                        class="handle-del mr10"
+                        @click="isAddEmployees = true"
                     >添加员工</el-button>
                 </el-row>
 
@@ -37,43 +37,43 @@
         </div>
         <div class="table">
             <el-table
-                    :data="tableData"
-                    border
-                    style="width: 100%"
+                :data="tableData"
+                border
+                style="width: 100%"
             >
                 <el-table-column
-                        prop="date"
-                        label="姓名"
+                    prop="name"
+                    label="姓名"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="系统账号"
+                    prop="acount"
+                    label="系统账号"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="province"
-                        label="门店"
+                    prop="province"
+                    label="门店"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="city"
-                        label="职位"
+                    prop="position_name"
+                    label="职位"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="address"
-                        label="关联角色"
+                    prop="role_names"
+                    label="关联角色"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="zip"
-                        label="添加时间"
+                    prop="zip"
+                    label="添加时间"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="zip"
-                        label="联系方式"
+                    prop="tel"
+                    label="联系方式"
                 >
                 </el-table-column>
                 <el-table-column
@@ -81,12 +81,12 @@
                         label="操作"
                 >
                     <template slot-scope="scope">
-                        <el-button @click="handleClick()" type="text" size="small">详情</el-button>
+                        <el-button @click="handleClick(scope)" type="text" size="small">详情</el-button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <el-dropdown>
                             <el-button type="text" size="small">更多</el-button>
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item><span @click="handleClick()">编辑</span></el-dropdown-item>
+                                <el-dropdown-item><span @click="handleClick(scope)">编辑</span></el-dropdown-item>
                                 <el-dropdown-item><span>关联服务</span></el-dropdown-item>
                                 <el-dropdown-item>设置排班</el-dropdown-item>
                                 <el-dropdown-item><span @click="handleRelevance()">禁用账号</span></el-dropdown-item>
@@ -118,17 +118,31 @@
 
         <div class="AddEmployees" v-if="isAddEmployees">
             <el-dialog
-                    title="添加员工"
-                    :visible.sync="isAddEmployees"
-                    width="50%"
-                    :before-close="handleClose">
-                <AddEmployees></AddEmployees>
+                title="添加员工"
+                :visible.sync="isAddEmployees"
+                :id="employeesId"
+                width="50%"
+                :before-close="handleClose">
+                <AddEmployees ref="AddEmployees"></AddEmployees>
             </el-dialog>
         </div>
+
+        <el-dialog
+            title="禁用账号"
+            :visible.sync="isStaffSetDisable"
+            width="500px"
+            :before-close="handleClose">
+            <div>员工账号被禁用后，将无法登录系统并进行操作，是否确定禁用该账号。</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="isStaffSetDisable = false">取 消</el-button>
+                <el-button type="primary" @click="setStaffSetDisable">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+import * as api from '../../../../../api/index'
 import AddEmployees from './AddEmployees'
 export default {
     name: '',
@@ -142,52 +156,36 @@ export default {
             },
             query: {},
             dialogVisible: false,
+            isStaffSetDisable: false,
             // 是否显示新增
             isAddEmployees: false,
+            employeesId: '',
             isRelevance: false,
-            tableData: [{
-                date: '2016-05-02',
-                name: '王小虎',
-                province: '上海',
-                city: '普陀区',
-                address: '上海市普陀区金沙江路 1518 弄',
-                zip: 200333
-            }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                province: '上海',
-                city: '普陀区',
-                address: '上海市普陀区金沙江路 1517 弄',
-                zip: 200333
-            }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                province: '上海',
-                city: '普陀区',
-                address: '上海市普陀区金沙江路 1519 弄',
-                zip: 200333
-            }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                province: '上海',
-                city: '普陀区',
-                address: '上海市普陀区金沙江路 1516 弄',
-                zip: 200333
-            }],
+            tableData: [],
         }
     },
+    created () {
+        this.getFormData();
+    },
     methods: {
+        async handleRelevance (scope) {
+            this.isStaffSetDisable = true;
+        },
+        async setStaffSetDisable () {
+            const { data } = api.staffSetDisable({ id: scope.row.id, is_disable: scope.row.is_disable});
+            this.isStaffSetDisable = false;
+        },
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
         },
         handleCurrentChange(val) {
             console.log(`当前页: ${val}`);
         },
-        handleClick () {
+        handleClick (val) {
             this.isAddEmployees = true;
-        },
-        handleRelevance () {
-            this.isRelevance = true;
+            this.$nextTick(() => {
+                this.$refs.AddEmployees.getInfoData(val);
+            });
         },
         handleClose () {
             this.isAddEmployees = false;
@@ -195,6 +193,10 @@ export default {
         },
         handleSearch () {
             this.isAddEmployees = false;
+        },
+        async getFormData () {
+            const { data } = await api.staffList();
+            this.tableData = data.data;
         }
     }
 };

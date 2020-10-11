@@ -23,43 +23,44 @@
         </div>
         <div class="table">
             <el-table
-                    :data="tableData"
-                    border
-                    style="width: 100%"
+                :data="tableData"
+                border
+                style="width: 100%"
             >
                 <el-table-column
-                        prop="date"
-                        label="职位名称"
+                    prop="name"
+                    label="职位名称"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="描述"
+                    prop="description"
+                    label="描述"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="province"
-                        label="员工数量"
+                    prop="staff_count"
+                    label="员工数量"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="city"
-                        label="添加时间"
+                    prop="create_time"
+                    label="添加时间"
                 >
                 </el-table-column>
                 <el-table-column
-                        fixed="right"
-                        label="操作"
+                    fixed="right"
+                    label="操作"
                 >
                     <template slot-scope="scope">
                         <el-button @click="handleClick(scope)" type="text" size="small">详情</el-button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
                         <el-popconfirm
-                                type="text"
-                                confirmButtonText='好的'
-                                cancelButtonText='不用了'
-                                title="这是一段内容确定删除吗？"
+                            @onConfirm="setPositionDelete(scope)"
+                            confirmButtonText='好的'
+                            cancelButtonText='不用了'
+                            title="这是一段内容确定删除吗？"
                         >
-                            <el-button slot="reference">删除</el-button>
+                            <a style="color: #409EFF" slot="reference">删除</a>
                         </el-popconfirm>
                     </template>
                 </el-table-column>
@@ -97,6 +98,7 @@
 </template>
 
 <script>
+    import * as api from '../../../../../api/index'
     import operationPosition from './operationPosition'
     export default {
         name: '',
@@ -112,38 +114,21 @@
                 dialogVisible: false,
                 // 是否显示新增
                 isAddEmployees: false,
-                tableData: [{
-                    date: '2016-05-02',
-                    name: '王小虎',
-                    province: '上海',
-                    city: '普陀区',
-                    address: '上海市普陀区金沙江路 1518 弄',
-                    zip: 200333
-                }, {
-                    date: '2016-05-04',
-                    name: '王小虎',
-                    province: '上海',
-                    city: '普陀区',
-                    address: '上海市普陀区金沙江路 1517 弄',
-                    zip: 200333
-                }, {
-                    date: '2016-05-01',
-                    name: '王小虎',
-                    province: '上海',
-                    city: '普陀区',
-                    address: '上海市普陀区金沙江路 1519 弄',
-                    zip: 200333
-                }, {
-                    date: '2016-05-03',
-                    name: '王小虎',
-                    province: '上海',
-                    city: '普陀区',
-                    address: '上海市普陀区金沙江路 1516 弄',
-                    zip: 200333
-                }],
+                tableData: [],
             }
         },
+        created () {
+            this.getFormData();
+        },
         methods: {
+            async setPositionDelete (scope) {
+                api.positionDelete({ id: scope.row.id})
+            },
+            async getFormData () {
+                const { data } = await api.positionList();
+                this.tableData = data.data;
+                this.page.total = data.all_count;
+            },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
             },
