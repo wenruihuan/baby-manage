@@ -3,14 +3,14 @@
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
         <div class="header-bar">
             <div class="header-bar-search">
-                <el-dropdown trigger="click">
+                <el-dropdown trigger="click" @command="handleClickDropdown">
                     <el-button type="primary">
                         添加预约<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>预约上门服务</el-dropdown-item>
-                        <el-dropdown-item>预约到店服务</el-dropdown-item>
-                        <el-dropdown-item>预约技师</el-dropdown-item>
+                        <el-dropdown-item v-for="item in dropdownOptions" :key="item.value" :command="item.value">
+                            {{ item.label }}
+                        </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
                 <div class="search-item">
@@ -121,11 +121,11 @@
                 </el-table-column>
                 <el-table-column label="操作" align="right">
                     <template slot-scope="scope">
-                        <el-button v-if="scope.$index === 2" type="text">预约详情</el-button>
+                        <el-button v-if="scope.$index === 2" type="text" @click="handleToDetail('view')">预约详情</el-button>
                         <el-button v-if="scope.$index === 0" type="text" @click="handleToOrder(scope.row)">开单
                         </el-button>
-                        <el-button v-if="scope.$index === 0" type="text">更改</el-button>
-                        <el-button v-if="scope.$index === 0" type="text">详情</el-button>
+                        <el-button v-if="scope.$index === 0" type="text" @click="handleToDetail('edit')">更改</el-button>
+                        <el-button v-if="scope.$index === 0" type="text" @click="handleToDetail('view')">详情</el-button>
                         <el-button v-if="scope.$index === 0" type="text" @click="handleCancel">取消</el-button>
                         <div class="cancel-tips" v-if="scope.$index === 1">
                             <p>客户取消</p>
@@ -143,10 +143,12 @@
                 </el-pagination>
             </div>
         </div>
+        <appointmentDetail ref="detail"></appointmentDetail>
     </div>
 </template>
 <script>
 import breadcrumb from '@/components/common/address';
+import appointmentDetail from '@/components/page/appointment/appointmentDetail';
 
 const getDateRange = (number) => {
     const end = new Date();
@@ -158,7 +160,8 @@ const getDateRange = (number) => {
 export default {
     name: 'AppointmentList',
     components: {
-        breadcrumb
+        breadcrumb,
+        appointmentDetail
     },
     data() {
         return {
@@ -175,6 +178,11 @@ export default {
                     name: '预约列表',
                     router: 'AppointmentList'
                 }
+            ],
+            dropdownOptions: [
+                { value: '1', label: '预约上门服务' },
+                { value: '2', label: '预约到店服务' },
+                { value: '3', label: '预约技师' }
             ],
             selectValue: '',
             selectOptions: [
@@ -287,6 +295,17 @@ export default {
         };
     },
     methods: {
+        handleClickDropdown(command) {
+            this.$refs.detail.appointmentType = command;
+            this.$refs.detail.dialogType = 'add';
+            this.$refs.detail.dialogTitle = this.dropdownOptions.find(m => m.value === command).label;
+            this.$refs.detail.dialogVisible = true;
+        },
+        handleToDetail (type) {
+            this.$refs.detail.dialogType = type;
+            this.$refs.detail.dialogTitle = type === 'edit' ? '修改预约' : '预约详情';
+            this.$refs.detail.dialogVisible = true;
+        },
         handleClickDate(number) {
             if (number === 'all') {
                 this.selectDate = '';
