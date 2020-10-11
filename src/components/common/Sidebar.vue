@@ -100,7 +100,26 @@ export default {
                             title: '预约列表'
                         }
                     ]
-                }
+                },
+                {
+                  icon: 'el-icon-tickets',
+                  index: 'OrderList',
+                  title: '订单管理',
+                  subs: [
+                    {
+                      index: 'OrderList',
+                      title: '订单列表'
+                    },
+                    {
+                      index: 'ChargebackList',
+                      title: '退单列表'
+                    },
+                    {
+                      index: 'ProductOrderList',
+                      title: '商品订单列表'
+                    }
+                  ]
+                },
             ]
         };
     },

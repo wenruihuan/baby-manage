@@ -50,6 +50,36 @@ export default new Router({
                     meta: { title: '预约评价' }
                 },
                 {
+                    path: '/OrderList',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/orderList.vue'),
+                    meta: { title: '订单列表' }
+                },
+                {
+                    path: '/OrderDetail',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/orderDetail.vue'),
+                    meta: { title: '订单详情' }
+                },
+                {
+                    path: '/ChargebackList',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/chargebackList.vue'),
+                    meta: { title: '退单列表' }
+                },
+                {
+                    path: '/ChargebackDetail',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/chargebackDetail.vue'),
+                    meta: { title: '退单详情' }
+                },
+                {
+                    path: '/ProductOrderList',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/productOrderList.vue'),
+                    meta: { title: '商品订单列表' }
+                },
+                {
+                    path: '/ProductOrderDetail',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/productOrderDetail.vue'),
+                    meta: { title: '商品订单详情' }
+                },
+                {
                     path: '/icon',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/Icon.vue'),
                     meta: { title: '自定义图标' }
