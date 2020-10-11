@@ -9,18 +9,18 @@
               <el-button type="primary">开单收银</el-button>
             </el-form-item>
             <el-form-item>
-              <el-select v-model="form.name">
-                <el-option label="订单编号" :value="1"></el-option>
-                <el-option label="会员名" :value="2"></el-option>
-                <el-option label="会员手机号" :value="3"></el-option>
-                <el-option label="技师" :value="4"></el-option>
+              <el-select v-model="inputName">
+                <el-option label="订单编号" value="order_no"></el-option>
+                <el-option label="会员名" value="memeber_name"></el-option>
+                <el-option label="会员手机号" value="memeber_phone"></el-option>
+                <el-option label="技师" value="technician_id"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" placeholder="请输入"></el-input>
+              <el-input v-model="inputValue" prefix-icon="el-icon-search" placeholder="请输入"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button>搜索</el-button>
+              <el-button @click="handleSearch">搜索</el-button>
             </el-form-item>
           </el-row>
           <el-row>
@@ -28,6 +28,7 @@
               <el-date-picker 
                 type="daterange"
                 range-separator="至"
+                v-model="dateArr"
               ></el-date-picker>
             </el-form-item>
             <el-form-item>
@@ -44,7 +45,7 @@
               <span>多多亲子岁月一店</span>
             </el-form-item>
             <el-form-item label="订单来源：" class="form-item">
-              <el-select>
+              <el-select v-model="form.order_source">
                 <el-option label="全部" :value="0"></el-option>
                 <el-option label="第三方支付" :value="1"></el-option>
                 <el-option label="店内消费" :value="2"></el-option>
@@ -52,23 +53,23 @@
               </el-select>
             </el-form-item>
             <el-form-item label="订单类型：" class="form-item">
-              <el-select>
+              <el-select v-model="form.order_type">
                 <el-option label="全部" :value="0"></el-option>
-                <el-option label="服务订单" :value="1"></el-option>
+                <el-option label="服务订单" value="service"></el-option>
                 <el-option label="卡项订单" :value="2"></el-option>
-                <el-option label="充值订单" :value="3"></el-option>
+                <el-option label="充值订单" value="recharge"></el-option>
               </el-select>
             </el-form-item>
           </el-row>
           <el-row>
             <el-form-item label="付款方式：" class="form-item">
-              <el-select>
-                <el-option label="全部" :value="0"></el-option>
-                <el-option label="微信" :value="1"></el-option>
-                <el-option label="支付宝" :value="2"></el-option>
-                <el-option label="现金" :value="3"></el-option>
-                <el-option label="卡内余额" :value="4"></el-option>
-                <el-option label="其他自定义记账方式" :value="5"></el-option>
+              <el-select v-model="form.pay_type_id">
+                <el-option
+                  v-for="item in paymentOpts"
+                  :label="item.name"
+                  :key="item.id"
+                  :value="item.id"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-row>
@@ -98,11 +99,9 @@
             :page-size="20"
             background
             layout="total, sizes, prev, pager, next, jumper"
-            :total="30"
+            :total="totalAll"
             :page-sizes="[20]"
             @current-change="handleCurChange"
-            @prev-click="handlePrevClick"
-            @next-click="handleNextClick"
           ></el-pagination>
         </el-tab-pane>
         <el-tab-pane label="待付款" name="unPay">
@@ -126,11 +125,9 @@
             :page-size="20"
             background
             layout="total, sizes, prev, pager, next, jumper"
-            :total="30"
+            :total="totalUnPay"
             :page-sizes="[20]"
             @current-change="handleCurChange"
-            @prev-click="handlePrevClick"
-            @next-click="handleNextClick"
           ></el-pagination>
         </el-tab-pane>
         <el-tab-pane label="已完成" name="done">
@@ -154,11 +151,9 @@
             :page-size="20"
             background
             layout="total, sizes, prev, pager, next, jumper"
-            :total="30"
+            :total="totalDone"
             :page-sizes="[20]"
             @current-change="handleCurChange"
-            @prev-click="handlePrevClick"
-            @next-click="handleNextClick"
           ></el-pagination>
         </el-tab-pane>
         <el-tab-pane label="已取消" name="cancel">
@@ -182,11 +177,9 @@
             :page-size="20"
             background
             layout="total, sizes, prev, pager, next, jumper"
-            :total="30"
+            :total="totalCancel"
             :page-sizes="[20]"
             @current-change="handleCurChange"
-            @prev-click="handlePrevClick"
-            @next-click="handleNextClick"
           ></el-pagination>
         </el-tab-pane>
       </el-tabs>
@@ -196,6 +189,13 @@
 
 <script>
 import breadcrumb from '@/components/common/address'
+import { getOrderList, getPaymentList } from '@/api/orderManagement'
+const tabDataCfg = {
+  all: { data: 'dataAll', total: 'totalAll' },
+  unPay: { data: 'dataUnPay', total: 'totalUnPay' },
+  done: { data: 'dataDone', total: 'totalDone' },
+  cancel: { data: 'dataCancel', total: 'totalCancel'}
+}
 export default {
   name: 'OrderList',
   components: {
@@ -208,39 +208,78 @@ export default {
         { name: '订单管理', router: 'OrderList' },
         { name: '订单列表', router: 'OrderList' }
       ],
+      inputName: 'order_no',
+      inputValue: '',
+      dateArr: [],
+      paymentOpts: [],
       form: {
-        name: '',
-        dateMention: 0
+        page_no: 0,
+        start_time: '',
+        end_time: '',
+        page_size: 20,
+        order_source: '',
+        pay_type_id: '',
+        order_type: ''
       },
       columnCfg: [
-        {label: '订单编号', prop: '1', width: '200'},
-        {label: '下单时间', prop: '2'},
-        {label: '购买项目', prop: '3'},
+        {label: '订单编号', prop: 'order_no', width: '200'},
+        {label: '下单时间', prop: 'create_time'},
+        {label: '购买项目', prop: 'order_name'},
         {label: '技师', prop: '4'},
-        {label: '单价（元）', prop: '5'},
-        {label: '数量', prop: '6'},
-        {label: '订单来源', prop: '7'},
-        {label: '下单门店', prop: '8'},
-        {label: '订单金额（元）', prop: '9'},
-        {label: '状态', prop: '10'},
+        {label: '单价（元）', prop: ''},
+        {label: '数量', prop: 'count'},
+        {label: '订单来源', prop: 'order_source'},
+        {label: '下单门店', prop: 'shop_name'},
+        {label: '订单金额（元）', prop: 'total_price'},
+        {label: '状态', prop: 'order_status'},
       ],
       activeTab: 'all',
-      tableDataAll: [],
-      tableDataUnPay: [],
-      tableData:[]
+      dataAll: [],
+      dataUnPay: [],
+      dataDone: [],
+      dataCancel: [],
+      totalAll: 0,
+      totalUnPay: 0,
+      totalDone: 0,
+      totalCancel: 0
     }
   },
   created() {
-
+    this.init()
   },
   methods: {
-    handleTabClick() {},
+    init() {
+      this.getPaymentList()
+      this.handleTabClick()
+    },
+    getPaymentList() {
+      getPaymentList().then(res => {
+        const { data } = res
+        this.paymentOpts = data
+      })
+    },
+    handleSearch() {
+      this.getTableData(0)
+    },
+    handleTabClick() {
+      if (this[tabDataCfg[this.activeTab].data].length === 0) {
+        this.getTableData(0)
+      }
+    },
+    getTableData(page) {
+      this.form.page_no = page
+      this.form[this.inputName] = this.inputValue
+      getOrderList(this.form).then(res => {
+        const { data, all_count } = res.data
+        this[tabDataCfg[this.activeTab].total] = all_count
+        this[tabDataCfg[this.activeTab].data] = data
+      })
+    },
     jumpToOrderDetail() {
     },
-    handleCurChange() {},
-    handlePrevClick() {
-    },
-    handleNextClick() {}
+    handleCurChange(page) {
+      this.getTableData(page)
+    }
   }
 }
 </script>
