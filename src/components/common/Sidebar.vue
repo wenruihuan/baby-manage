@@ -119,7 +119,17 @@ export default {
                       title: '商品订单列表'
                     }
                   ]
-                },
+								},
+								{
+                    index: '3-3',
+                    title: '商品',
+                    subs: [
+                        {
+                            index: '/Box/list',
+                            title: '包厢列表'
+                        }
+                    ]
+                }
             ]
         };
     },

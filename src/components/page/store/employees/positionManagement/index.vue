@@ -5,7 +5,6 @@
                 <el-row>
                     <el-button
                             type="primary"
-                            icon="el-icon-delete"
                             class="handle-del mr10"
                             @click="isAddEmployees = true"
                     >添加职位</el-button>
@@ -53,8 +52,15 @@
                         label="操作"
                 >
                     <template slot-scope="scope">
-                        <el-button @click="handleClick()" type="text" size="small">详情</el-button>
-                        <el-button type="text" size="small">删除</el-button>
+                        <el-button @click="handleClick(scope)" type="text" size="small">详情</el-button>
+                        <el-popconfirm
+                                type="text"
+                                confirmButtonText='好的'
+                                cancelButtonText='不用了'
+                                title="这是一段内容确定删除吗？"
+                        >
+                            <el-button slot="reference">删除</el-button>
+                        </el-popconfirm>
                     </template>
                 </el-table-column>
             </el-table>
@@ -80,10 +86,10 @@
         </el-dialog>
         <div class="AddEmployees" v-if="isAddEmployees">
             <el-dialog
-                    title="添加员工"
-                    :visible.sync="isAddEmployees"
-                    width="50%"
-                    :before-close="handleClose">
+                title="添加职位"
+                :visible.sync="isAddEmployees"
+                width="50%"
+                :before-close="handleClose">
                 <operation-position></operation-position>
             </el-dialog>
         </div>
@@ -144,7 +150,10 @@
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
             },
-            handleClick () {},
+            handleClick (val) {
+                console.log(val);
+                this.isAddEmployees = true;
+            },
             handleClose () {
                 this.isAddEmployees = false;
             }
