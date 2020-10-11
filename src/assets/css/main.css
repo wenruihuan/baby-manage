@@ -71,7 +71,7 @@ a {
     margin-bottom: 20px;
 }
 
-.el-button+.el-tooltip {
+.el-button + .el-tooltip {
     margin-left: 10px;
 }
 
@@ -177,14 +177,16 @@ a {
     min-height: 500px;
 }
 
-.common-box{
+.common-box {
     padding: 25px 20px;
     background: #fff;
 }
-.page-box{
+
+.page-box {
     margin-top: 20px;
     text-align: right;
 }
+
 .info-title {
     display: flex;
     height: 50px;
@@ -193,8 +195,9 @@ a {
     position: relative;
     background-color: #EBEEF5;
     padding-left: 25px;
-  }
-  .info-title::before {
+}
+
+.info-title::before {
     content: '';
     position: absolute;
     width: 5px;
@@ -202,4 +205,27 @@ a {
     left: 10px;
     top: 15px;
     background-color: #409EFF;
-  }
+}
+
+/* 服务级联 */
+.service-cascader .el-cascader-panel .el-cascader-menu .el-cascader-menu__wrap .el-cascader-menu__list .el-cascader-node {
+    height: auto;
+}
+
+.service-cascader .el-cascader-panel .el-cascader-menu .el-cascader-menu__wrap .el-cascader-menu__list .el-cascader-node .node-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.service-cascader .el-cascader-panel .el-cascader-menu .el-cascader-menu__wrap .el-cascader-menu__list .el-cascader-node .node-item .el-image {
+    width: 60px;
+    height: 50px;
+    margin-right: 5px;
+    background-color: #F5F7FA;
+    color: #c0c4cc;
+    font-size: 21px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
