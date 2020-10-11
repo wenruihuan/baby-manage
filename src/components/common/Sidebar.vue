@@ -102,6 +102,25 @@ export default {
                     ]
                 },
                 {
+                  icon: 'el-icon-tickets',
+                  index: 'OrderList',
+                  title: '订单管理',
+                  subs: [
+                    {
+                      index: 'OrderList',
+                      title: '订单列表'
+                    },
+                    {
+                      index: 'ChargebackList',
+                      title: '退单列表'
+                    },
+                    {
+                      index: 'ProductOrderList',
+                      title: '商品订单列表'
+                    }
+                  ]
+								},
+								{
                     index: '3-3',
                     title: '商品',
                     subs: [
