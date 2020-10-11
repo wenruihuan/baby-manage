@@ -10,19 +10,19 @@
                     </el-form-item>
                     <el-form-item label="店铺logo" prop="name">
                         <el-upload
-                                v-model="ruleForm.fileListLogo"
+                                v-model="ruleForm.logo"
                                 class="avatar-uploader"
                                 action="https://jsonplaceholder.typicode.com/posts/"
                                 :show-file-list="false"
                                 :on-success="handleAvatarSuccess"
                                 :before-upload="beforeAvatarUpload">
-                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                            <img v-if="ruleForm.logo" :src="ruleForm.logo" class="avatar">
                             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="店铺照片" prop="name">
                         <el-upload
-                                v-model="ruleForm.fileListPic"
+                                v-model="ruleForm.img"
                                 class="avatar-uploader"
                                 action="https://jsonplaceholder.typicode.com/posts/"
                                 :show-file-list="false"
@@ -32,6 +32,9 @@
                             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
                         </el-upload>
+                        <div v-if="ruleForm.img">
+                            <span v-for="item in ruleForm.img.split(',')"><img :src="item" alt=""></span>
+                        </div>
                     </el-form-item>
                     <el-form-item label="客服电话" prop="name">
                         <el-input :disabled="disabled" v-model="ruleForm.tel"></el-input>
@@ -40,10 +43,10 @@
                         </div>
                     </el-form-item>
                     <el-form-item label="营业时间" prop="name">
-                        <el-input class="inline-input"v-model="ruleForm.date"></el-input>
+                        <el-input class="inline-input"v-model="ruleForm.service_time"></el-input>
                         <span class="block-tips">  用于网店展示，短信提醒展示</span>
                     </el-form-item>
-                    <el-form-item label=" ">
+                    <!--<el-form-item label=" ">
                         <el-time-picker
                                 is-range
                                 v-model="ruleForm.time"
@@ -52,15 +55,15 @@
                                 end-placeholder="结束时间"
                                 placeholder="选择时间范围">
                         </el-time-picker>
-                    </el-form-item>
+                    </el-form-item>-->
                     <el-form-item label="店铺地址" prop="name">
-                        <el-select></el-select>
+                        <!--<el-select></el-select>-->
                     </el-form-item>
                     <el-form-item label="店铺介绍">
-                        <el-input type="textarea" :disabled="disabled" v-model="ruleForm.name"></el-input>
+                        <el-input type="textarea" :disabled="disabled" v-model="ruleForm.intr"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="save">保存</el-button>
+                        <el-button type="primary" @click="shopSave">保存</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -69,6 +72,7 @@
 </template>
 
 <script>
+import * as api from '../../../api/index'
 import breadcrumb from '../../common/address'
 export default {
     name: 'index',
@@ -77,6 +81,7 @@ export default {
     },
     data () {
         return {
+            imageUrl: '',
             disabled: false,
             // 面包屑信息
             breadcrumbList: [
@@ -103,9 +108,19 @@ export default {
             }
         }
     },
+    created () {
+        this.getShopInfo();
+    },
     methods: {
-        save () {
-            this.$router.push({path: '/store'});
+        handleAvatarSuccess () {},
+        beforeAvatarUpload () {},
+        async getShopInfo () {
+            const { data } = await api.shopInfo();
+            this.ruleForm = data;
+        },
+        async shopSave () {
+            await api.shopSave(this.ruleForm);
+            this.getShopInfo();
         }
     }
 };
