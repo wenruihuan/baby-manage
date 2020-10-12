@@ -1,14 +1,16 @@
 <template>
     <div class="edit-view">
         <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="rules">
-            <el-form-item label="名称" prop="name" required>
-                <el-input maxlength="100" v-model="form.name"></el-input>
+            <el-form-item label="名称:" prop="name" required>
+                <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
+                <span v-else>{{ form.name }}</span>
             </el-form-item>
-            <el-form-item label="编号" prop="box_no">
-                <el-input v-model="form.box_no" placehodler="例如：bx001"></el-input>
+            <el-form-item label="编号:" prop="box_no">
+                <el-input v-if="isEdit" v-model="form.box_no" placehodler="例如：bx001"></el-input>
+                <span v-else>{{ form.box_no }}</span>
             </el-form-item>
-            <el-form-item label="分类" prop="kind_id" required>
-                <el-select class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
+            <el-form-item label="分类:" prop="kind_id" required>
+                <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
                     <el-option
                         v-for="item in categoryList"
                         :key="item.id"
@@ -16,29 +18,33 @@
                         :value="item.id">
                     </el-option>
                 </el-select>
-                <p class="tips">一个商品对应一个分类，用于后台设置</p>
-                <el-button class="category-manage" type="text" @click="openDialog">管理包厢分类</el-button>
+                <span v-else>{{ form.kind_name }}</span>
+                <p class="tips" v-if="isEdit">一个商品对应一个分类，用于后台设置</p>
+                <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理包厢分类</el-button>
             </el-form-item>
-            <el-form-item label="图片" prop="img">
+            <el-form-item label="图片:" prop="img">
                 <el-upload
+                    multiple
                     action="http://up-z0.qiniu.com"
                     list-type="picture-card"
                     :data="uploadBody"
                     :before-upload="beforeUpload"
                     :on-success="handleUploadSuccess"
                     :before-remove="() => false"
+                    :disabled="!isEdit"
                 >
                     <i class="el-icon-plus"></i>
                 </el-upload>
-<!--                <el-input v-model="form.img"></el-input>-->
             </el-form-item>
-            <el-form-item label="人数" prop="people_count" required>
-                <el-input v-model="form.people_count"></el-input>
+            <el-form-item label="人数:" prop="people_count" required>
+                <el-input v-if="isEdit" v-model="form.people_count"></el-input>
+                <span v-else>{{ form.people_count }}</span>
             </el-form-item>
-            <el-form-item label="价格" prop="price">
-                <el-input v-model="form.price">
+            <el-form-item label="价格:" prop="price">
+                <el-input v-if="isEdit" v-model="form.price">
                     <template slot="prepend">￥</template>
                 </el-input>
+                <span v-else>{{ form.price }}</span>
             </el-form-item>
         </el-form>
         <div class="btn-group">
@@ -66,6 +72,7 @@ export default {
     },
     data () {
         return {
+            baseUrl: '',
             uploadBody: {
                 token: '',
                 key: ''
@@ -74,6 +81,7 @@ export default {
                 name: '',
                 box_no: '',
                 kind_id: '',
+                kind_name: '',
                 img: '',
                 people_count: '',
                 price: ''
@@ -90,11 +98,14 @@ export default {
                 ]
             },
             boxCategoryVisible: false,
-            categoryList: []
+            categoryList: [],
+            isEdit: '',
+            files: []
         };
     },
     created() {
         const id = this.$route.query.id;
+        this.isEdit = this.$route.query.isEdit === '1';
         this.getDetail(id);
         this.getCategory();
         this.getUploadToken();
@@ -106,6 +117,7 @@ export default {
                 const data = await getUploadToken();
                 if (data.code === ERR_OK) {
                     this.uploadBody.token = data.data.uptoken;
+                    this.baseUrl = data.data.baseUrl;
                 }
             } catch (e) {
                 console.log(`getUploadToken error: ${e}`);
@@ -129,8 +141,7 @@ export default {
         },
         /* 成功上传 */
         handleUploadSuccess (res, file) {
-            console.log(res);
-            console.log(file);
+            this.files.push(`${ this.baseUrl }/${ file.name }`);
         },
         /* 获取包厢分类下拉框 */
         async getCategory () {
@@ -158,7 +169,9 @@ export default {
             this.$refs.boxForm.validate(async valid => {
                 if (valid) {
                     try {
-                        const data = await addOrEditBox(this.form);
+                        let { kind_name, ...obj } = this.form;
+                        obj.img = this.files.join(',');
+                        const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
                                 message: data.msg,

@@ -176,7 +176,7 @@ export default {
         /* 获取包厢列表 */
         async getList () {
             try {
-                const { data } = await getBoxList({
+                const data = await getBoxList({
                     keyword: this.searchVal,
                     page_no: this.curPage,
                     kind_id: this.selected
@@ -193,10 +193,12 @@ export default {
         },
         /* 点击编辑 */
         handleEdit (index, row) {
-            this.$router.push(`/Box/detail?id=${ row.id }`);
+            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=1`);
         },
         /* 点击详情 */
-        handleView (index, row) {},
+        handleView (index, row) {
+            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=0`);
+        },
         /* 删除包厢 */
         async removeBox () {
             const id = this.selection.map(item => item.id).join(',');
