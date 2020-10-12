@@ -103,4 +103,4 @@ export const login = query => {
         method: 'post',
         params: query
     });
-}:
+};
