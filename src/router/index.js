@@ -50,6 +50,16 @@ export default new Router({
                     meta: { title: '包厢详情' },
                 },
                 {
+                    path: '/goodslist',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/goods'),
+                    meta: { title: '商品列表' },
+                },
+                {
+                    path: '/goodsdetail',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/goods/component/edit-view'),
+                    meta: { title: '商品详情' },
+                },
+                {
                     path: '/AppointmentList',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/appointment/appointmentList.vue'),
                     meta: { title: '预约列表' }
