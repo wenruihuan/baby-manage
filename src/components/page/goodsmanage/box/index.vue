@@ -149,7 +149,7 @@ export default {
         /* 选择包厢分类 */
         selectCategory (value) {
             if (value === 'all') {
-                this.selected = '';
+                this.selected = 'all';
                 this.getList();
             } else {
                 this.selected = value;
@@ -161,10 +161,7 @@ export default {
             try {
                 const data = await getCategoryList();
                 if (data.code === ERR_OK) {
-                    this.categoryList = data.data.data.map(item => ({
-                        ...item,
-                        id: Number(item.id)
-                    }));
+                    this.categoryList = data.data.data;
                     this.categoryList.unshift({ id: 'all', name: '全部分类' });
                 }
             } catch (e) {
@@ -192,7 +189,7 @@ export default {
                 const data = await getBoxList({
                     keyword: this.searchVal,
                     page_no: this.curPage,
-                    kind_id: this.selected
+                    kind_id: this.selected === 'all' ? '' : this.selected
                 });
                 this.tableData = data.data;
             } catch (e) {

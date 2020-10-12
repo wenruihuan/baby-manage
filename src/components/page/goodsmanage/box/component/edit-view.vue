@@ -32,9 +32,17 @@
                     :on-success="handleUploadSuccess"
                     :before-remove="() => false"
                     :disabled="!isEdit"
+                    :show-file-list="false"
                 >
                     <i class="el-icon-plus"></i>
                 </el-upload>
+                <ul class="img-list">
+                    <li v-for="(item, index) in files"
+                        :key="index"
+                    >
+                        <img :src="item" alt=''>
+                    </li>
+                </ul>
             </el-form-item>
             <el-form-item label="人数:" prop="people_count">
                 <el-input v-if="isEdit" v-model="form.people_count"></el-input>
@@ -132,6 +140,7 @@ export default {
                     const data = await getDetail({ id });
                     if (data.code === ERR_OK) {
                         this.form = data.data;
+                        this.files = this.form.img.split(',');
                     }
                 } catch (e) {
                     console.log(`getList error: ${e}`);
@@ -151,10 +160,7 @@ export default {
             try {
                 const data = await getCategoryList();
                 if (data.code === ERR_OK) {
-                    this.categoryList = data.data.data.map(item => ({
-                        ...item,
-                        id: Number(item.id)
-                    }));
+                    this.categoryList = data.data.data;
                 }
             } catch (e) {
                 console.log(`edit-view.vue getCategory error: ${e}`);
@@ -244,5 +250,24 @@ export default {
 }
 .category-select {
     width: 100%;
+}
+.img-list {
+    max-width: 500px;
+    overflow: auto;
+    width: 500px;
+    list-style: none;
+    margin-top: 15px;
+}
+.img-list li {
+    float: left;
+    margin-right: 10px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 2px;
+    box-sizing: border-box;
+}
+.img-list li img {
+    max-width: 100px;
+    display: inline-block;
 }
 </style>
