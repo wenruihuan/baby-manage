@@ -40,12 +40,12 @@ export default new Router({
                     meta: { title: '员工列表' }
                 },
                 {
-                    path: '/Box/list',
+                    path: '/boxlist',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/box'),
                     meta: { title: '包厢列表' },
                 },
                 {
-                    path: '/Box/detail',
+                    path: '/boxdetail',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/box/component/edit-view'),
                     meta: { title: '包厢详情' },
                 },

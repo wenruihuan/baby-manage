@@ -180,7 +180,7 @@ export default {
         },
         /* 添加包厢 */
         addBox () {
-            this.$router.push('/Box/detail?isEdit=1');
+            this.$router.push('/boxdetail?isEdit=1');
         },
         /* 搜索 */
         handleSearch () {
@@ -206,11 +206,11 @@ export default {
         },
         /* 点击编辑 */
         handleEdit (index, row) {
-            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=1&isPublish=${row.is_publish}`);
+            this.$router.push(`/boxdetail?id=${ row.id }&isEdit=1&isPublish=${row.is_publish}`);
         },
         /* 点击详情 */
         handleView (index, row) {
-            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=0`);
+            this.$router.push(`/boxdetail?id=${ row.id }&isEdit=0`);
         },
         /* 删除包厢 */
         async removeBox () {

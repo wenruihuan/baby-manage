@@ -119,13 +119,14 @@ export default {
                       title: '商品订单列表'
                     }
                   ]
-								},
-								{
-                    index: '3-3',
+                },
+                {
                     title: '商品',
+                    index: '3-3',
+                    icon: 'el-icon-time',
                     subs: [
                         {
-                            index: '/Box/list',
+                            index: '/boxlist',
                             title: '包厢列表'
                         }
                     ]
