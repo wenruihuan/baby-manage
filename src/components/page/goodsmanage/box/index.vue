@@ -40,6 +40,12 @@
                 <el-table-column
                         prop="kind_name"
                         label="包厢">
+                    <template slot-scope="scope">
+                        <div class="box-column">
+                            <img class="img-wrapper" :src="scope.row.img && scope.row.img.split(',')[0]" alt="">
+                            <span class="category-text">{{ scope.row.name }}</span>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="name"
@@ -268,6 +274,10 @@ export default {
     justify-content: space-between;
     align-items: center;
     margin-top: 10px;
+}
+.box-column .img-wrapper {
+    max-width: 100px;
+    display: inline-block;
 }
 </style>
 
