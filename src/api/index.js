@@ -88,3 +88,11 @@ export const roleList = query => {
         params: query
     });
 };
+// 获取角色列表
+export const roleAathList = query => {
+    return request({
+        url: IP + `/admin/role/authList`,
+        method: 'get',
+        params: query
+    });
+};
