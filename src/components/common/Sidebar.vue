@@ -128,6 +128,10 @@ export default {
                         {
                             index: '/boxlist',
                             title: '包厢列表'
+                        },
+                        {
+                            index: '/goodslist',
+                            title: '商品列表'
                         }
                     ]
                 }
