@@ -71,7 +71,7 @@
             </el-form-item>
         </el-form>
         <div class="btn-group" v-if="isEdit">
-            <el-button type="primary" @click="activeStep = 2">下一步</el-button>
+            <el-button type="primary" @click="handleSave">下一步</el-button>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
         <service-manage v-if="serviceVisible" ref="serviceManage" />
@@ -107,12 +107,15 @@ export default {
             form: {
                 id: '',
                 name: '',
-                box_no: '',
                 kind_id: '',
+                tag_ids: '',
                 kind_name: '',
-                img: '',
-                people_count: '',
-                price: ''
+                img_list: '',
+                unit: '',
+                sku: '',
+                cost_price: '',
+                price: '',
+                intr: ''
             },
             rules: {
                 name: [
@@ -225,6 +228,7 @@ export default {
                                 message: data.msg,
                                 type: 'success'
                             });
+                            this.activeStep = 2;
                         }
                     } catch (e) {
                         console.log(`handleSave error: ${e}`);
