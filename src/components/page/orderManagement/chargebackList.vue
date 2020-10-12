@@ -12,14 +12,21 @@
               <el-input prefix-icon="el-icon-search" placeholder="请输入手机号、退款编号"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button>搜索</el-button>
+              <el-button @click="handleSearch">搜索</el-button>
             </el-form-item>
           </el-row>
           <el-row>
             <el-form-item label="操作时间">
               <el-date-picker 
                 type="daterange"
+                v-model="dateArr"
                 range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                clearable
+                :default-time="['00:00:00', '23:59:59']"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                @change="handleDateChange"
               ></el-date-picker>
             </el-form-item>
             <el-form-item>
@@ -33,7 +40,7 @@
           </el-row>
           <el-row>
             <el-form-item label="退款方式：" class="form-item">
-              <el-select>
+              <el-select v-model="form.refund_type_id">
                 <el-option label="全部" :value="0"></el-option>
                 <el-option label="原路返回" :value="1"></el-option>
                 <el-option label="现金退款" :value="2"></el-option>
@@ -44,7 +51,7 @@
               <span>多多亲子岁月一店</span>
             </el-form-item>
             <el-form-item label="订单来源：" class="form-item">
-              <el-select>
+              <el-select v-model="form.order_source">
                 <el-option label="全部" :value="0"></el-option>
                 <el-option label="第三方支付" :value="1"></el-option>
                 <el-option label="店内消费" :value="2"></el-option>
@@ -67,7 +74,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="jumpToOrderDetail">查看订单</el-button>
+            <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,11 +83,9 @@
         :page-size="20"
         background
         layout="total, sizes, prev, pager, next, jumper"
-        :total="30"
+        :total="total"
         :page-sizes="[20]"
         @current-change="handleCurChange"
-        @prev-click="handlePrevClick"
-        @next-click="handleNextClick"
       ></el-pagination>
     </div>
   </div>
@@ -88,6 +93,9 @@
 
 <script>
 import breadcrumb from '@/components/common/address'
+import dayjs from 'dayjs'
+import { getChargeBackList } from '@/api/orderManagement'
+const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
   components: {
@@ -101,8 +109,13 @@ export default {
         { name: '退单列表', router: 'ChargebackList' }
       ],
       form: {
-        name: '',
-        dateMention: 0
+        start_time: '',
+        end_time: '',
+        // todo: 待定
+        refund_type_id: '',
+        order_source: '',
+        page_size: 20,
+        page_no: 0
       },
       columnCfg: [
         {label: '退单编号', prop: '1'},
@@ -113,20 +126,58 @@ export default {
         {label: '退款金额（元）', prop: '6'},
         {label: '状态', prop: '10'},
       ],
-      tableData:[]
+      tableData: [],
+      total: 0,
+      dateArr: []
     }
   },
   created() {
-
+    this.getTableData(0)
   },
   methods: {
-    handleTabClick() {},
-    jumpToOrderDetail() {
+    handleClickDate(num) {
+      const now = dayjs().format(dateFormatStr)
+      switch(num) {
+        case 'all':
+          this.form.start_time = ''
+          this.form.end_time = ''
+          break
+        case 0:
+          this.form.start_time = dayjs().startOf('day').format(dateFormatStr)
+          this.form.end_time = now
+          break
+        case 3: 
+          this.form.start_time = dayjs().subtract(3, 'day').format(dateFormatStr)
+          this.form.start_time = now
+          break
+        case 7:
+          this.form.start_time = dayjs().subtract(7, 'day').format(dateFormatStr)
+          this.form.start_time = now
+          break
+      }
     },
-    handleCurChange() {},
-    handlePrevClick() {
+    handleSearch() {
+      this.getTableData(0)
     },
-    handleNextClick() {}
+    getTableData(page) {
+      // todo: 入参待补全
+      this.form.page_no = page
+      getChargeBackList(this.form).then(res => {
+        const { data, all_count } = res
+        this.tableData = data
+        this.total = all_count
+      })
+    },
+    jumpToOrderDetail(orderId) {
+      this.$router.push(`/ChargebackDetail/${orderId}`)
+    },
+    handleCurChange(page) {
+      this.getTableData(page)
+    },
+    handleDateChange(val) {
+      this.form.start_time = val[0]
+      this.form.end_time = val[1]
+    }
   }
 }
 </script>

@@ -65,7 +65,7 @@ export default new Router({
                     meta: { title: '订单列表' }
                 },
                 {
-                    path: '/OrderDetail',
+                    path: '/OrderDetail/:id',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/orderDetail.vue'),
                     meta: { title: '订单详情' }
                 },
@@ -75,7 +75,7 @@ export default new Router({
                     meta: { title: '退单列表' }
                 },
                 {
-                    path: '/ChargebackDetail',
+                    path: '/ChargebackDetail/:id',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/chargebackDetail.vue'),
                     meta: { title: '退单详情' }
                 },

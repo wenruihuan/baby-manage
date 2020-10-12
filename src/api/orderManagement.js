@@ -16,4 +16,21 @@ export const getPaymentList = query => {
     params: query
   })
 }
+// 获取退单列表
+export const getChargeBackList = query => {
+  return request({
+    url: `${IP}/admin/order/refund/list`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取商品订单列表
+export const getProductOrderList = query => {
+  return request({
+    url: `${IP}/admin/order/goods/list`,
+    method: 'get',
+    params: query
+  })
+}
 

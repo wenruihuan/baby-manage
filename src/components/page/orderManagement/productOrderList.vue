@@ -9,18 +9,18 @@
               <span>多多亲子岁月一店</span>
             </el-form-item>
             <el-form-item>
-              <el-select v-model="form.name">
-                <el-option label="订单编号" :value="1"></el-option>
-                <el-option label="会员名" :value="2"></el-option>
-                <el-option label="会员手机号" :value="3"></el-option>
-                <el-option label="技师" :value="4"></el-option>
+              <el-select v-model="inputName">
+                <el-option label="订单编号" value="order_no"></el-option>
+                <el-option label="会员名" value="member_name"></el-option>
+                <el-option label="会员手机号" value="member_phone"></el-option>
+                <el-option label="订单状态" value="order_status"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" placeholder="请输入"></el-input>
+              <el-input prefix-icon="el-icon-search" v-model="inputValue" placeholder="请输入"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button>搜索</el-button>
+              <el-button @click="handleSearch">搜索</el-button>
             </el-form-item>
           </el-row>
           <el-row>
@@ -28,6 +28,13 @@
               <el-date-picker 
                 type="daterange"
                 range-separator="至"
+                v-model="dateArr"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                clearable
+                :default-time="['00:00:00', '23:59:59']"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                @change="handleDateChange"
               ></el-date-picker>
             </el-form-item>
             <el-form-item>
@@ -70,15 +77,13 @@
             :page-size="20"
             background
             layout="total, sizes, prev, pager, next, jumper"
-            :total="30"
+            :total="totalAll"
             :page-sizes="[20]"
             @current-change="handleCurChange"
-            @prev-click="handlePrevClick"
-            @next-click="handleNextClick"
           ></el-pagination>
         </el-tab-pane>
-        <el-tab-pane label="待发货" name="unPay">
-          <el-table :data="dataUnPay" border style="width: 100%">
+        <el-tab-pane label="待发货" name="toSend">
+          <el-table :data="dataToSend" border style="width: 100%">
             <el-table-column 
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
@@ -98,11 +103,9 @@
             :page-size="20"
             background
             layout="total, sizes, prev, pager, next, jumper"
-            :total="30"
+            :total="totalToSend"
             :page-sizes="[20]"
             @current-change="handleCurChange"
-            @prev-click="handlePrevClick"
-            @next-click="handleNextClick"
           ></el-pagination>
         </el-tab-pane>
         <el-tab-pane label="已发货" name="done">
@@ -128,11 +131,9 @@
             :page-size="20"
             background
             layout="total, sizes, prev, pager, next, jumper"
-            :total="30"
+            :total="totalDone"
             :page-sizes="[20]"
             @current-change="handleCurChange"
-            @prev-click="handlePrevClick"
-            @next-click="handleNextClick"
           ></el-pagination>
         </el-tab-pane>
       </el-tabs>
@@ -142,6 +143,14 @@
 
 <script>
 import breadcrumb from '@/components/common/address'
+import dayjs from 'dayjs'
+import { getProductOrderList } from '@/api/orderManagement'
+const tabDataCfg = {
+  all: { data: 'dataAll', total: 'totalAll' },
+  toSend: { data: 'dataToSend', total: 'totalToSend' },
+  done: { data: 'dataDone', total: 'totalDone' },
+}
+const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
   components: {
@@ -154,37 +163,85 @@ export default {
         { name: '订单管理', router: 'OrderList' },
         { name: '商品订单列表', router: 'ProductOrderList' }
       ],
+      inputName: 'order_no',
+      inputValue: '',
       form: {
-        name: '',
-        dateMention: 0
+        page_size: 20,
+        page_no: 0,
+        start_time: '',
+        end_time: ''
       },
       columnCfg: [
-        {label: '商品订单编号', prop: '1', width: 220},
-        {label: '订购时间', prop: '2'},
-        {label: '订购门店', prop: '3'},
-        {label: '商品', prop: '4'},
-        {label: '数量', prop: '5'},
-        {label: '订购人', prop: '6'},
-        {label: '配送方式', prop: '7'},
-        {label: '状态', prop: '10'},
+        {label: '商品订单编号', prop: 'order_no', width: 220},
+        {label: '订购时间', prop: 'create_time'},
+        {label: '订购门店', prop: 'shop_name'},
+        {label: '商品', prop: 'goods_name'},
+        {label: '数量', prop: 'count'},
+        {label: '订购人', prop: 'member_name'},
+        {label: '配送方式', prop: 'express_name'},
+        {label: '状态', prop: 'order_status'},
       ],
       activeTab: 'all',
-      tableDataAll: [],
-      tableDataUnPay: [],
-      tableData:[]
+      dataAll: [],
+      dataToSend: [],
+      dataDone: [],
+      totalAll: 0,
+      totalToSend: 0,
+      totalDone: 0,
+      dateArr: []
     }
   },
   created() {
-
+    this.getTableData(0)
   },
   methods: {
-    handleTabClick() {},
+    handleClickDate(num) {
+      const now = dayjs().format(dateFormatStr)
+      switch(num) {
+        case 'all':
+          this.form.start_time = ''
+          this.form.end_time = ''
+          break
+        case 0:
+          this.form.start_time = dayjs().startOf('day').format(dateFormatStr)
+          this.form.end_time = now
+          break
+        case 3: 
+          this.form.start_time = dayjs().subtract(3, 'day').format(dateFormatStr)
+          this.form.start_time = now
+          break
+        case 7:
+          this.form.start_time = dayjs().subtract(7, 'day').format(dateFormatStr)
+          this.form.start_time = now
+          break
+      }
+    },
+    getTableData(page) {
+      this.form.page_no = page
+      this.inputName && (this.form[this.inputName] = this.inputValue)
+      getProductOrderList(this.form).then(res => {
+        const { data, all_count } = res.data
+        this[tabDataCfg[this.activeTab].total] = all_count
+        this[tabDataCfg[this.activeTab].data] = data
+      })
+    },
+    handleSearch() {
+      this.getTableData(0)
+    },
+    handleDateChange(val) {
+      this.form.start_time = val[0]
+      this.form.end_time = val[1]
+    },
+    handleTabClick() {
+      if (this[tabDataCfg[this.activeTab].data].length === 0) {
+        this.getTableData(0)
+      }
+    },
     jumpToOrderDetail() {
     },
-    handleCurChange() {},
-    handlePrevClick() {
-    },
-    handleNextClick() {}
+    handleCurChange(page) {
+      this.getTableData(page)
+    }
   }
 }
 </script>

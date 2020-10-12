@@ -29,6 +29,12 @@
                 type="daterange"
                 range-separator="至"
                 v-model="dateArr"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                clearable
+                :default-time="['00:00:00', '23:59:59']"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                @change="handleDateChange"
               ></el-date-picker>
             </el-form-item>
             <el-form-item>
@@ -47,9 +53,9 @@
             <el-form-item label="订单来源：" class="form-item">
               <el-select v-model="form.order_source">
                 <el-option label="全部" :value="0"></el-option>
-                <el-option label="第三方支付" :value="1"></el-option>
-                <el-option label="店内消费" :value="2"></el-option>
-                <el-option label="线上支付" :value="3"></el-option>
+                <el-option label="第三方支付" value="第三方支付"></el-option>
+                <el-option label="店内消费" value="店内消费"></el-option>
+                <el-option label="线上支付" value="线上支付"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="订单类型：" class="form-item">
@@ -90,7 +96,7 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="jumpToOrderDetail">查看订单</el-button>
+                <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -116,7 +122,7 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="jumpToOrderDetail">查看订单</el-button>
+                <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -142,7 +148,7 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="jumpToOrderDetail">查看订单</el-button>
+                <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -168,7 +174,7 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="jumpToOrderDetail">查看订单</el-button>
+                <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -188,6 +194,7 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
 import breadcrumb from '@/components/common/address'
 import { getOrderList, getPaymentList } from '@/api/orderManagement'
 const tabDataCfg = {
@@ -196,6 +203,7 @@ const tabDataCfg = {
   done: { data: 'dataDone', total: 'totalDone' },
   cancel: { data: 'dataCancel', total: 'totalCancel'}
 }
+const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
   components: {
@@ -246,6 +254,7 @@ export default {
   },
   created() {
     this.init()
+    console.log(dayjs().startOf('day').format(dateFormatStr))
   },
   methods: {
     init() {
@@ -268,17 +277,43 @@ export default {
     },
     getTableData(page) {
       this.form.page_no = page
-      this.form[this.inputName] = this.inputValue
+      this.inputName && (this.form[this.inputName] = this.inputValue)
       getOrderList(this.form).then(res => {
         const { data, all_count } = res.data
         this[tabDataCfg[this.activeTab].total] = all_count
         this[tabDataCfg[this.activeTab].data] = data
       })
     },
-    jumpToOrderDetail() {
+    jumpToOrderDetail(orderId) {
+      this.$router.push(`/orderDetail/${orderId}`)
     },
     handleCurChange(page) {
       this.getTableData(page)
+    },
+    handleClickDate(num) {
+      const now = dayjs().format(dateFormatStr)
+      switch(num) {
+        case 'all':
+          this.form.start_time = ''
+          this.form.end_time = ''
+          break
+        case 0:
+          this.form.start_time = dayjs().startOf('day').format(dateFormatStr)
+          this.form.end_time = now
+          break
+        case 3: 
+          this.form.start_time = dayjs().subtract(3, 'day').format(dateFormatStr)
+          this.form.start_time = now
+          break
+        case 7:
+          this.form.start_time = dayjs().subtract(7, 'day').format(dateFormatStr)
+          this.form.start_time = now
+          break
+      }
+    },
+    handleDateChange(val) {
+      this.form.start_time = val[0]
+      this.form.end_time = val[1]
     }
   }
 }
