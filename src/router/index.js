@@ -95,6 +95,51 @@ export default new Router({
                     meta: { title: '预约评价' }
                 },
                 {
+                    path: '/InformationSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/informationSetting.vue'),
+                    meta: { title: '资讯设置' }
+                },
+                {
+                    path: '/IndexSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/indexSetting.vue'),
+                    meta: { title: '首页设置' }
+                },
+                {
+                    path: '/MemberSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/memberSetting.vue'),
+                    meta: { title: '会员设置' }
+                },
+                {
+                    path: '/IntegralSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/integralSetting.vue'),
+                    meta: { title: '积分设置' }
+                },
+                {
+                    path: '/TagSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/tagSetting.vue'),
+                    meta: { title: '标签设置' }
+                },
+                {
+                    path: '/GlobalSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/globalSetting.vue'),
+                    meta: { title: '全局设置' }
+                },
+                {
+                    path: '/TechnicianSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/technicianSetting.vue'),
+                    meta: { title: '技师设置' }
+                },
+                {
+                    path: '/BillingSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/billingSetting.vue'),
+                    meta: { title: '开单设置' }
+                },
+                {
+                    path: '/DistributionSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/distributionSetting.vue'),
+                    meta: { title: '商品配送设置' }
+                },
+                {
                     path: '/icon',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/Icon.vue'),
                     meta: { title: '自定义图标' }
