@@ -4,9 +4,7 @@
         <div class="header-bar">
             <div class="header-bar-search">
                 <el-dropdown trigger="click" @command="handleClickDropdown">
-                    <el-button type="primary">
-                        添加预约<i class="el-icon-arrow-down el-icon--right"></i>
-                    </el-button>
+                    <el-button type="primary"> 添加预约<i class="el-icon-arrow-down el-icon--right"></i> </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-for="item in dropdownOptions" :key="item.value" :command="item.value">
                             {{ item.label }}
@@ -15,19 +13,9 @@
                 </el-dropdown>
                 <div class="search-item">
                     <el-select v-model="selectValue" placeholder="请选择" clearable>
-                        <el-option
-                            v-for="item in selectOptions"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                        </el-option>
+                        <el-option v-for="item in selectOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                     </el-select>
-                    <el-input
-                        placeholder="请输入"
-                        prefix-icon="el-icon-search"
-                        v-model="searchValue"
-                        clearable>
-                    </el-input>
+                    <el-input placeholder="请输入" prefix-icon="el-icon-search" v-model="searchValue" clearable> </el-input>
                     <el-button>搜索</el-button>
                 </div>
             </div>
@@ -39,7 +27,8 @@
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
-                    unlink-panels>
+                    unlink-panels
+                >
                 </el-date-picker>
                 <div class="btn-list">
                     <el-button @click="handleClickDate('all')">全部</el-button>
@@ -57,12 +46,7 @@
                     <span class="item-label">预约来源：</span>
                     <div class="item-content">
                         <el-select v-model="sourceValue" placeholder="请选择" clearable>
-                            <el-option
-                                v-for="item in sourceOptions"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
+                            <el-option v-for="item in sourceOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                         </el-select>
                     </div>
                 </div>
@@ -90,7 +74,7 @@
                     <el-badge slot="label" :is-dot="true" class="tab-badge">未分配</el-badge>
                 </el-tab-pane>
             </el-tabs>
-            <el-table :data="tableData" border style="width: 100%">
+            <el-table :data="tableData" style="width: 100%">
                 <el-table-column label="到店人" align="center">
                     <template slot-scope="scope">
                         <p style="padding-top: 6px">
@@ -107,23 +91,16 @@
                         </p>
                     </template>
                 </el-table-column>
-                <el-table-column prop="shop_name" label="预约门店" align="center">
-                </el-table-column>
-                <el-table-column prop="service_name" label="服务项目" align="center">
-                </el-table-column>
-                <el-table-column prop="source" label="预约来源" align="center">
-                </el-table-column>
-                <el-table-column prop="technician_name" label="技师" align="center">
-                </el-table-column>
-                <el-table-column prop="back_booking_status" label="状态" align="center">
-                </el-table-column>
-                <el-table-column prop="create_time" label="下单时间" align="center">
-                </el-table-column>
+                <el-table-column prop="shop_name" label="预约门店" align="center"> </el-table-column>
+                <el-table-column prop="service_name" label="服务项目" align="center"> </el-table-column>
+                <el-table-column prop="source" label="预约来源" align="center"> </el-table-column>
+                <el-table-column prop="technician_name" label="技师" align="center"> </el-table-column>
+                <el-table-column prop="back_booking_status" label="状态" align="center"> </el-table-column>
+                <el-table-column prop="create_time" label="下单时间" align="center"> </el-table-column>
                 <el-table-column label="操作" align="right">
                     <template slot-scope="scope">
                         <el-button v-if="scope.$index === 2" type="text" @click="handleToDetail('view')">预约详情</el-button>
-                        <el-button v-if="scope.$index === 0" type="text" @click="handleToOrder(scope.row)">开单
-                        </el-button>
+                        <el-button v-if="scope.$index === 0" type="text" @click="handleToOrder(scope.row)">开单 </el-button>
                         <el-button v-if="scope.$index === 0" type="text" @click="handleToDetail('edit')">更改</el-button>
                         <el-button v-if="scope.$index === 0" type="text" @click="handleToDetail('view')">详情</el-button>
                         <el-button v-if="scope.$index === 0" type="text" @click="handleCancel">取消</el-button>
@@ -139,7 +116,8 @@
                     background
                     @current-change="handleCurrentChange"
                     layout="total, prev, pager, next, jumper"
-                    :total="page.total">
+                    :total="page.total"
+                >
                 </el-pagination>
             </div>
         </div>
@@ -147,251 +125,255 @@
     </div>
 </template>
 <script>
-import breadcrumb from '@/components/common/address';
-import appointmentDetail from '@/components/page/appointment/appointmentDetail';
+    import breadcrumb from '@/components/common/address';
+    import appointmentDetail from '@/components/page/appointment/appointmentDetail';
 
-const getDateRange = (number) => {
-    const end = new Date();
-    const start = new Date();
-    start.setTime(start.getTime() - 3600 * 1000 * 24 * number);
-    return [start, end];
-};
+    const getDateRange = (number) => {
+        const end = new Date();
+        const start = new Date();
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * number);
+        return [start, end];
+    };
 
-export default {
-    name: 'AppointmentList',
-    components: {
-        breadcrumb,
-        appointmentDetail
-    },
-    data() {
-        return {
-            breadcrumbList: [
-                {
-                    name: '首页',
-                    router: 'dashboard'
+    export default {
+        name: 'AppointmentList',
+        components: {
+            breadcrumb,
+            appointmentDetail
+        },
+        data() {
+            return {
+                breadcrumbList: [
+                    {
+                        name: '首页',
+                        router: 'dashboard'
+                    },
+                    {
+                        name: '预约管理',
+                        router: 'AppointmentList'
+                    },
+                    {
+                        name: '预约列表',
+                        router: 'AppointmentList'
+                    }
+                ],
+                dropdownOptions: [
+                    { value: '1', label: '预约上门服务' },
+                    { value: '2', label: '预约到店服务' },
+                    { value: '3', label: '预约技师' }
+                ],
+                selectValue: '',
+                selectOptions: [
+                    { label: '会员名', value: 1 },
+                    { label: '会员手机号', value: 2 },
+                    { label: '技师', value: 3 },
+                    { label: '服务', value: 4 }
+                ],
+                searchValue: '',
+                selectDate: '',
+                pickerOptions: {
+                    shortcuts: [
+                        {
+                            text: '全部',
+                            onClick(picker) {
+                                picker.$emit('pick', []);
+                            }
+                        },
+                        {
+                            text: '今天',
+                            onClick(picker) {
+                                picker.$emit('pick', getDateRange(0));
+                            }
+                        },
+                        {
+                            text: '近三天',
+                            onClick(picker) {
+                                picker.$emit('pick', getDateRange(3));
+                            }
+                        },
+                        {
+                            text: '近七天',
+                            onClick(picker) {
+                                picker.$emit('pick', getDateRange(7));
+                            }
+                        }
+                    ]
                 },
-                {
-                    name: '预约管理',
-                    router: 'AppointmentList'
+                sourceValue: 0,
+                sourceOptions: [
+                    { label: '全部', value: 0 },
+                    { label: '线下门店', value: 1 },
+                    { label: '微信小程序', value: 2 }
+                ],
+                activeName: 'all',
+                page: {
+                    size: 10,
+                    number: 1,
+                    total: 0
                 },
-                {
-                    name: '预约列表',
-                    router: 'AppointmentList'
-                }
-            ],
-            dropdownOptions: [
-                { value: '1', label: '预约上门服务' },
-                { value: '2', label: '预约到店服务' },
-                { value: '3', label: '预约技师' }
-            ],
-            selectValue: '',
-            selectOptions: [
-                { label: '会员名', value: 1 },
-                { label: '会员手机号', value: 2 },
-                { label: '技师', value: 3 },
-                { label: '服务', value: 4 }
-            ],
-            searchValue: '',
-            selectDate: '',
-            pickerOptions: {
-                shortcuts: [
+                tableData: [
                     {
-                        text: '全部',
-                        onClick(picker) {
-                            picker.$emit('pick', []);
-                        }
+                        customer: '王太太',
+                        phone: '+86 12312311231',
+                        arrive_time: '2020-08-20 13:14:23',
+                        booking_id: '1696f79e4f4644fb85da200335049412',
+                        booking_no: '7897539745135',
+                        shop_id: '76679a29fc044b5a89f75c4f3768e56f',
+                        shop_name: '多多亲子一店',
+                        service_id: '1696f79e4f4644fb85da200335049412',
+                        service_name: '少儿精油',
+                        technician_id: '1696f79e4f4644fb85da200335049412',
+                        technician_name: '小花',
+                        source: '线下门店',
+                        source_type: 'shop',
+                        create_time: '2020-08-20 13:14:23',
+                        is_read: false,
+                        back_booking_status: '！这是一个待定参数！',
+                        warn_text: ['超时6天']
                     },
                     {
-                        text: '今天',
-                        onClick(picker) {
-                            picker.$emit('pick', getDateRange(0));
-                        }
+                        customer: '王太太',
+                        phone: '+86 12312311231',
+                        arrive_time: '2020-08-20 13:14:23',
+                        booking_id: '1696f79e4f4644fb85da200335049412',
+                        booking_no: '7897539745135',
+                        shop_id: '76679a29fc044b5a89f75c4f3768e56f',
+                        shop_name: '多多亲子一店',
+                        service_id: '1696f79e4f4644fb85da200335049412',
+                        service_name: '少儿精油',
+                        technician_id: '1696f79e4f4644fb85da200335049412',
+                        technician_name: '小花',
+                        source: '线下门店',
+                        source_type: 'shop',
+                        create_time: '2020-08-20 13:14:23',
+                        is_read: false,
+                        back_booking_status: '！这是一个待定参数！',
+                        warn_text: []
                     },
                     {
-                        text: '近三天',
-                        onClick(picker) {
-                            picker.$emit('pick', getDateRange(3));
-                        }
-                    },
-                    {
-                        text: '近七天',
-                        onClick(picker) {
-                            picker.$emit('pick', getDateRange(7));
-                        }
+                        customer: '王太太',
+                        phone: '+86 12312311231',
+                        arrive_time: '2020-08-20 13:14:23',
+                        booking_id: '1696f79e4f4644fb85da200335049412',
+                        booking_no: '7897539745135',
+                        shop_id: '76679a29fc044b5a89f75c4f3768e56f',
+                        shop_name: '多多亲子一店',
+                        service_id: '1696f79e4f4644fb85da200335049412',
+                        service_name: '少儿精油',
+                        technician_id: '1696f79e4f4644fb85da200335049412',
+                        technician_name: '小花',
+                        source: '线下门店',
+                        source_type: 'shop',
+                        create_time: '2020-08-20 13:14:23',
+                        is_read: true,
+                        back_booking_status: '！这是一个待定参数！',
+                        warn_text: ['技师排版冲突']
                     }
                 ]
+            };
+        },
+        methods: {
+            handleClickDropdown(command) {
+                this.$refs.detail.appointmentType = command;
+                this.$refs.detail.dialogType = 'add';
+                this.$refs.detail.dialogTitle = this.dropdownOptions.find((m) => m.value === command).label;
+                this.$refs.detail.dialogVisible = true;
             },
-            sourceValue: 0,
-            sourceOptions: [
-                { label: '全部', value: 0 },
-                { label: '线下门店', value: 1 },
-                { label: '微信小程序', value: 2 }
-            ],
-            activeName: 'all',
-            page: {
-                size: 10,
-                number: 1,
-                total: 0
+            handleToDetail(type) {
+                this.$refs.detail.dialogType = type;
+                this.$refs.detail.dialogTitle = type === 'edit' ? '修改预约' : '预约详情';
+                this.$refs.detail.dialogVisible = true;
             },
-            tableData: [
-                {
-                    'customer': '王太太',
-                    'phone': '+86 12312311231',
-                    'arrive_time': '2020-08-20 13:14:23',
-                    'booking_id': '1696f79e4f4644fb85da200335049412',
-                    'booking_no': '7897539745135',
-                    'shop_id': '76679a29fc044b5a89f75c4f3768e56f',
-                    'shop_name': '多多亲子一店',
-                    'service_id': '1696f79e4f4644fb85da200335049412',
-                    'service_name': '少儿精油',
-                    'technician_id': '1696f79e4f4644fb85da200335049412',
-                    'technician_name': '小花',
-                    'source': '线下门店',
-                    'source_type': 'shop',
-                    'create_time': '2020-08-20 13:14:23',
-                    'is_read': false,
-                    'back_booking_status': '！这是一个待定参数！',
-                    'warn_text': ['超时6天']
-                },
-                {
-                    'customer': '王太太',
-                    'phone': '+86 12312311231',
-                    'arrive_time': '2020-08-20 13:14:23',
-                    'booking_id': '1696f79e4f4644fb85da200335049412',
-                    'booking_no': '7897539745135',
-                    'shop_id': '76679a29fc044b5a89f75c4f3768e56f',
-                    'shop_name': '多多亲子一店',
-                    'service_id': '1696f79e4f4644fb85da200335049412',
-                    'service_name': '少儿精油',
-                    'technician_id': '1696f79e4f4644fb85da200335049412',
-                    'technician_name': '小花',
-                    'source': '线下门店',
-                    'source_type': 'shop',
-                    'create_time': '2020-08-20 13:14:23',
-                    'is_read': false,
-                    'back_booking_status': '！这是一个待定参数！',
-                    'warn_text': []
-                },
-                {
-                    'customer': '王太太',
-                    'phone': '+86 12312311231',
-                    'arrive_time': '2020-08-20 13:14:23',
-                    'booking_id': '1696f79e4f4644fb85da200335049412',
-                    'booking_no': '7897539745135',
-                    'shop_id': '76679a29fc044b5a89f75c4f3768e56f',
-                    'shop_name': '多多亲子一店',
-                    'service_id': '1696f79e4f4644fb85da200335049412',
-                    'service_name': '少儿精油',
-                    'technician_id': '1696f79e4f4644fb85da200335049412',
-                    'technician_name': '小花',
-                    'source': '线下门店',
-                    'source_type': 'shop',
-                    'create_time': '2020-08-20 13:14:23',
-                    'is_read': true,
-                    'back_booking_status': '！这是一个待定参数！',
-                    'warn_text': ['技师排版冲突']
+            handleClickDate(number) {
+                if (number === 'all') {
+                    this.selectDate = '';
+                    return;
                 }
-            ]
-        };
-    },
-    methods: {
-        handleClickDropdown(command) {
-            this.$refs.detail.appointmentType = command;
-            this.$refs.detail.dialogType = 'add';
-            this.$refs.detail.dialogTitle = this.dropdownOptions.find(m => m.value === command).label;
-            this.$refs.detail.dialogVisible = true;
-        },
-        handleToDetail (type) {
-            this.$refs.detail.dialogType = type;
-            this.$refs.detail.dialogTitle = type === 'edit' ? '修改预约' : '预约详情';
-            this.$refs.detail.dialogVisible = true;
-        },
-        handleClickDate(number) {
-            if (number === 'all') {
-                this.selectDate = '';
-                return;
+                this.selectDate = getDateRange(number);
+            },
+            handleClickTab() {},
+            handleCurrentChange() {},
+            handleToOrder(row) {
+                this.$router.push({ path: '/EvaluateList' });
+            },
+            handleCancel() {
+                this.$confirm('是否确定取消此订单?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                })
+                    .then(() => {
+                        this.$message.success('取消成功!');
+                    })
+                    .catch(() => {});
             }
-            this.selectDate = getDateRange(number);
-        },
-        handleClickTab() {
-        },
-        handleCurrentChange() {
-        },
-        handleToOrder(row) {
-            this.$router.push({ path: '/EvaluateList' });
-        },
-        handleCancel() {
-            this.$confirm('是否确定取消该订单?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.$message.success('取消成功!');
-            }).catch(() => {
-            });
         }
-    }
-};
+    };
 </script>
 
 <style lang="css" scoped>
-.header-bar, .container {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 5px;
-    border: 0;
-}
+    .header-bar,
+    .container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        border: 0;
+    }
 
-.container {
-    margin-top: 20px;
-}
+    .container {
+        margin-top: 20px;
+    }
 
-.header-bar .header-bar-search, .header-bar .header-bar-search .search-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    .header-bar .header-bar-search,
+    .header-bar .header-bar-search .search-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.header-bar .header-bar-search .search-item > .el-input {
-    margin: 0 10px;
-}
+    .header-bar .header-bar-search .search-item > .el-input {
+        margin: 0 10px;
+    }
 
-.header-bar-date .btn-list {
-    padding-left: 20px;
-}
+    .header-bar-date .btn-list {
+        padding-left: 20px;
+    }
 
-.header-bar-date, .header-bar-appointment {
-    padding-top: 18px;
-    font-size: 14px;
-}
+    .header-bar-date,
+    .header-bar-appointment {
+        padding-top: 18px;
+        font-size: 14px;
+    }
 
-.header-bar-date, .header-bar-appointment, .header-bar-appointment .appointment-item {
-    display: flex;
-    align-items: center;
-}
+    .header-bar-date,
+    .header-bar-appointment,
+    .header-bar-appointment .appointment-item {
+        display: flex;
+        align-items: center;
+    }
 
-.header-bar-appointment .appointment-item {
-    padding-right: 50px;
-}
+    .header-bar-appointment .appointment-item {
+        padding-right: 50px;
+    }
 
-.export-btn {
-    margin-top: 18px;
-}
+    .export-btn {
+        margin-top: 18px;
+    }
 
-.tab-badge >>> .el-badge__content.is-fixed {
-    top: 10px;
-    right: 0;
-}
+    .tab-badge >>> .el-badge__content.is-fixed {
+        top: 10px;
+        right: 0;
+    }
 
-.warn-tips {
-    color: #F56C6C;
-}
+    .warn-tips {
+        color: #f56c6c;
+    }
 
-.warn-tips .point {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #F56C6C;
-}
+    .warn-tips .point {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #f56c6c;
+    }
 </style>
