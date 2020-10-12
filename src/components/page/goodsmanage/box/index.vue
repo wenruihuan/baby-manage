@@ -16,8 +16,13 @@
             </div>
             <div class="select-container">
                 <span>选择分类:</span>
-                <el-select v-model="selected">
-
+                <el-select class="category-select" v-model="selected" placeholder="选择包厢分类" @change="selectCategory">
+                    <el-option
+                        v-for="item in categoryList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                    </el-option>
                 </el-select>
             </div>
         </div>
@@ -25,7 +30,9 @@
             <el-table
                     :data="tableData"
                     stripe
-                    style="width: 100%">
+                    style="width: 100%"
+                    @selection-change="selection => this.selection = selection"
+            >
                 <el-table-column
                         type="selection"
                         width="55">
@@ -79,16 +86,18 @@
                     <div>
                         <el-button>上架</el-button>
                         <el-button>下架</el-button>
-                        <el-button>删除</el-button>
+                        <el-button @click="removeBox">删除</el-button>
                     </div>
-                    <el-button slot="reference" type="primary">批量操作</el-button>
+                    <el-button :disabled="selection.length <= 0" slot="reference" type="primary">批量操作</el-button>
                 </el-popover>
                 <el-pagination
                         :current-page="curPage"
-                        :page-sizes="[100, 200, 300, 400]"
+                        :page-sizes="[10, 20, 100, 200]"
                         :page-size="100"
                         layout="total, sizes, prev, pager, next, jumper"
-                        :total="400">
+                        :total="tableData.length"
+                        @current-change="handleCurrentChange"
+                >
                 </el-pagination>
             </div>
         </div>
@@ -97,7 +106,7 @@
 </template>
 
 <script>
-import { getBoxList } from './api';
+import { ERR_OK, getBoxList, getCategoryList, removeBox } from './api';
 import BoxCategory from './component/box-category';
 import EditView from './component/edit-view';
 export default {
@@ -115,16 +124,44 @@ export default {
                 { value: '3', label: '乒乓球' },
                 { value: '4', label: '游泳' }
             ],
+            categoryList: [],
             tableData: [],
             curPage: 1,
+            selection: [],
             boxCategoryVisible: false,
             isEditViewShow: false
         };
     },
     created () {
         this.getList();
+        this.getCategory();
     },
     methods: {
+        /* 选择包厢分类 */
+        selectCategory (value) {
+            if (value === 'all') {
+                this.selected = '';
+                this.getList();
+            } else {
+                this.selected = value;
+                this.getList();
+            }
+        },
+        /* 获取包厢分类下拉框 */
+        async getCategory () {
+            try {
+                const data = await getCategoryList();
+                if (data.code === ERR_OK) {
+                    this.categoryList = data.data.data.map(item => ({
+                        ...item,
+                        id: Number(item.id)
+                    }));
+                    this.categoryList.unshift({ id: 'all', name: '全部分类' });
+                }
+            } catch (e) {
+                console.log(`edit-view.vue getCategory error: ${e}`);
+            }
+        },
         /* 添加包厢分类 */
         handleAddCategory () {
             this.boxCategoryVisible = true;
@@ -136,6 +173,7 @@ export default {
         addBox () {
             this.$router.push('/Box/detail');
         },
+        /* 获取包厢列表 */
         async getList () {
             try {
                 const { data } = await getBoxList({
@@ -148,10 +186,33 @@ export default {
                 console.log(`getList error: ${e}`);
             }
         },
+        /* 当前页改变时触发 */
+        handleCurrentChange (curPage) {
+            this.curPage = curPage;
+            this.getList();
+        },
         /* 点击编辑 */
-        handleEdit (index, row) {},
+        handleEdit (index, row) {
+            this.$router.push(`/Box/detail?id=${ row.id }`);
+        },
         /* 点击详情 */
         handleView (index, row) {},
+        /* 删除包厢 */
+        async removeBox () {
+            const id = this.selection.map(item => item.id).join(',');
+            try {
+                const data = await removeBox({ id });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功！'
+                    });
+                    this.getList();
+                }
+            } catch (e) {
+                console.log(`getList error: ${e}`);
+            }
+        }
     }
 };
 </script>
