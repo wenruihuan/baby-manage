@@ -49,7 +49,7 @@
         </el-form>
         <div class="btn-group" v-if="isEdit">
             <el-button type="primary" @click="handleSave">保存</el-button>
-            <el-button @click="setPublishStatus">上架</el-button>
+            <el-button @click="setPublishStatus">{{ this.isPublish ? '下架' : '上架' }}</el-button>
             <el-button v-if="this.form.id" @click="handleRemove">删除</el-button>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
@@ -63,7 +63,7 @@ import {
     ERR_OK,
     getCategoryList,
     getDetail,
-    getUploadToken, removeBox
+    getUploadToken, removeBox, setPublish
 } from '@/components/page/goodsmanage/box/api';
 
 export default {
@@ -101,12 +101,14 @@ export default {
             boxCategoryVisible: false,
             categoryList: [],
             isEdit: '',
+            isPublish: false,
             files: []
         };
     },
     created() {
         const id = this.$route.query.id;
         this.isEdit = this.$route.query.isEdit === '1';
+        this.isPublish = this.$route.query.isPublish === '1';
         this.getDetail(id);
         this.getCategory();
         this.getUploadToken();
@@ -187,7 +189,18 @@ export default {
         },
         /* 上下架状态 */
         async setPublishStatus () {
-
+            try {
+                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        message: data.msg,
+                        type: 'success'
+                    });
+                    this.isPublish = !this.isPublish;
+                }
+            } catch (e) {
+                console.log(`setPublishStatus error: ${e}`);
+            }
         },
         async handleRemove () {
             try {

@@ -12,6 +12,7 @@
                             prefix-icon="el-icon-search"
                             v-model="searchVal">
                     </el-input>
+                    <el-button class="search-btn" @click="handleSearch">搜索</el-button>
                 </div>
             </div>
             <div class="select-container">
@@ -181,6 +182,10 @@ export default {
         addBox () {
             this.$router.push('/Box/detail?isEdit=1');
         },
+        /* 搜索 */
+        handleSearch () {
+            this.getList();
+        },
         /* 获取包厢列表 */
         async getList () {
             try {
@@ -201,7 +206,7 @@ export default {
         },
         /* 点击编辑 */
         handleEdit (index, row) {
-            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=1`);
+            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=1&isPublish=${row.is_publish}`);
         },
         /* 点击详情 */
         handleView (index, row) {
@@ -268,6 +273,15 @@ export default {
     position: absolute;
     bottom: 15px;
     left: 5px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.search-container .search-btn {
+    margin-left: 5px;
 }
 .page-container {
     display: flex;
