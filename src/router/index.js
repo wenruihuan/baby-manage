@@ -40,13 +40,13 @@ export default new Router({
                     meta: { title: '员工列表' }
                 },
                 {
-                    path: '/Box/list',
-                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/box'),
+                    path: '/boxlist',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/box'),
                     meta: { title: '包厢列表' },
                 },
                 {
-                    path: '/Box/detail',
-                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/box/component/edit-view'),
+                    path: '/boxdetail',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/box/component/edit-view'),
                     meta: { title: '包厢详情' },
                 },
                 {

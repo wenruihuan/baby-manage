@@ -96,3 +96,11 @@ export const roleAathList = query => {
         params: query
     });
 };
+
+export const login = query => {
+    return request({
+        url: IP + `/admin/common/login`,
+        method: 'post',
+        params: query
+    });
+}:
