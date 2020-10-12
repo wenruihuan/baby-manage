@@ -1,7 +1,7 @@
 <template>
     <div class="edit-view">
-        <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="rules">
-            <el-form-item label="名称:" prop="name" required>
+        <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : []">
+            <el-form-item label="名称:" prop="name">
                 <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
                 <span v-else>{{ form.name }}</span>
             </el-form-item>
@@ -9,7 +9,7 @@
                 <el-input v-if="isEdit" v-model="form.box_no" placehodler="例如：bx001"></el-input>
                 <span v-else>{{ form.box_no }}</span>
             </el-form-item>
-            <el-form-item label="分类:" prop="kind_id" required>
+            <el-form-item label="分类:" prop="kind_id">
                 <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
                     <el-option
                         v-for="item in categoryList"
@@ -36,7 +36,7 @@
                     <i class="el-icon-plus"></i>
                 </el-upload>
             </el-form-item>
-            <el-form-item label="人数:" prop="people_count" required>
+            <el-form-item label="人数:" prop="people_count">
                 <el-input v-if="isEdit" v-model="form.people_count"></el-input>
                 <span v-else>{{ form.people_count }}</span>
             </el-form-item>
@@ -47,10 +47,10 @@
                 <span v-else>{{ form.price }}</span>
             </el-form-item>
         </el-form>
-        <div class="btn-group">
+        <div class="btn-group" v-if="isEdit">
             <el-button type="primary" @click="handleSave">保存</el-button>
             <el-button @click="setPublishStatus">上架</el-button>
-            <el-button>删除</el-button>
+            <el-button v-if="this.form.id" @click="handleRemove">删除</el-button>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
     </div>
@@ -63,7 +63,7 @@ import {
     ERR_OK,
     getCategoryList,
     getDetail,
-    getUploadToken
+    getUploadToken, removeBox
 } from '@/components/page/goodsmanage/box/api';
 
 export default {
@@ -78,6 +78,7 @@ export default {
                 key: ''
             },
             form: {
+                id: '',
                 name: '',
                 box_no: '',
                 kind_id: '',
@@ -187,6 +188,19 @@ export default {
         /* 上下架状态 */
         async setPublishStatus () {
 
+        },
+        async handleRemove () {
+            try {
+                const data = await removeBox({ id: this.form.id });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        message: data.msg,
+                        type: 'success'
+                    });
+                }
+            } catch (e) {
+                console.log(`handleRemove error: ${e}`);
+            }
         }
     }
 };

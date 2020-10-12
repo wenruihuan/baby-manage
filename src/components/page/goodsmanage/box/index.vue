@@ -60,33 +60,35 @@
                                 type="text"
                                 @click="handleView(scope.$index, scope.row)">详情</el-button>
                         <el-popover
+                                popper-class="POPOVER1"
                                 placement="top-start"
                                 width="80"
                                 trigger="click"
                         >
-                            <div>
-                                <el-button>上架</el-button>
-                                <el-button>下架</el-button>
-                            </div>
+                            <el-button @click="handlePublish(scope.row.id, scope.row.is_publish === '1' ? '0' : '1')">{{ scope.row.is_publish === '1' ? '下架' : '上架' }}</el-button>
                             <el-button
+                                    style="margin-left: 8px;"
                                     slot="reference"
                                     size="mini"
                                     type="text"
-                                    @click="handleView(scope.$index, scope.row)">···</el-button>
+                            >
+                                <i class="el-icon-more"></i>
+                            </el-button>
                         </el-popover>
                     </template>
                 </el-table-column>
             </el-table>
             <div class="page-container">
                 <el-popover
+                        popper-class="POPOVER1"
                         placement="top-start"
                         width="80"
                         trigger="click"
                 >
                     <div>
-                        <el-button>上架</el-button>
-                        <el-button>下架</el-button>
-                        <el-button @click="removeBox">删除</el-button>
+                        <el-button style="margin-top: 5px;" @click="handlePublish('', '1')">上架</el-button>
+                        <el-button style="margin-top: 5px;" @click="handlePublish('', '0')">下架</el-button>
+                        <el-button style="margin-top: 5px;" @click="removeBox">删除</el-button>
                     </div>
                     <el-button :disabled="selection.length <= 0" slot="reference" type="primary">批量操作</el-button>
                 </el-popover>
@@ -106,7 +108,7 @@
 </template>
 
 <script>
-import { ERR_OK, getBoxList, getCategoryList, removeBox } from './api';
+import { ERR_OK, getBoxList, getCategoryList, removeBox, setPublish } from './api';
 import BoxCategory from './component/box-category';
 import EditView from './component/edit-view';
 export default {
@@ -171,7 +173,7 @@ export default {
         },
         /* 添加包厢 */
         addBox () {
-            this.$router.push('/Box/detail');
+            this.$router.push('/Box/detail?isEdit=1');
         },
         /* 获取包厢列表 */
         async getList () {
@@ -214,6 +216,27 @@ export default {
             } catch (e) {
                 console.log(`getList error: ${e}`);
             }
+        },
+        /* 上下架 */
+        async handlePublish (rowId = '', isPublish) {
+            let id = '';
+            if (rowId) {
+                id = rowId;
+            } else {
+                id = this.selection.map(item => item.id).join(',');
+            }
+            try {
+                const data = await setPublish({ id, is_publish: isPublish });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: data.msg
+                    });
+                    this.getList();
+                }
+            } catch (e) {
+                console.log(`handlePublish error: ${e}`);
+            }
         }
     }
 };
@@ -240,13 +263,20 @@ export default {
     bottom: 15px;
     left: 5px;
 }
-.table-container {
-
-}
 .page-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 10px;
+}
+</style>
+
+<style lang="css">
+.POPOVER1 {
+    min-width: 60px;
+    text-align: center;
+}
+.POPOVER1 .el-button+.el-button {
+    margin-left: 0;
 }
 </style>

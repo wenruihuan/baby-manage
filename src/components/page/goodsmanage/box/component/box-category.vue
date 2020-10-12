@@ -61,6 +61,7 @@ export default {
     methods: {
         /* 获取分类列表 */
         async getCategoryList () {
+            this.categoryName = '';
             this.visible = true;
             try {
                 const { data } = await getCategoryList();
@@ -74,6 +75,8 @@ export default {
             try {
                 const data = await addCategory({ id: '', name: this.categoryName });
                 if (data.code === ERR_OK) {
+                    this.categoryName = '';
+                    this.isAdd = false;
                     this.$message({
                         message: '新增成功',
                         type: 'success'
