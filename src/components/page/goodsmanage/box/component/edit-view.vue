@@ -189,6 +189,7 @@ export default {
         },
         /* 上下架状态 */
         async setPublishStatus () {
+            this.handleSave();
             try {
                 const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
                 if (data.code === ERR_OK) {
