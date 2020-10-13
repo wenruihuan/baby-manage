@@ -189,7 +189,30 @@
                                 title: '商品配送设置'
                             }
                         ]
-                    }
+										},
+										{
+                        icon: 'el-icon-present',
+                        index: 'FirstAgent',
+                        title: '营销',
+                        subs: [
+                            {
+                                index: 'FirstAgent',
+                                title: '一级推广员列表'
+                            },
+                            {
+                                index: 'SecondAgent',
+                                title: '二级推广员列表'
+                            },
+                            {
+                                index: 'AgentData',
+                                title: '推广员数据'
+                            },
+                            {
+                                index: 'MemberPrice',
+                                title: '会员价'
+                            }
+                        ]
+                    },
                 ]
             };
         },

@@ -120,9 +120,9 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="jumpToOrderDetail">查看地址</el-button>|
-                <el-button type="text" @click="jumpToOrderDetail">发货</el-button>
-                <el-button type="text" @click="jumpToOrderDetail">查看详情</el-button>
+                <el-button type="text" @click="checkAdress">查看地址</el-button>|
+                <el-button type="text" @click="handleSend">发货</el-button>
+                <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看详情</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -237,8 +237,11 @@ export default {
         this.getTableData(0)
       }
     },
-    jumpToOrderDetail() {
+    jumpToOrderDetail(id) {
+      this.$router.push(`/ChargebackDetail/${id}`)
     },
+    handleSend() {},
+    checkAdress() {},
     handleCurChange(page) {
       this.getTableData(page)
     }

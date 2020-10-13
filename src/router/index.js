@@ -241,6 +241,26 @@ export default new Router({
                     path: '/donate',
                     component: () => import(/* webpackChunkName: "donate" */ '../components/page/Donate.vue'),
                     meta: { title: '支持作者' }
+                },
+                {
+                  path: '/FirstAgent',
+                  component: () => import(/* webpackChunkName: "appointment" */ '../components/page/marketing/firstAgent.vue'),
+                  meta: { title: '一级推广员列表' }
+                },
+                {
+                  path: '/SecondAgent',
+                  component: () => import(/* webpackChunkName: "appointment" */ '../components/page/marketing/secondAgent.vue'),
+                  meta: { title: '二级推广员列表' }
+                },
+                {
+                  path: '/AgentData',
+                  component: () => import(/* webpackChunkName: "appointment" */ '../components/page/marketing/agentData.vue'),
+                  meta: { title: '推广员数据' }
+                },
+                {
+                  path: '/MemberPrice',
+                  component: () => import(/* webpackChunkName: "appointment" */ '../components/page/marketing/memberPrice.vue'),
+                  meta: { title: '会员价' }
                 }
             ]
         },
