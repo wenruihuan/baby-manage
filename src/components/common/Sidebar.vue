@@ -122,6 +122,10 @@
                             {
                                 index: '/goodslist',
                                 title: '商品列表'
+                            },
+                            {
+                                index: '/servicelist',
+                                title: '服务列表'
                             }
                         ]
                     },

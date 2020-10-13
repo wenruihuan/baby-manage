@@ -40,6 +40,16 @@ export default new Router({
                     meta: { title: '员工列表' }
                 },
                 {
+                    path: '/servicelist',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/service'),
+                    meta: { title: '服务列表' },
+                },
+                {
+                    path: '/servicedetail',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/service/component/edit-view'),
+                    meta: { title: '服务详情' },
+                },
+                {
                     path: '/boxlist',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/box'),
                     meta: { title: '包厢列表' },
