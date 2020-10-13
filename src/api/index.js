@@ -1,6 +1,15 @@
 import request from '../utils/request';
 const IP = 'https://result.eolinker.com/BxxMFUV803ea48c63410d63327c3ad2f649e76860d89dfd?uri=';
 
+
+export const login = query => {
+    return request({
+        url: IP + `/admin/common/login`,
+        method: 'post',
+        params: query
+    });
+};
+
 //获取店铺信息
 export const shopInfo = query => {
     return request({
@@ -97,10 +106,10 @@ export const roleAathList = query => {
     });
 };
 
-export const login = query => {
+export  const login = query => {
     return request({
-        url: IP + `/admin/common/login`,
+        url: IP + '/admin/common/login',
         method: 'post',
         params: query
-    });
-}:
+    })
+}
