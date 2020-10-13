@@ -48,6 +48,13 @@
                 >
                     <i class="el-icon-plus"></i>
                 </el-upload>
+                <ul class="img-list" v-if="files.length > 0">
+                    <li v-for="(item, index) in files"
+                        :key="index"
+                    >
+                        <img :src="item" alt=''>
+                    </li>
+                </ul>
             </el-form-item>
             <el-form-item label="单位:" prop="unit">
                 <el-input v-if="isEdit" v-model="form.unit"></el-input>
@@ -165,6 +172,7 @@ export default {
                     const data = await getDetail({ id });
                     if (data.code === ERR_OK) {
                         this.form = data.data;
+                        this.files = this.form.img && this.form.img.split(',');
                     }
                 } catch (e) {
                     console.log(`getList error: ${e}`);
@@ -294,5 +302,24 @@ export default {
 }
 .category-select {
     width: 100%;
+}
+.img-list {
+    max-width: 500px;
+    overflow: auto;
+    width: 500px;
+    list-style: none;
+    margin-top: 15px;
+}
+.img-list li {
+    float: left;
+    margin-right: 10px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 2px;
+    box-sizing: border-box;
+}
+.img-list li img {
+    max-width: 100px;
+    display: inline-block;
 }
 </style>

@@ -55,6 +55,7 @@
                 >
                     <template slot-scope="scope">
                         <el-popover
+                            v-model="scope.row.isSortShow"
                             popper-class="GOODPOPOVER2"
                             placement="top-start"
                             width="260"
@@ -62,12 +63,12 @@
                         >
                             <div>
                                 <el-input v-model="scope.row.sort"></el-input>
-                                <el-button style="margin-left: 5px;" @click="handlePublish('', '1')">取消</el-button>
-                                <el-button style="margin-left: 5px;" type="primary" @click="handlePublish('', '0')">确认</el-button>
+                                <el-button style="margin-left: 5px;" @click="scope.row.isSortShow = false">取消</el-button>
+                                <el-button style="margin-left: 5px;" type="primary" @click="handleCorrectSort(scope.row)">确认</el-button>
                             </div>
                             <div slot="reference">
                                 <span>{{ scope.row.sort }}</span>
-                                <i class="el-icon-edit" @click="$set(scope.row, 'isSortShow', true)"></i>
+                                <i class="el-icon-edit"></i>
                             </div>
                         </el-popover>
                     </template>
@@ -213,6 +214,10 @@ export default {
                     page_size: this.pageSize
                 });
                 this.tableData = data.data && data.data.data ? data.data.data : [];
+                this.tableData = this.tableData.map(item => ({
+                    ...item,
+                    isSortShow: false
+                }));
             } catch (e) {
                 console.log(`goods getList error: ${e}`);
             }
@@ -224,11 +229,11 @@ export default {
         },
         /* 点击编辑 */
         handleEdit (index, row) {
-            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=1&isPublish=${row.is_publish}`);
+            this.$router.push(`/goodsdetail?id=${ row.id }&isEdit=1`);
         },
         /* 点击详情 */
         handleView (index, row) {
-            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=0`);
+            this.$router.push(`/goodsdetail?id=${ row.id }&isEdit=0`);
         },
         /* 删除包厢 */
         async removeBox () {
@@ -243,8 +248,12 @@ export default {
                     this.getList();
                 }
             } catch (e) {
-                console.log(`getList error: ${e}`);
+                console.log(`goods getList error: ${e}`);
             }
+        },
+        /* 修改排序 */
+        handleCorrectSort (row) {
+            row.isSortShow = false;
         },
         /* 上下架 */
         async handlePublish (rowId = '', isPublish) {
