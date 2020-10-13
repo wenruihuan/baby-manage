@@ -3,8 +3,9 @@
         <div class="top-container">
             <div class="tool">
                 <div class="btn-group">
-                    <el-button type="primary" @click="addBox">添加包厢</el-button>
+                    <el-button type="primary" @click="addBox">添加商品</el-button>
                     <el-button @click="handleAddCategory">管理分类</el-button>
+                    <el-button @click="handleAddService">管理服务</el-button>
                 </div>
                 <div class="search-container">
                     <el-input
@@ -14,17 +15,6 @@
                     </el-input>
                     <el-button class="search-btn" @click="handleSearch">搜索</el-button>
                 </div>
-            </div>
-            <div class="select-container">
-                <span>选择分类:</span>
-                <el-select class="category-select" v-model="selected" placeholder="选择包厢分类" @change="selectCategory">
-                    <el-option
-                        v-for="item in categoryList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                    </el-option>
-                </el-select>
             </div>
         </div>
         <div class="table-container">
@@ -39,22 +29,52 @@
                         width="55">
                 </el-table-column>
                 <el-table-column
-                        prop="kind_name"
-                        label="包厢">
+                        prop="name"
+                        label="商品">
                     <template slot-scope="scope">
                         <div class="box-column">
                             <img class="img-wrapper" :src="scope.row.img && scope.row.img.split(',')[0]" alt="">
-                            <span class="category-text">{{ scope.row.name }}</span>
+                            <div>
+                                <p class="category-text">{{ scope.row.name }}</p>
+                                <p class="category-text">￥{{ scope.row.price }}</p>
+                            </div>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="kind_name"
                         label="分类">
                 </el-table-column>
                 <el-table-column
-                        prop="people_count"
-                        label="人数">
+                        prop="tag_names"
+                        label="标签">
+                </el-table-column>
+                <el-table-column
+                    prop="sort"
+                    label="线上排序"
+                >
+                    <template slot-scope="scope">
+                        <el-popover
+                            popper-class="GOODPOPOVER2"
+                            placement="top-start"
+                            width="260"
+                            trigger="click"
+                        >
+                            <div>
+                                <el-input v-model="scope.row.sort"></el-input>
+                                <el-button style="margin-left: 5px;" @click="handlePublish('', '1')">取消</el-button>
+                                <el-button style="margin-left: 5px;" type="primary" @click="handlePublish('', '0')">确认</el-button>
+                            </div>
+                            <div slot="reference">
+                                <span>{{ scope.row.sort }}</span>
+                                <i class="el-icon-edit" @click="$set(scope.row, 'isSortShow', true)"></i>
+                            </div>
+                        </el-popover>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                    prop="sell_count"
+                    label="总销量">
                 </el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
@@ -96,6 +116,8 @@
                         <el-button style="margin-top: 5px;" @click="handlePublish('', '1')">上架</el-button>
                         <el-button style="margin-top: 5px;" @click="handlePublish('', '0')">下架</el-button>
                         <el-button style="margin-top: 5px;" @click="removeBox">删除</el-button>
+                        <el-button style="margin-top: 5px;" @click="setShow(1)">展示</el-button>
+                        <el-button style="margin-top: 5px;" @click="setShow(0)">不展示</el-button>
                     </div>
                     <el-button :disabled="selection.length <= 0" slot="reference" type="primary">批量操作</el-button>
                 </el-popover>
@@ -111,17 +133,20 @@
             </div>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
+        <service-manage v-if="serviceManageVisible" ref="serviceManage" />
     </div>
 </template>
 
 <script>
-import { ERR_OK, getBoxList, getCategoryList, removeBox, setPublish } from './api';
+import { ERR_OK, getBoxList, removeBox, setPublish, setShow } from './api';
 import BoxCategory from './component/box-category';
+import ServiceManage from './component/service-manage';
 import EditView from './component/edit-view';
 export default {
     components: {
         BoxCategory,
-        EditView
+        EditView,
+        ServiceManage
     },
     data () {
         return {
@@ -133,67 +158,63 @@ export default {
                 { value: '3', label: '乒乓球' },
                 { value: '4', label: '游泳' }
             ],
-            categoryList: [],
             tableData: [],
             curPage: 1,
+            pageSize: 10,
             selection: [],
             boxCategoryVisible: false,
+            serviceManageVisible: false,
             isEditViewShow: false
         };
     },
     created () {
         this.getList();
-        this.getCategory();
+        // this.getCategory();
     },
     methods: {
         /* 选择包厢分类 */
         selectCategory (value) {
             if (value === 'all') {
-                this.selected = 'all';
+                this.selected = '';
                 this.getList();
             } else {
                 this.selected = value;
                 this.getList();
             }
         },
-        /* 获取包厢分类下拉框 */
-        async getCategory () {
-            try {
-                const data = await getCategoryList();
-                if (data.code === ERR_OK) {
-                    this.categoryList = data.data.data;
-                    this.categoryList.unshift({ id: 'all', name: '全部分类' });
-                }
-            } catch (e) {
-                console.log(`edit-view.vue getCategory error: ${e}`);
-            }
-        },
-        /* 添加包厢分类 */
+        /* 添加商品分类 */
         handleAddCategory () {
             this.boxCategoryVisible = true;
             this.$nextTick(() => {
                 this.$refs.boxCategory.getCategoryList();
             });
         },
+        /* 添加服务标签 */
+        handleAddService () {
+            this.serviceManageVisible = true;
+            this.$nextTick(() => {
+                this.$refs.serviceManage.getTagList();
+            });
+        },
         /* 添加包厢 */
         addBox () {
-            this.$router.push('/boxdetail?isEdit=1');
+            this.$router.push('/goodsdetail?isEdit=1');
         },
         /* 搜索 */
         handleSearch () {
             this.getList();
         },
-        /* 获取包厢列表 */
+        /* 获取商品列表 */
         async getList () {
             try {
                 const data = await getBoxList({
                     keyword: this.searchVal,
                     page_no: this.curPage,
-                    kind_id: this.selected === 'all' ? '' : this.selected
+                    page_size: this.pageSize
                 });
-                this.tableData = data.data;
+                this.tableData = data.data && data.data.data ? data.data.data : [];
             } catch (e) {
-                console.log(`getList error: ${e}`);
+                console.log(`goods getList error: ${e}`);
             }
         },
         /* 当前页改变时触发 */
@@ -203,11 +224,11 @@ export default {
         },
         /* 点击编辑 */
         handleEdit (index, row) {
-            this.$router.push(`/boxdetail?id=${ row.id }&isEdit=1&isPublish=${row.is_publish}`);
+            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=1&isPublish=${row.is_publish}`);
         },
         /* 点击详情 */
         handleView (index, row) {
-            this.$router.push(`/boxdetail?id=${ row.id }&isEdit=0`);
+            this.$router.push(`/Box/detail?id=${ row.id }&isEdit=0`);
         },
         /* 删除包厢 */
         async removeBox () {
@@ -244,6 +265,22 @@ export default {
                 }
             } catch (e) {
                 console.log(`handlePublish error: ${e}`);
+            }
+        },
+        /* 展示或者不展示 */
+        async setShow (isShow = 0) {
+            try {
+                const id = this.selection.map(item => item.id).join(',');
+                const data = await setShow({ id, is_show: isShow });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: data.msg
+                    });
+                    this.getList();
+                }
+            } catch (e) {
+                console.log(`goods index.vue setShow error: ${e}`);
             }
         }
     }
@@ -286,9 +323,22 @@ export default {
     align-items: center;
     margin-top: 10px;
 }
+.box-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .box-column .img-wrapper {
     max-width: 100px;
     display: inline-block;
+}
+.el-icon-edit {
+    display: inline-block;
+    margin-left: 5px;
+    cursor: pointer;
+}
+.el-icon-edit:hover {
+    color: #2d8cf0;
 }
 </style>
 
@@ -299,5 +349,11 @@ export default {
 }
 .POPOVER1 .el-button+.el-button {
     margin-left: 0;
+}
+</style>
+
+<style lang="css">
+.GOODPOPOVER2  /deep/ .el-input {
+    width: 100px;
 }
 </style>

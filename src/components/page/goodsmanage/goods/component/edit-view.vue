@@ -1,16 +1,16 @@
 <template>
     <div class="edit-view">
+        <el-steps :active="activeStep" simple>
+            <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
+            <el-step title="详情介绍" ></el-step>
+        </el-steps>
         <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
             <el-form-item label="名称:" prop="name">
                 <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
                 <span v-else>{{ form.name }}</span>
             </el-form-item>
-            <el-form-item label="编号:" prop="box_no">
-                <el-input v-if="isEdit" v-model="form.box_no" placehodler="例如：bx001"></el-input>
-                <span v-else>{{ form.box_no }}</span>
-            </el-form-item>
             <el-form-item label="分类:" prop="kind_id">
-                <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
+                <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择商品分类">
                     <el-option
                         v-for="item in categoryList"
                         :key="item.id"
@@ -20,7 +20,20 @@
                 </el-select>
                 <span v-else>{{ form.kind_name }}</span>
                 <p class="tips" v-if="isEdit">一个商品对应一个分类，用于后台设置</p>
-                <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理包厢分类</el-button>
+                <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理商品分类</el-button>
+            </el-form-item>
+            <el-form-item label="标签:" prop="tag_ids">
+                <el-select v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择商品标签">
+                    <el-option
+                        v-for="item in tagList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                    </el-option>
+                </el-select>
+                <span v-else>{{ form.tag_names }}</span>
+                <p class="tips" v-if="isEdit">一个商品可打多个标签，用于小程序端查找商品</p>
+                <el-button v-if="isEdit" class="category-manage" type="text" @click="openServiceDialog">管理商品标签</el-button>
             </el-form-item>
             <el-form-item label="图片:" prop="img">
                 <el-upload
@@ -32,23 +45,25 @@
                     :on-success="handleUploadSuccess"
                     :before-remove="() => false"
                     :disabled="!isEdit"
-                    :show-file-list="false"
                 >
                     <i class="el-icon-plus"></i>
                 </el-upload>
-                <ul class="img-list">
-                    <li v-for="(item, index) in files"
-                        :key="index"
-                    >
-                        <img :src="item" alt=''>
-                    </li>
-                </ul>
             </el-form-item>
-            <el-form-item label="人数:" prop="people_count">
-                <el-input v-if="isEdit" v-model="form.people_count"></el-input>
-                <span v-else>{{ form.people_count }}</span>
+            <el-form-item label="单位:" prop="unit">
+                <el-input v-if="isEdit" v-model="form.unit"></el-input>
+                <span v-else>{{ form.unit }}</span>
             </el-form-item>
-            <el-form-item label="价格:" prop="price">
+<!--            <el-form-item label="规格:" prop="unit">-->
+<!--                <el-input v-if="isEdit" v-model="form.unit"></el-input>-->
+<!--                <span v-else>{{ form.unit }}</span>-->
+<!--            </el-form-item>-->
+            <el-form-item label="成本价:" prop="cost_price">
+                <el-input v-if="isEdit" v-model="form.cost_price">
+                    <template slot="prepend">￥</template>
+                </el-input>
+                <span v-else>{{ form.cost_price }}</span>
+            </el-form-item>
+            <el-form-item label="售价:" prop="price">
                 <el-input v-if="isEdit" v-model="form.price">
                     <template slot="prepend">￥</template>
                 </el-input>
@@ -56,16 +71,17 @@
             </el-form-item>
         </el-form>
         <div class="btn-group" v-if="isEdit">
-            <el-button type="primary" @click="handleSave">保存</el-button>
-            <el-button @click="setPublishStatus">{{ this.isPublish ? '下架' : '上架' }}</el-button>
-            <el-button v-if="this.form.id" @click="handleRemove">删除</el-button>
+            <el-button type="primary" @click="handleSave">下一步</el-button>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
+        <service-manage v-if="serviceVisible" ref="serviceManage" />
     </div>
 </template>
 
 <script>
 import BoxCategory from './box-category';
+import ServiceManage from './service-manage';
+
 import {
     addOrEditBox,
     ERR_OK,
@@ -73,13 +89,16 @@ import {
     getDetail,
     getUploadToken, removeBox, setPublish
 } from '@/components/page/goodsmanage/box/api';
+import { getTagList } from '@/components/page/goodsmanage/goods/api';
 
 export default {
     components: {
-        BoxCategory
+        BoxCategory,
+        ServiceManage
     },
     data () {
         return {
+            activeStep: 1,
             baseUrl: '',
             uploadBody: {
                 token: '',
@@ -88,12 +107,15 @@ export default {
             form: {
                 id: '',
                 name: '',
-                box_no: '',
                 kind_id: '',
+                tag_ids: '',
                 kind_name: '',
-                img: '',
-                people_count: '',
-                price: ''
+                img_list: '',
+                unit: '',
+                sku: '',
+                cost_price: '',
+                price: '',
+                intr: ''
             },
             rules: {
                 name: [
@@ -108,6 +130,8 @@ export default {
             },
             boxCategoryVisible: false,
             categoryList: [],
+            serviceVisible: false,
+            tagList: [],
             isEdit: '',
             isPublish: false,
             files: []
@@ -119,6 +143,7 @@ export default {
         this.isPublish = this.$route.query.isPublish === '1';
         this.getDetail(id);
         this.getCategory();
+        this.getTagList();
         this.getUploadToken();
     },
     methods: {
@@ -140,7 +165,6 @@ export default {
                     const data = await getDetail({ id });
                     if (data.code === ERR_OK) {
                         this.form = data.data;
-                        this.files = this.form.img.split(',');
                     }
                 } catch (e) {
                     console.log(`getList error: ${e}`);
@@ -155,7 +179,7 @@ export default {
         handleUploadSuccess (res, file) {
             this.files.push(`${ this.baseUrl }/${ file.name }`);
         },
-        /* 获取包厢分类下拉框 */
+        /* 获取商品分类下拉框 */
         async getCategory () {
             try {
                 const data = await getCategoryList();
@@ -166,11 +190,29 @@ export default {
                 console.log(`edit-view.vue getCategory error: ${e}`);
             }
         },
+        /* 获取商品分类下拉框 */
+        async getTagList () {
+            try {
+                const data = await getTagList();
+                if (data.code === ERR_OK) {
+                    this.tagList = data.data.data;
+                }
+            } catch (e) {
+                console.log(`edit-view.vue getTagList error: ${e}`);
+            }
+        },
         /* 打开管理包厢分类的框 */
         openDialog () {
             this.boxCategoryVisible = true;
             this.$nextTick(() => {
                 this.$refs.boxCategory.getCategoryList();
+            });
+        },
+        /* 打开管理服务标签框 */
+        openServiceDialog () {
+            this.serviceVisible = true;
+            this.$nextTick(() => {
+                this.$refs.serviceManage.getTagList();
             });
         },
         /* 保存 */
@@ -186,6 +228,7 @@ export default {
                                 message: data.msg,
                                 type: 'success'
                             });
+                            this.activeStep = 2;
                         }
                     } catch (e) {
                         console.log(`handleSave error: ${e}`);
@@ -235,6 +278,7 @@ export default {
 .edit-form {
     width: 30%;
     margin: 0 auto;
+    margin-top: 15px;
 }
 .btn-group {
     text-align: center;
@@ -250,24 +294,5 @@ export default {
 }
 .category-select {
     width: 100%;
-}
-.img-list {
-    max-width: 500px;
-    overflow: auto;
-    width: 500px;
-    list-style: none;
-    margin-top: 15px;
-}
-.img-list li {
-    float: left;
-    margin-right: 10px;
-    border: 1px solid #dddddd;
-    border-radius: 5px;
-    padding: 2px;
-    box-sizing: border-box;
-}
-.img-list li img {
-    max-width: 100px;
-    display: inline-block;
 }
 </style>

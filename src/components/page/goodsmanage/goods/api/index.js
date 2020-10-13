@@ -13,10 +13,10 @@ export const getUploadToken = query => {
     });
 };
 
-/* 获取包厢列表 */
+/* 获取商品列表 */
 export const getBoxList = query => {
     return request({
-        url: `${IP}/admin/box/list`,
+        url: `${IP}/admin/goods/list`,
         method: 'get',
         params: query
     });
@@ -34,7 +34,7 @@ export const removeBox = query => {
 /* 包厢详情 */
 export const getDetail = query => {
     return request({
-        url: `${IP}/admin/box/detail`,
+        url: `${IP}/admin/goods/detail`,
         method: 'get',
         params: query
     });
@@ -43,7 +43,7 @@ export const getDetail = query => {
 /* 添加/编辑包厢 */
 export const addOrEditBox = query => {
     return request({
-        url: `${IP}/admin/box/save`,
+        url: `${IP}/admin/goods/save`,
         method: 'post',
         data: query
     });
@@ -52,13 +52,22 @@ export const addOrEditBox = query => {
 /* 包厢上下架 */
 export const setPublish = query => {
     return request({
-        url: `${IP}/admin/box/setPublish`,
+        url: `${IP}/admin/goods/setPublish`,
         method: 'post',
         data: query
     });
 };
 
-/* 获取商品分类列表 */
+/* 展示或者不展示 */
+export const setShow = query => {
+    return request({
+        url: `${IP}/admin/goods/setShow`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 获取包厢分类列表 */
 export const getCategoryList = query => {
     return request({
         url: `${IP}/admin/goods/kind`,
@@ -67,10 +76,10 @@ export const getCategoryList = query => {
     });
 };
 
-/* 添加包厢分类 */
+/* 添加商品分类 */
 export const addCategory = query => {
     return request({
-        url: `${IP}/admin/box/saveKind`,
+        url: `${IP}/admin/goods/saveKind`,
         method: 'post',
         data: query
     });
@@ -79,7 +88,34 @@ export const addCategory = query => {
 /* 删除包厢分类 */
 export const removeCategory = query => {
     return request({
-        url: `${IP}/admin/box/deleteKind`,
+        url: `${IP}/admin/goods/deleteKind`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 获取标签列表 */
+export const getTagList = query => {
+    return request({
+        url: `${IP}/admin/goods/tag`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 保存标签 */
+export const saveTag = query => {
+    return request({
+        url: `${IP}/admin/goods/saveTag`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 删除标签 */
+export const removeTag = query => {
+    return request({
+        url: `${IP}/admin/goods/deleteTag`,
         method: 'post',
         data: query
     });

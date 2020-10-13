@@ -50,6 +50,16 @@ export default new Router({
                     meta: { title: '包厢详情' },
                 },
                 {
+                    path: '/goodslist',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/goods'),
+                    meta: { title: '商品列表' },
+                },
+                {
+                    path: '/goodsdetail',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/goods/component/edit-view'),
+                    meta: { title: '商品详情' },
+                },
+                {
                     path: '/AppointmentList',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/appointment/appointmentList.vue'),
                     meta: { title: '预约列表' }
@@ -65,7 +75,7 @@ export default new Router({
                     meta: { title: '订单列表' }
                 },
                 {
-                    path: '/OrderDetail',
+                    path: '/OrderDetail/:id',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/orderDetail.vue'),
                     meta: { title: '订单详情' }
                 },
@@ -75,7 +85,7 @@ export default new Router({
                     meta: { title: '退单列表' }
                 },
                 {
-                    path: '/ChargebackDetail',
+                    path: '/ChargebackDetail/:id',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/chargebackDetail.vue'),
                     meta: { title: '退单详情' }
                 },
@@ -93,6 +103,51 @@ export default new Router({
                     path: '/EvaluateList',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/appointment/evaluateList.vue'),
                     meta: { title: '预约评价' }
+                },
+                {
+                    path: '/InformationSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/informationSetting.vue'),
+                    meta: { title: '资讯设置' }
+                },
+                {
+                    path: '/IndexSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/indexSetting.vue'),
+                    meta: { title: '首页设置' }
+                },
+                {
+                    path: '/MemberSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/memberSetting.vue'),
+                    meta: { title: '会员设置' }
+                },
+                {
+                    path: '/IntegralSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/integralSetting.vue'),
+                    meta: { title: '积分设置' }
+                },
+                {
+                    path: '/TagSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/tagSetting.vue'),
+                    meta: { title: '标签设置' }
+                },
+                {
+                    path: '/GlobalSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/globalSetting.vue'),
+                    meta: { title: '全局设置' }
+                },
+                {
+                    path: '/TechnicianSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/technicianSetting.vue'),
+                    meta: { title: '技师设置' }
+                },
+                {
+                    path: '/BillingSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/billingSetting.vue'),
+                    meta: { title: '开单设置' }
+                },
+                {
+                    path: '/DistributionSetting',
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/distributionSetting.vue'),
+                    meta: { title: '商品配送设置' }
                 },
                 {
                     path: '/icon',

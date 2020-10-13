@@ -111,5 +111,5 @@ export  const login = query => {
         url: IP + '/admin/common/login',
         method: 'post',
         params: query
-    })
+    });
 }
