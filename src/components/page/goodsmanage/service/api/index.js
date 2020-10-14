@@ -22,37 +22,37 @@ export const getBoxList = query => {
     });
 };
 
-/* 删除包厢 */
+/* 删除服务分类 */
 export const removeBox = query => {
     return request({
-        url: `${IP}/admin/box/delete`,
+        url: `${IP}/admin/service/deleteKind`,
         method: 'post',
         data: query
     });
 };
 
-/* 包厢详情 */
+/* 服务详情 */
 export const getDetail = query => {
     return request({
-        url: `${IP}/admin/box/detail`,
+        url: `${IP}/admin/service/detail`,
         method: 'get',
         params: query
     });
 };
 
-/* 添加/编辑包厢 */
+/* 添加/编辑服务 */
 export const addOrEditBox = query => {
     return request({
-        url: `${IP}/admin/box/save`,
+        url: `${IP}/admin/service/save`,
         method: 'post',
         data: query
     });
 };
 
-/* 包厢上下架 */
+/* 服务上下架 */
 export const setPublish = query => {
     return request({
-        url: `${IP}/admin/box/setPublish`,
+        url: `${IP}/admin/service/setPublish`,
         method: 'post',
         data: query
     });
@@ -116,6 +116,24 @@ export const saveTag = query => {
 export const removeTag = query => {
     return request({
         url: `${IP}/admin/service/deleteTag`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 服务是否展示 */
+export const setShow = query => {
+    return request({
+        url: `${IP}/admin/service/setShow`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 服务排序 */
+export const setSort = query => {
+    return request({
+        url: `${IP}/admin/service/sort`,
         method: 'post',
         data: query
     });

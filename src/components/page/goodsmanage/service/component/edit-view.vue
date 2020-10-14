@@ -5,10 +5,6 @@
                 <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
                 <span v-else>{{ form.name }}</span>
             </el-form-item>
-            <el-form-item label="编号:" prop="box_no">
-                <el-input v-if="isEdit" v-model="form.box_no" placehodler="例如：bx001"></el-input>
-                <span v-else>{{ form.box_no }}</span>
-            </el-form-item>
             <el-form-item label="分类:" prop="kind_id">
                 <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
                     <el-option
@@ -21,6 +17,19 @@
                 <span v-else>{{ form.kind_name }}</span>
                 <p class="tips" v-if="isEdit">一个商品对应一个分类，用于后台设置</p>
                 <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理包厢分类</el-button>
+            </el-form-item>
+            <el-form-item label="标签:" prop="box_no">
+                <el-select v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择服务标签">
+                    <el-option
+                        v-for="item in tagList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                    </el-option>
+                </el-select>
+                <span v-else>{{ form.tag_name }}</span>
+                <p class="tips" v-if="isEdit">一个商品可以打多个标签，用于小程序端查找商品</p>
+                <el-button v-if="isEdit" class="category-manage" type="text" @click="openTagDialog">管理服务标签</el-button>
             </el-form-item>
             <el-form-item label="图片:" prop="img">
                 <el-upload
@@ -44,39 +53,72 @@
                     </li>
                 </ul>
             </el-form-item>
-            <el-form-item label="人数:" prop="people_count">
+            <el-form-item label="规格:" prop="people_count">
                 <el-input v-if="isEdit" v-model="form.people_count"></el-input>
                 <span v-else>{{ form.people_count }}</span>
             </el-form-item>
-            <el-form-item label="价格:" prop="price">
+            <el-form-item label="售价:" prop="price">
                 <el-input v-if="isEdit" v-model="form.price">
                     <template slot="prepend">￥</template>
                 </el-input>
                 <span v-else>{{ form.price }}</span>
             </el-form-item>
+            <el-form-item label="划线价:" prop="original_price">
+                <el-input v-if="isEdit" v-model="form.original_price" placeholder="原价：￥99.99"></el-input>
+                <span v-else>{{ form.original_price }}</span>
+            </el-form-item>
+            <el-form-item label="服务时长:" prop="service_time">
+                <el-input v-if="isEdit" v-model="form.service_time">
+                    <template slot="suffix">分钟</template>
+                </el-input>
+                <span v-else>{{ form.service_time }}分钟</span>
+            </el-form-item>
+            <el-form-item label="线上预约:" prop="is_needpay">
+                <el-radio-group v-if="isEdit" v-model="form.is_needpay">
+                    <el-radio :label="0">无需支付</el-radio>
+                    <el-radio :label="1">需支付</el-radio>
+                </el-radio-group>
+                <span v-else>{{ form.is_needpay === '1' ? '需支付' : '无需支付' }}</span>
+            </el-form-item>
+            <el-form-item label="服务方式:" prop="is_todoor">
+                <el-radio-group v-if="isEdit" v-model="form.is_todoor">
+                    <el-radio :label="0">到店</el-radio>
+                    <el-radio :label="1">上门</el-radio>
+                </el-radio-group>
+                <span v-else>{{ form.is_todoor === '1' ? '上门' : '到店' }}</span>
+            </el-form-item>
+            <el-form-item label="网店展示:" prop="is_show">
+                <el-radio-group v-if="isEdit" v-model="form.is_show">
+                    <el-radio :label="0">不展示</el-radio>
+                    <el-radio :label="1">展示</el-radio>
+                </el-radio-group>
+                <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
+            </el-form-item>
         </el-form>
         <div class="btn-group" v-if="isEdit">
-            <el-button type="primary" @click="handleSave">保存</el-button>
-            <el-button @click="setPublishStatus">{{ this.isPublish ? '下架' : '上架' }}</el-button>
-            <el-button v-if="this.form.id" @click="handleRemove">删除</el-button>
+            <el-button type="primary" @click="handleSave">下一步</el-button>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
+        <service-manage v-if="serviceManageVisible" ref="serviceManage" />
     </div>
 </template>
 
 <script>
 import BoxCategory from './box-category';
+import ServiceManage from './service-manage';
 import {
     addOrEditBox,
     ERR_OK,
     getCategoryList,
     getDetail,
-    getUploadToken, removeBox, setPublish
-} from '@/components/page/goodsmanage/box/api';
+    getUploadToken, removeBox, setPublish,
+    getServiceTags
+} from '@/components/page/goodsmanage/service/api';
 
 export default {
     components: {
-        BoxCategory
+        BoxCategory,
+        ServiceManage
     },
     data () {
         return {
@@ -88,12 +130,16 @@ export default {
             form: {
                 id: '',
                 name: '',
-                box_no: '',
                 kind_id: '',
                 kind_name: '',
                 img: '',
-                people_count: '',
-                price: ''
+                price: '',
+                is_todoor: '',
+                service_time: '',
+                need_pay: '',
+                original_price: '',
+                tag_ids: '',
+                is_show: ''
             },
             rules: {
                 name: [
@@ -107,7 +153,9 @@ export default {
                 ]
             },
             boxCategoryVisible: false,
+            serviceManageVisible: false,
             categoryList: [],
+            tagList: [],
             isEdit: '',
             isPublish: false,
             files: []
@@ -119,6 +167,7 @@ export default {
         this.isPublish = this.$route.query.isPublish === '1';
         this.getDetail(id);
         this.getCategory();
+        this.getTags();
         this.getUploadToken();
     },
     methods: {
@@ -166,11 +215,29 @@ export default {
                 console.log(`edit-view.vue getCategory error: ${e}`);
             }
         },
+        /* 获取服务分类下拉框 */
+        async getTags () {
+            try {
+                const data = await getServiceTags({ page_no: 1, page_size: 1000000 });
+                if (data.code === ERR_OK) {
+                    this.tagList = data.data.data;
+                }
+            } catch (e) {
+                console.log(`service edit-view.vue getTags error: ${e}`);
+            }
+        },
         /* 打开管理包厢分类的框 */
         openDialog () {
             this.boxCategoryVisible = true;
             this.$nextTick(() => {
                 this.$refs.boxCategory.getCategoryList();
+            });
+        },
+        /* 管理服务标签 */
+        async openTagDialog () {
+            this.serviceManageVisible = true;
+            this.$nextTick(() => {
+                this.$refs.serviceManage.getTagList();
             });
         },
         /* 保存 */
@@ -188,7 +255,7 @@ export default {
                             });
                         }
                     } catch (e) {
-                        console.log(`handleSave error: ${e}`);
+                        console.log(`service edit-view handleSave error: ${e}`);
                     }
                 }
             });
