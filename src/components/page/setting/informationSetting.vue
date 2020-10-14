@@ -62,7 +62,7 @@
 </template>
 <script>
     import breadcrumb from '@/components/common/address';
-    import informationSettingDetail from './component/informationSettingDetail'
+    import informationSettingDetail from './component/informationSettingDetail';
     export default {
         name: 'InformationSetting',
         components: {

@@ -153,10 +153,12 @@
     };
 </script>
 <style lang="css" scoped>
+    .header-bar,
     .container {
         background-color: #ffffff;
         padding: 20px;
-        border: none;
+        border-radius: 5px;
+        border: 0;
     }
     .info-title {
         margin-bottom: 20px;
