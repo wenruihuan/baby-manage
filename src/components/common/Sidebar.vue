@@ -126,6 +126,10 @@
                             {
                                 index: '/servicelist',
                                 title: '服务列表'
+                            },
+                            {
+                                index: '/card-item',
+                                title: '卡项列表'
                             }
                         ]
                     },

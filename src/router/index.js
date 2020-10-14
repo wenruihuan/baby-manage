@@ -40,6 +40,26 @@ export default new Router({
                     meta: { title: '员工列表' }
                 },
                 {
+                    path: '/card-item',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item'),
+                    meta: { title: '卡项列表' },
+                },
+                {
+                    path: '/cika',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/cika-edit.vue'),
+                    meta: { title: '次卡' },
+                },
+                {
+                    path: '/discount',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/discount-card.vue'),
+                    meta: { title: '折扣卡' },
+                },
+                {
+                    path: '/insert-card',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/insert-card.vue'),
+                    meta: { title: '充值卡' },
+                },
+                {
                     path: '/servicelist',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/service'),
                     meta: { title: '服务列表' },
