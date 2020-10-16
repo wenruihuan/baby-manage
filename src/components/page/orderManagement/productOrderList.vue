@@ -238,7 +238,7 @@ export default {
       }
     },
     jumpToOrderDetail(id) {
-      this.$router.push(`/ChargebackDetail/${id}`)
+      this.$router.push(`/RefundDetail/${id}`)
     },
     handleSend() {},
     checkAdress() {},

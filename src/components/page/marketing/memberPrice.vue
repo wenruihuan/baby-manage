@@ -7,6 +7,14 @@
         <el-button type="primary" plain>添加商品</el-button>
       </div>
       <el-table :data="tableData" border style="width: 100%; margin-top: 20px;">
+        <el-table-column label="商品名称" align="center">
+          <template slot-scope="scope">
+            <div>
+              <img src="" alt="">
+              <span></span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column 
           v-for="item in columnCfg" :key="item.prop"
           :label="item.label"
@@ -39,7 +47,6 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
-import { getChargeBackList } from '@/api/orderManagement'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
@@ -62,13 +69,13 @@ export default {
         page_no: 0
       },
       columnCfg: [
-        {label: '推广员', prop: '1'},
-        {label: '别名', prop: '2'},
-        {label: '归属地', prop: '3', width: 220},
-        {label: '手机号码', prop: '4'},
-        {label: '所属一级推广员', prop: '5'},
-        {label: '推荐用户', prop: '6'},
-        {label: '加入时间', prop: '6'}
+        {label: '售价', prop: '1'},
+        {label: '优惠方式', prop: '2'},
+        {label: '多多会员', prop: '3', width: 220},
+        {label: '亲子会员', prop: '4'},
+        {label: '黄金会员', prop: '5'},
+        {label: '铂金会员', prop: '6'},
+        {label: '钻石会员', prop: '6'}
       ],
       tableData: [],
       total: 0,
@@ -85,14 +92,14 @@ export default {
     getTableData(page) {
       // todo: 入参待补全
       this.form.page_no = page
-      getChargeBackList(this.form).then(res => {
-        const { data, all_count } = res
-        this.tableData = data
-        this.total = all_count
-      })
+      // getChargeBackList(this.form).then(res => {
+      //   const { data, all_count } = res
+      //   this.tableData = data
+      //   this.total = all_count
+      // })
     },
     jumpToOrderDetail(orderId) {
-      this.$router.push(`/ChargebackDetail/${orderId}`)
+      this.$router.push(`/RefundDetail/${orderId}`)
     },
     handleCurChange(page) {
       this.getTableData(page)

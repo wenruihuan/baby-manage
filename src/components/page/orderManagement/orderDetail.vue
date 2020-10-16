@@ -1,13 +1,18 @@
 <template>
   <div class="order-detail">
     <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
-    <order-detail></order-detail>
+    <order-detail
+      orderType="order"
+      :reqFn="getOrderDetail"
+      :orderId="orderId"
+    ></order-detail>
   </div>
 </template>
 
 <script>
-import breadcrumb from '@/components/common/address'
-import orderDetail from './components/orderDetail'
+import Breadcrumb from '@/components/common/address'
+import OrderDetail from './components/orderDetail'
+import { getOrderDetail } from '@/api/orderManagement'
 export default {
   name: 'orederDetail',
   data() {
@@ -15,16 +20,19 @@ export default {
       breadcrumbList: [
         { name: '首页', router: 'dashboard' },
         { name: '订单列表', router: 'OrderList' },
-        { name: '订单详情', router: 'dashboard' },
-      ]
+        { name: '订单详情', router: 'OrderDetail' },
+      ],
+      orderId: this.$route.params.id
     }
   },
   components: {
-    breadcrumb,
-    orderDetail
+    Breadcrumb,
+    OrderDetail
   },
   created() {},
-  methods: {}
+  methods: {
+    getOrderDetail
+  }
 }
 </script>
 

@@ -66,7 +66,6 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
-import { getChargeBackList } from '@/api/orderManagement'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
@@ -110,14 +109,14 @@ export default {
     getTableData(page) {
       // todo: 入参待补全
       this.form.page_no = page
-      getChargeBackList(this.form).then(res => {
-        const { data, all_count } = res
-        this.tableData = data
-        this.total = all_count
-      })
+      // getChargeBackList(this.form).then(res => {
+      //   const { data, all_count } = res
+      //   this.tableData = data
+      //   this.total = all_count
+      // })
     },
     jumpToOrderDetail(orderId) {
-      this.$router.push(`/ChargebackDetail/${orderId}`)
+      this.$router.push(`/RefundDetail/${orderId}`)
     },
     handleCurChange(page) {
       this.getTableData(page)

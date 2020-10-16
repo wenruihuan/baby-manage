@@ -97,15 +97,15 @@
                         title: '订单管理',
                         subs: [
                             {
-                                index: 'OrderList',
+                                index: '/orderList',
                                 title: '订单列表'
                             },
                             {
-                                index: 'ChargebackList',
+                                index: '/refundList',
                                 title: '退单列表'
                             },
                             {
-                                index: 'ProductOrderList',
+                                index: '/productOrderList',
                                 title: '商品订单列表'
                             }
                         ]
@@ -200,19 +200,19 @@
                         title: '营销',
                         subs: [
                             {
-                                index: 'FirstAgent',
+                                index: '/firstAgent',
                                 title: '一级推广员列表'
                             },
                             {
-                                index: 'SecondAgent',
+                                index: '/secondAgent',
                                 title: '二级推广员列表'
                             },
                             {
-                                index: 'AgentData',
+                                index: '/agentData',
                                 title: '推广员数据'
                             },
                             {
-                                index: 'MemberPrice',
+                                index: '/memberPrice',
                                 title: '会员价'
                             }
                         ]
