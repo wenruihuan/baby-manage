@@ -207,6 +207,18 @@ a {
     background-color: #409EFF;
 }
 
+
+.dialog-box .item{
+    display: flex;
+    margin-bottom: 20px;
+}
+.dialog-box .item span{
+    line-height: 32px;
+}
+.width200{
+    width: 200px;
+}
+
 /* 服务级联 */
 .service-cascader .el-cascader-panel .el-cascader-menu .el-cascader-menu__wrap .el-cascader-menu__list .el-cascader-node {
     height: auto;
