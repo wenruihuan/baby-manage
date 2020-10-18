@@ -115,13 +115,13 @@ export default new Router({
                     meta: { title: '订单详情' }
                 },
                 {
-                    path: '/ChargebackList',
-                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/chargebackList.vue'),
+                    path: '/RefundList',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/refundList.vue'),
                     meta: { title: '退单列表' }
                 },
                 {
-                    path: '/ChargebackDetail/:id',
-                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/chargebackDetail.vue'),
+                    path: '/RefundDetail/:id',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/refundDetail.vue'),
                     meta: { title: '退单详情' }
                 },
                 {
