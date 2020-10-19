@@ -53,9 +53,51 @@
                     </li>
                 </ul>
             </el-form-item>
-            <el-form-item label="规格:" prop="people_count">
-                <el-input v-if="isEdit" v-model="form.people_count"></el-input>
-                <span v-else>{{ form.people_count }}</span>
+            <el-form-item label="规格:" prop="unit">
+                <div class="size-group">
+                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="setUUID()">
+                        <div class="size-name">
+                            <span>规格名：</span>
+                            <el-input class="size-key" v-model="item.name" placeholder="请输入规格名称">
+                                <template slot="append">
+                                    <i class="el-icon-close" style="cursor: pointer;" @click="removeSizeKey(index)"></i>
+                                </template>
+                            </el-input>
+                        </div>
+                        <div v-if="item.values && item.values.length > 0" class="size-value">
+                            <span>规格值：</span>
+                            <el-input
+                                    :key="setUUID()"
+                                    v-for="(innerItem, index) in item.values"
+                                    v-model="innerItem.value"
+                                    class="size-input"
+                                    placeholder="请输入规格值"
+                            >
+                                <template slot="append">
+                                    <i class="el-icon-close" style="cursor: pointer;" @click="removeSizeVal(item, index)"></i>
+                                </template>
+                            </el-input>
+                            <el-button type="text" @click="addSizeValue(item)">添加规格值</el-button>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="isEdit" class="add-size">
+                    <el-button @click="addSize">添加规格</el-button>
+                </div>
+                <ul v-if="!isEdit" class="size-readonly">
+                    <li
+                            class="readonly-item"
+                            v-for="item in sizeGroup"
+                            :key="setUUID()"
+                    >
+                        <span>{{ item.name }}:</span>
+                        <ul class="size-value-readonly">
+                            <li class="item" v-for="innerItem in item.values" :key="setUUID()">
+                                {{ innerItem.value }}
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </el-form-item>
             <el-form-item label="售价:" prop="price">
                 <el-input v-if="isEdit" v-model="form.price">
@@ -114,6 +156,7 @@ import {
     getUploadToken, removeBox, setPublish,
     getServiceTags
 } from '@/components/page/goodsmanage/service/api';
+import { guid } from '../../utils';
 
 export default {
     components: {
@@ -158,7 +201,8 @@ export default {
             tagList: [],
             isEdit: '',
             isPublish: false,
-            files: []
+            files: [],
+            sizeGroup: []
         };
     },
     created() {
@@ -171,6 +215,9 @@ export default {
         this.getUploadToken();
     },
     methods: {
+        setUUID () {
+            guid();
+        },
         /* 获取上传图片的token */
         async getUploadToken () {
             try{
@@ -190,6 +237,22 @@ export default {
                     if (data.code === ERR_OK) {
                         this.form = data.data;
                         this.files = this.form.img.split(',');
+                        if (Array.isArray(this.form.sku)) {
+                            this.form.sku = [
+                                { name: '个', value: ['80', '60'] }
+                            ];
+                            this.sizeGroup = this.form.sku.map(item => {
+                                return { ...item, values: item.value.map(i => ({ value: i })) };
+                            });
+                        }
+                        this.form.sku = [
+                            { name: '个', value: ['80', '60'] },
+                            { name: '个', value: ['80', '60'] },
+                            { name: '个', value: ['80', '60'] },
+                        ];
+                        this.sizeGroup = this.form.sku.map(item => {
+                            return { ...item, values: item.value.map(i => ({ value: i })) };
+                        });
                     }
                 } catch (e) {
                     console.log(`getList error: ${e}`);
@@ -247,6 +310,10 @@ export default {
                     try {
                         let { kind_name, ...obj } = this.form;
                         obj.img = this.files.join(',');
+                        obj.sku = this.sizeGroup.map(item => ({
+                            ...item,
+                            value: item.values.map(i => i.value)
+                        }));
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
@@ -288,6 +355,26 @@ export default {
             } catch (e) {
                 console.log(`handleRemove error: ${e}`);
             }
+        },
+        /* 添加规格 */
+        addSize () {
+            this.sizeGroup.push({
+                name: '',
+                values: [{ value: '' }]
+            });
+        },
+        /* 添加规格值 */
+        addSizeValue (item) {
+            item.values.push({ value: '' });
+        },
+        /* 删除规格key */
+        removeSizeKey (index) {
+            this.sizeGroup.splice(index, 1);
+        },
+        /* 删除规格值 */
+        removeSizeVal (item, index) {
+            item.values.splice(index, 1);
+            this.sizeGroup = this.sizeGroup.filter(item => item.values.length > 0);
         }
     }
 };
@@ -300,7 +387,6 @@ export default {
     padding: 10px;
 }
 .edit-form {
-    width: 30%;
     margin: 0 auto;
 }
 .btn-group {
@@ -336,5 +422,42 @@ export default {
 .img-list li img {
     max-width: 100px;
     display: inline-block;
+}
+.size-name {
+    padding: 8px;
+    background: #eeeeee;
+}
+.size-key {
+    width: 30%;
+    margin: 5px;
+}
+.size-value {
+    padding: 8px;
+}
+.size-input {
+    width: 30%;
+    margin: 5px;
+}
+.add-size {
+    padding: 8px;
+    box-sizing: border-box;
+    background: #eeeeee;
+}
+.size-readonly {
+    float: left;
+    list-style: none;
+    overflow: hidden;
+}
+.size-readonly .item {
+    float: left;
+}
+.size-value-readonly {
+    float: right;
+    list-style: none;
+}
+.size-value-readonly .item {
+    display: inline-block;
+    float: left;
+    margin-right: 5px;
 }
 </style>

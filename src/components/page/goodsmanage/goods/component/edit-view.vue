@@ -49,8 +49,8 @@
                     <i class="el-icon-plus"></i>
                 </el-upload>
                 <ul class="img-list" v-if="files.length > 0">
-                    <li v-for="(item, index) in files"
-                        :key="index"
+                    <li v-for="item in files"
+                        :key="setUUID()"
                     >
                         <img :src="item" alt=''>
                     </li>
@@ -62,19 +62,27 @@
             </el-form-item>
             <el-form-item label="规格:" prop="unit">
                 <div class="size-group">
-                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="index">
+                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="setUUID()">
                         <div class="size-name">
                             <span>规格名：</span>
-                            <el-input v-model="item.name"></el-input>
+                            <el-input class="size-key" v-model="item.name" placeholder="请输入规格名称">
+                                <template slot="append">
+                                    <i class="el-icon-close" style="cursor: pointer;" @click="removeSizeKey(index)"></i>
+                                </template>
+                            </el-input>
                         </div>
                         <div v-if="item.values && item.values.length > 0" class="size-value">
                             <span>规格值：</span>
                             <el-input
-                                :key="index"
+                                :key="setUUID()"
                                 v-for="(innerItem, index) in item.values"
                                 v-model="innerItem.value"
                                 class="size-input"
+                                placeholder="请输入规格值"
                             >
+                                <template slot="append">
+                                    <i class="el-icon-close" style="cursor: pointer;" @click="removeSizeVal(item, index)"></i>
+                                </template>
                             </el-input>
                             <el-button type="text" @click="addSizeValue(item)">添加规格值</el-button>
                         </div>
@@ -85,13 +93,13 @@
                 </div>
                 <ul v-if="!isEdit" class="size-readonly">
                     <li
-                        class="item"
-                        v-for="(item, index) in sizeGroup"
-                        :key="index"
+                        class="readonly-item"
+                        v-for="item in sizeGroup"
+                        :key="setUUID()"
                     >
                         <span>{{ item.name }}:</span>
                         <ul class="size-value-readonly">
-                            <li class="item" v-for="(innerItem, index) in item.values" :key="index">
+                            <li class="item" v-for="innerItem in item.values" :key="setUUID()">
                                 {{ innerItem.value }}
                             </li>
                         </ul>
@@ -122,7 +130,7 @@
 <script>
 import BoxCategory from './box-category';
 import ServiceManage from './service-manage';
-
+import { guid } from '../../utils';
 import {
     addOrEditBox,
     ERR_OK,
@@ -189,6 +197,9 @@ export default {
         this.getUploadToken();
     },
     methods: {
+        setUUID () {
+            guid();
+        },
         /* 获取上传图片的token */
         async getUploadToken () {
             try{
@@ -217,7 +228,9 @@ export default {
                             });
                         }
                         this.form.sku = [
-                            { name: '个', value: ['80', '60'] }
+                            { name: '个', value: ['80', '60'] },
+                            { name: '个', value: ['80', '60'] },
+                            { name: '个', value: ['80', '60'] },
                         ];
                         this.sizeGroup = this.form.sku.map(item => {
                             return { ...item, values: item.value.map(i => ({ value: i })) };
@@ -336,6 +349,15 @@ export default {
         /* 添加规格值 */
         addSizeValue (item) {
             item.values.push({ value: '' });
+        },
+        /* 删除规格key */
+        removeSizeKey (index) {
+            this.sizeGroup.splice(index, 1);
+        },
+        /* 删除规格值 */
+        removeSizeVal (item, index) {
+            item.values.splice(index, 1);
+            this.sizeGroup = this.sizeGroup.filter(item => item.values.length > 0);
         }
     }
 };
@@ -389,11 +411,16 @@ export default {
     padding: 8px;
     background: #eeeeee;
 }
+.size-key {
+    width: 30%;
+    margin: 5px;
+}
 .size-value {
     padding: 8px;
 }
 .size-input {
-    margin-bottom: 5px;
+    width: 30%;
+    margin: 5px;
 }
 .add-size {
     padding: 8px;
