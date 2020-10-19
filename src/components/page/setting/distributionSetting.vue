@@ -1,5 +1,6 @@
 <template>
     <div class="distribution-setting">
+        <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
         <div class="container">
             <div class="info-title">配送设置</div>
             <el-form :model="formData" label-width="130px" class="demo-ruleForm">
@@ -52,10 +53,28 @@
     </div>
 </template>
 <script>
+    import breadcrumb from '@/components/common/address';
     export default {
         name: 'DistributionSetting',
+        components: {
+            breadcrumb
+        },
         data() {
             return {
+                breadcrumbList: [
+                    {
+                        name: '首页',
+                        router: 'dashboard'
+                    },
+                    {
+                        name: '设置',
+                        router: 'Setting'
+                    },
+                    {
+                        name: '商品配送设置',
+                        router: 'DistributionSetting'
+                    }
+                ],
                 formData: {},
                 noDistributionList: [{ name: '上门自提', check: true, remark: '', visible: false, tempName: '' }],
                 distributionList: [
