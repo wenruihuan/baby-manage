@@ -9,7 +9,7 @@
               <el-button type="primary">开单收银</el-button>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" placeholder="请输入手机号、退款编号"></el-input>
+              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSearch">搜索</el-button>
@@ -40,7 +40,7 @@
           </el-row>
           <el-row>
             <el-form-item label="退款方式：" class="form-item">
-              <el-select v-model="form.refund_type_id">
+              <el-select v-model="form.refund_way">
                 <el-option label="全部" :value="0"></el-option>
                 <el-option label="原路返回" :value="1"></el-option>
                 <el-option label="现金退款" :value="2"></el-option>
@@ -51,7 +51,7 @@
               <span>多多亲子岁月一店</span>
             </el-form-item>
             <el-form-item label="订单来源：" class="form-item">
-              <el-select v-model="form.order_source">
+              <el-select v-model="form.source">
                 <el-option label="全部" :value="0"></el-option>
                 <el-option label="第三方支付" :value="1"></el-option>
                 <el-option label="店内消费" :value="2"></el-option>
@@ -110,21 +110,21 @@ export default {
       ],
       form: {
         start_time: '',
+        keyword: '',
         end_time: '',
-        // todo: 待定
-        refund_type_id: '',
-        order_source: '',
+        refund_way: '',
+        source: '',
         page_size: 20,
         page_no: 0
       },
       columnCfg: [
-        {label: '退单编号', prop: '1'},
-        {label: '操作时间', prop: '2'},
-        {label: '订单编号', prop: '3', width: 220},
-        {label: '退款门店', prop: '4'},
-        {label: '订单金额（元）', prop: '5'},
-        {label: '退款金额（元）', prop: '6'},
-        {label: '状态', prop: '10'},
+        {label: '退单编号', prop: 'refund_no'},
+        {label: '操作时间', prop: 'create_time'},
+        {label: '订单编号', prop: 'order_no', width: 220},
+        {label: '退款门店', prop: 'shop_name'},
+        {label: '订单金额（元）', prop: 'order_price'},
+        {label: '退款金额（元）', prop: 'refund_price'},
+        {label: '状态', prop: 'refund_status'},
       ],
       tableData: [],
       total: 0,
@@ -148,11 +148,11 @@ export default {
           break
         case 3: 
           this.form.start_time = dayjs().subtract(3, 'day').format(dateFormatStr)
-          this.form.start_time = now
+          this.form.end_time = now
           break
         case 7:
           this.form.start_time = dayjs().subtract(7, 'day').format(dateFormatStr)
-          this.form.start_time = now
+          this.form.end_time = now
           break
       }
     },
@@ -163,7 +163,7 @@ export default {
       // todo: 入参待补全
       this.form.page_no = page
       getRefundList(this.form).then(res => {
-        const { data, all_count } = res
+        const { data, all_count } = res.data
         this.tableData = data
         this.total = all_count
       })

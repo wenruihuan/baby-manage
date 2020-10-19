@@ -10,7 +10,7 @@
         <el-table-column label="商品名称" align="center">
           <template slot-scope="scope">
             <div>
-              <img src="" alt="">
+              <img src="" alt="" width="50px" height="50px">
               <span></span>
             </div>
           </template>
@@ -47,6 +47,7 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
+import { getMemberPriceList, addMemberProducts, setMemberProduct, removeMemberPrice } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
@@ -57,25 +58,20 @@ export default {
     return {
       breadcrumbList: [
         { name: '首页', router: 'dashboard' },
-        { name: '推广员列表', router: 'SecondAgent' },
+        { name: '推广员列表', router: 'MemberPrice' },
       ],
       form: {
-        start_time: '',
-        end_time: '',
-        // todo: 待定
-        first_agent: '',
-        input_value: '',
         page_size: 20,
-        page_no: 0
+        page_no: 1
       },
       columnCfg: [
-        {label: '售价', prop: '1'},
-        {label: '优惠方式', prop: '2'},
-        {label: '多多会员', prop: '3', width: 220},
-        {label: '亲子会员', prop: '4'},
-        {label: '黄金会员', prop: '5'},
-        {label: '铂金会员', prop: '6'},
-        {label: '钻石会员', prop: '6'}
+        {label: '售价', prop: 'price'},
+        {label: '优惠方式', prop: 'type'},
+        {label: '多多会员', width: 220},
+        {label: '亲子会员', prop: '1testDataLevelID.price'},
+        {label: '黄金会员', prop: '2testDataLevelID.price'},
+        {label: '铂金会员', prop: '3testDataLevelID.price'},
+        {label: '钻石会员', prop: '4testDataLevelID.price'}
       ],
       tableData: [],
       total: 0,
@@ -83,23 +79,19 @@ export default {
     }
   },
   created() {
-    this.getTableData(0)
+    this.getTableData(1)
   },
   methods: {
     handleSearch() {
-      this.getTableData(0)
+      this.getTableData(1)
     },
     getTableData(page) {
-      // todo: 入参待补全
       this.form.page_no = page
-      // getChargeBackList(this.form).then(res => {
-      //   const { data, all_count } = res
-      //   this.tableData = data
-      //   this.total = all_count
-      // })
-    },
-    jumpToOrderDetail(orderId) {
-      this.$router.push(`/RefundDetail/${orderId}`)
+      getMemberPriceList(this.form).then(res => {
+        const { data = [], all_count } = res.data || {}
+        this.tableData = data
+        this.total = all_count
+      })
     },
     handleCurChange(page) {
       this.getTableData(page)

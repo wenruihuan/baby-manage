@@ -9,7 +9,7 @@
               <el-button type="primary">添加一级推广员</el-button>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" v-model="form.input_value" placeholder="请输入手机号、退款编号"></el-input>
+              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSearch">搜索</el-button>
@@ -46,7 +46,7 @@
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="downloadCode">下载邀请码</el-button>
-            <el-button type="text" @click="handleRepay">清退</el-button>
+            <el-button type="text" @click="handleRemove">清退</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,6 +66,7 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
+import { getFirstAgentList, addFirstAgent, removeAgent } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
@@ -79,20 +80,20 @@ export default {
         { name: '推广员列表', router: 'FirstAgent' },
       ],
       form: {
-        start_time: '',
-        end_time: '',
+        start_date: '',
+        end_date: '',
         // todo: 待定
-        input_value: '',
+        keyword: '',
         page_size: 20,
-        page_no: 0
+        page_no: 1
       },
       columnCfg: [
-        {label: '推广员', prop: '1'},
-        {label: '别名', prop: '2'},
-        {label: '归属地', prop: '3', width: 220},
-        {label: '手机号码', prop: '4'},
-        {label: '下级推广员', prop: '5'},
-        {label: '添加时间', prop: '6'}
+        {label: '推广员', prop: 'name'},
+        {label: '别名', prop: 'alias'},
+        {label: '归属地', prop: 'city', width: 220},
+        {label: '手机号码', prop: 'phone'},
+        {label: '下级推广员', prop: 'member_count'},
+        {label: '添加时间', prop: 'create_time'}
       ],
       tableData: [],
       total: 0,
@@ -100,31 +101,29 @@ export default {
     }
   },
   created() {
-    this.getTableData(0)
+    this.getTableData(1)
   },
   methods: {
     handleSearch() {
-      this.getTableData(0)
+      this.getTableData(1)
     },
     getTableData(page) {
-      // todo: 入参待补全
       this.form.page_no = page
-      // getChargeBackList(this.form).then(res => {
-      //   const { data, all_count } = res
-      //   this.tableData = data
-      //   this.total = all_count
-      // })
-    },
-    jumpToOrderDetail(orderId) {
-      this.$router.push(`/RefundDetail/${orderId}`)
+      getFirstAgentList(this.form).then(res => {
+        const { data = [], all_count } = res.data || {}
+        this.tableData = data
+        this.total = all_count
+      })
     },
     handleCurChange(page) {
       this.getTableData(page)
     },
     handleDateChange(val) {
-      this.form.start_time = val[0]
-      this.form.end_time = val[1]
-    }
+      this.form.start_date = val[0]
+      this.form.end_date = val[1]
+    },
+    downloadCode() {},
+    handleRemove() {}
   }
 }
 </script>
