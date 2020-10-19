@@ -60,10 +60,44 @@
                 <el-input v-if="isEdit" v-model="form.unit"></el-input>
                 <span v-else>{{ form.unit }}</span>
             </el-form-item>
-<!--            <el-form-item label="规格:" prop="unit">-->
-<!--                <el-input v-if="isEdit" v-model="form.unit"></el-input>-->
-<!--                <span v-else>{{ form.unit }}</span>-->
-<!--            </el-form-item>-->
+            <el-form-item label="规格:" prop="unit">
+                <div class="size-group">
+                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="index">
+                        <div class="size-name">
+                            <span>规格名：</span>
+                            <el-input v-model="item.name"></el-input>
+                        </div>
+                        <div v-if="item.values && item.values.length > 0" class="size-value">
+                            <span>规格值：</span>
+                            <el-input
+                                :key="index"
+                                v-for="(innerItem, index) in item.values"
+                                v-model="innerItem.value"
+                                class="size-input"
+                            >
+                            </el-input>
+                            <el-button type="text" @click="addSizeValue(item)">添加规格值</el-button>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="isEdit" class="add-size">
+                    <el-button @click="addSize">添加规格</el-button>
+                </div>
+                <ul v-if="!isEdit" class="size-readonly">
+                    <li
+                        class="item"
+                        v-for="(item, index) in sizeGroup"
+                        :key="index"
+                    >
+                        <span>{{ item.name }}:</span>
+                        <ul class="size-value-readonly">
+                            <li class="item" v-for="(innerItem, index) in item.values" :key="index">
+                                {{ innerItem.value }}
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </el-form-item>
             <el-form-item label="成本价:" prop="cost_price">
                 <el-input v-if="isEdit" v-model="form.cost_price">
                     <template slot="prepend">￥</template>
@@ -141,7 +175,8 @@ export default {
             tagList: [],
             isEdit: '',
             isPublish: false,
-            files: []
+            files: [],
+            sizeGroup: []
         };
     },
     created() {
@@ -173,9 +208,23 @@ export default {
                     if (data.code === ERR_OK) {
                         this.form = data.data;
                         this.files = this.form.img && this.form.img.split(',');
+                        if (Array.isArray(this.form.sku)) {
+                            this.form.sku = [
+                                { name: '个', value: ['80', '60'] }
+                            ];
+                            this.sizeGroup = this.form.sku.map(item => {
+                                return { ...item, values: item.value.map(i => ({ value: i })) };
+                            });
+                        }
+                        this.form.sku = [
+                            { name: '个', value: ['80', '60'] }
+                        ];
+                        this.sizeGroup = this.form.sku.map(item => {
+                            return { ...item, values: item.value.map(i => ({ value: i })) };
+                        });
                     }
                 } catch (e) {
-                    console.log(`getList error: ${e}`);
+                    console.log(`goods edit-view.vue getDetail error: ${e}`);
                 }
             }
         },
@@ -230,6 +279,10 @@ export default {
                     try {
                         let { kind_name, ...obj } = this.form;
                         obj.img = this.files.join(',');
+                        obj.sku = this.sizeGroup.map(item => ({
+                            ...item,
+                            value: item.values.map(i => i.value)
+                        }));
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
@@ -272,6 +325,17 @@ export default {
             } catch (e) {
                 console.log(`handleRemove error: ${e}`);
             }
+        },
+        /* 添加规格 */
+        addSize () {
+            this.sizeGroup.push({
+                name: '',
+                values: [{ value: '' }]
+            });
+        },
+        /* 添加规格值 */
+        addSizeValue (item) {
+            item.values.push({ value: '' });
         }
     }
 };
@@ -284,7 +348,6 @@ export default {
     padding: 10px;
 }
 .edit-form {
-    width: 30%;
     margin: 0 auto;
     margin-top: 15px;
 }
@@ -321,5 +384,37 @@ export default {
 .img-list li img {
     max-width: 100px;
     display: inline-block;
+}
+.size-name {
+    padding: 8px;
+    background: #eeeeee;
+}
+.size-value {
+    padding: 8px;
+}
+.size-input {
+    margin-bottom: 5px;
+}
+.add-size {
+    padding: 8px;
+    box-sizing: border-box;
+    background: #eeeeee;
+}
+.size-readonly {
+    float: left;
+    list-style: none;
+    overflow: hidden;
+}
+.size-readonly .item {
+    float: left;
+}
+.size-value-readonly {
+    float: right;
+    list-style: none;
+}
+.size-value-readonly .item {
+    display: inline-block;
+    float: left;
+    margin-right: 5px;
 }
 </style>
