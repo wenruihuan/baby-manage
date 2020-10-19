@@ -303,11 +303,11 @@ export default {
           break
         case 3: 
           this.form.start_time = dayjs().subtract(3, 'day').format(dateFormatStr)
-          this.form.start_time = now
+          this.form.end_time = now
           break
         case 7:
           this.form.start_time = dayjs().subtract(7, 'day').format(dateFormatStr)
-          this.form.start_time = now
+          this.form.end_time = now
           break
       }
     },

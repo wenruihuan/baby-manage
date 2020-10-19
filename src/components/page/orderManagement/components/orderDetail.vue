@@ -180,8 +180,10 @@
           <el-table :data="consume" style="width:100%">
             <el-table-column label="商品" prop="name" width="260" align="center">
               <template slot-scope="scope">
-                <img :src="scope.row.img" alt="">
-                {{scope.row.name}}
+                <div class="product-ctner">
+                  <img :src="scope.row.img" alt="" width="50px" height="50px">
+                  {{scope.row.name}}  
+                </div>
               </template>
             </el-table-column>
             <el-table-column v-if="!isProductOrderInfo" label="技师" align="center">--</el-table-column>
@@ -203,12 +205,12 @@
             </div>
             <div class="summary-item">
               <div class="space"></div>
-              <span class="summary-label">{{payText}}：第三方</span>
+              <span class="summary-label">{{payText}}第三方</span>
               <span class="summary-amount">￥{{checkoutPrice}}</span>
             </div>
             <div class="summary-item">
               <div class="space"></div>
-              <span class="summary-label">合计收款：</span>
+              <span class="summary-label">合计收款：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <span class="summary-amount">￥{{balancePrice}}</span>
             </div>
           </div>
@@ -322,7 +324,7 @@ export default {
     }
   },
   created() {
-    const params = {order_id: thsi.orderId}
+    const params = {order_id: this.orderId}
     this.reqFn(params).then(res => {
       const {order_info, member_info, type, consume,
         booking_info, total_price, balance_price,
@@ -430,5 +432,14 @@ export default {
     display: flex;
     justify-content: flex-end;
   }
+  .product-ctner { 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .product-ctner img {
+    margin-right: 10px;
+  }
+
   
 </style>

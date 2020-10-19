@@ -6,12 +6,12 @@
         <el-form ref="form" :inline="true" :model="form" label-width="80">
           <el-row class="form-row">
             <el-form-item class="form-row-left" label="推广员：">
-              <el-select v-model="form.first_agent">
-                <el-option></el-option>
+              <el-select v-model="form.publicist">
+                <el-option value="1"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" v-model="form.input_value" placeholder="请输入手机号、退款编号"></el-input>
+              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSearch">搜索</el-button>
@@ -32,7 +32,7 @@
               ></el-date-picker>
             </el-form-item>
             <el-form-item>
-              <el-button>导出报表</el-button>
+              <el-button @click="handleExport">导出报表</el-button>
             </el-form-item>
           </el-row>
         </el-form>
@@ -47,12 +47,26 @@
           :width="item.width"
           align="center"
         >
+          <template slot-scope="scope">
+            <div class="member-info" v-if="item.prop === 'memeber_name'">
+              <div class="avatar">
+                <img src="" alt="" width="50px" height="50px">
+                <p class="avart-tag">普通会员</p>
+              </div>
+              <div class="member-name">
+                <p class="title">会员名</p>
+                <p class="phone">{{scope.row.memeber_phone}}</p>
+                <p class="code">编号{{scope.row.memeber_no}}</p>
+              </div>
+            </div>
+            <span v-else>{{scope.row[item.prop]}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="downloadCode">下载邀请码</el-button>
             <span>|</span>
-            <el-button type="text" @click="handleRepay">清退</el-button>
+            <el-button type="text" @click="handleRemove">清退</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -72,6 +86,7 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
+import { getAgentData } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
@@ -88,19 +103,20 @@ export default {
         start_time: '',
         end_time: '',
         // todo: 待定
-        first_agent: '',
-        input_value: '',
+        publicist: '',
+        keyword: '',
         page_size: 20,
-        page_no: 0
+        page_no: 1
       },
       columnCfg: [
-        {label: '推广员', prop: '1'},
-        {label: '别名', prop: '2'},
-        {label: '归属地', prop: '3', width: 220},
-        {label: '手机号码', prop: '4'},
-        {label: '所属一级推广员', prop: '5'},
-        {label: '推荐用户', prop: '6'},
-        {label: '加入时间', prop: '6'}
+        {label: '会员信息', prop: 'memeber_name', width: 220},
+        {label: '最近消费', prop: 'last_buy'},
+        {label: '消费次数', prop: 'buy_time', width: 220},
+        {label: '累计消费', prop: 'total_buy'},
+        {label: '注册时间', prop: 'reg_time'},
+        {label: '归属门店', prop: 'shop_name'},
+        {label: '健康管理师', prop: 'hm_name'},
+        {label: '推广员', prop: 'secondary_name'}
       ],
       tableData: [],
       total: 0,
@@ -108,23 +124,19 @@ export default {
     }
   },
   created() {
-    this.getTableData(0)
+    this.getTableData(1)
   },
   methods: {
     handleSearch() {
-      this.getTableData(0)
+      this.getTableData(1)
     },
     getTableData(page) {
-      // todo: 入参待补全
       this.form.page_no = page
-      // getChargeBackList(this.form).then(res => {
-      //   const { data, all_count } = res
-      //   this.tableData = data
-      //   this.total = all_count
-      // })
-    },
-    jumpToOrderDetail(orderId) {
-      this.$router.push(`/RefundDetail/${orderId}`)
+      getAgentData(this.form).then(res => {
+        const { data = [], all_count } = res.data || {}
+        this.tableData = data
+        this.total = all_count
+      })
     },
     handleCurChange(page) {
       this.getTableData(page)
@@ -132,7 +144,10 @@ export default {
     handleDateChange(val) {
       this.form.start_time = val[0]
       this.form.end_time = val[1]
-    }
+    },
+    handleExport() {},
+    downloadCode() {},
+    handleRemove() {}
   }
 }
 </script>
@@ -165,5 +180,19 @@ export default {
   }
   .form-item {
     margin-right: 120px;
+  }
+  .member-info {
+    display: flex;
+  }
+  .member-name {
+    text-align: left;
+    margin-left: 10px;
+  }
+  .title {
+    color: #409EFF
+  }
+  .avart-tag {
+    background-color: #409EFF;
+    color: #ffffff;
   }
 </style>
