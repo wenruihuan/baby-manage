@@ -62,13 +62,6 @@
             <span v-else>{{scope.row[item.prop]}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center">
-          <template slot-scope="scope">
-            <el-button type="text" @click="downloadCode">下载邀请码</el-button>
-            <span>|</span>
-            <el-button type="text" @click="handleRemove">清退</el-button>
-          </template>
-        </el-table-column>
       </el-table>
       <el-pagination
         class="page-ctner"
@@ -145,9 +138,7 @@ export default {
       this.form.start_time = val[0]
       this.form.end_time = val[1]
     },
-    handleExport() {},
-    downloadCode() {},
-    handleRemove() {}
+    handleExport() {}
   }
 }
 </script>
