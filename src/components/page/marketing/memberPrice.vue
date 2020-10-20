@@ -25,7 +25,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="handleEdit">编辑</el-button>
+            <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
             <span>|</span>
             <el-button type="text" @click="handleRemove">移除</el-button>
           </template>
@@ -52,6 +52,7 @@
         :is="componentName"
         @success="handleSuccess"
         @cancel="handleCancel"
+        :rowData="rowData"
       ></component>
     </el-dialog>
   </div>
@@ -95,7 +96,8 @@ export default {
       dateArr: [],
       dialogShow: false,
       dialogTitle: '',
-      componentName: ''
+      componentName: '',
+      rowData: {}
     }
   },
   created() {
@@ -125,9 +127,10 @@ export default {
       this.dialogShow = true
       this.dialogTitle = '添加商品'
     },
-    handleEdit() {
+    handleEdit(rowData) {
       this.componentName = 'editProduct'
       this.dialogShow = true
+      this.rowData = rowData
       this.dialogTitle = '设置会员价'
     },
     handleRemove(id) {
