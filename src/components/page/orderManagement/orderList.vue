@@ -233,7 +233,7 @@ export default {
         {label: '订单编号', prop: 'order_no', width: '200'},
         {label: '下单时间', prop: 'create_time'},
         {label: '购买项目', prop: 'order_name'},
-        {label: '技师', prop: '4'},
+        {label: '技师', prop: 'technician_name'},
         {label: '单价（元）', prop: ''},
         {label: '数量', prop: 'count'},
         {label: '订单来源', prop: 'order_source'},
