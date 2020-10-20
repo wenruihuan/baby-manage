@@ -14,57 +14,39 @@
             </div>
         </div>
         <div class="table">
-            <el-table
-                :data="tableData"
-                border
-                style="width: 100%"
-            >
-                <el-table-column
-                    prop="name"
-                    label="职位名称"
-                >
-                </el-table-column>
-                <el-table-column
-                    prop="description"
-                    label="描述"
-                >
-                </el-table-column>
-                <el-table-column
-                    prop="staff_count"
-                    label="员工数量"
-                >
-                </el-table-column>
-                <el-table-column
-                    prop="create_time"
-                    label="添加时间"
-                >
-                </el-table-column>
-                <el-table-column
-                    fixed="right"
-                    label="操作"
-                >
+            <div class="date-box"></div>
+            <el-table :data="tableData" border style="width: 100%; margin-top: 20px;">
+                <el-table-column label="商品名称" align="center">
                     <template slot-scope="scope">
-                        <el-button @click="handleClick(scope)" type="text" size="small">详情</el-button>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <el-popconfirm
-                            @onConfirm="setPositionDelete(scope)"
-                            confirmButtonText='好的'
-                            cancelButtonText='不用了'
-                            title="这是一段内容确定删除吗？"
-                        >
-                            <a style="color: #409EFF" slot="reference">删除</a>
-                        </el-popconfirm>
+                        <div>
+                            <img src="" alt="" width="50px" height="50px">
+                            <span></span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        v-for="item in columnCfg" :key="item.prop"
+                        :label="item.label"
+                        :prop="item.prop"
+                        :width="item.width"
+                        align="center"
+                >
+                </el-table-column>
+                <el-table-column label="操作" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" @click="downloadCode">设置排班</el-button>
                     </template>
                 </el-table-column>
             </el-table>
-        </div>
-        <div class="page-box">
             <el-pagination
+                    class="page-ctner"
+                    :page-size="20"
                     background
-                    @current-change="handleCurrentChange"
-                    layout="total, prev, pager, next, jumper"
-                    :total="page.total">
-            </el-pagination>
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="total"
+                    :page-sizes="[20]"
+                    @current-change="handleCurChange"
+            ></el-pagination>
         </div>
         <el-dialog
                 title="提示"
@@ -96,6 +78,24 @@
         },
         data () {
             return {
+                form: {
+                    page_size: 20,
+                    page_no: 1
+                },
+                columnCfg: [
+                    {label: '姓名', prop: 'price'},
+                    {label: '手机号', prop: 'type'},
+                    {label: '门店', width: 220},
+                    {label: '周一', prop: '1testDataLevelID.price'},
+                    {label: '周二', prop: '2testDataLevelID.price'},
+                    {label: '周三', prop: '3testDataLevelID.price'},
+                    {label: '周四', prop: '4testDataLevelID.price'},
+                    {label: '周五', prop: '4testDataLevelID.price'},
+                    {label: '周六', prop: '4testDataLevelID.price'},
+                    {label: '周日', prop: '4testDataLevelID.price'},
+                ],
+                tableData: [],
+                total: 0,
                 page: {
                     total: 30
                 },
@@ -103,7 +103,6 @@
                 dialogVisible: false,
                 // 是否显示新增
                 isAddEmployees: false,
-                tableData: [],
             }
         },
         created () {
@@ -115,8 +114,8 @@
             },
             async getFormData () {
                 const { data } = await api.positionList();
-                this.tableData = data.data;
-                this.page.total = data.all_count;
+                this.tableData = data
+                this.total = data.all_count
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
