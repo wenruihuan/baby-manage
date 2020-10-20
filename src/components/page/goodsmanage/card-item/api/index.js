@@ -13,7 +13,7 @@ export const getUploadToken = query => {
     });
 };
 
-/* 获取包厢列表 */
+/* 获取卡项列表 */
 export const getBoxList = query => {
     return request({
         url: `${IP}/admin/card/list`,
@@ -22,65 +22,146 @@ export const getBoxList = query => {
     });
 };
 
-/* 删除包厢 */
+/* 删除卡项 */
+export const removeCard = query => {
+    return request({
+        url: `${IP}/admin/card/delete`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 删除服务分类 */
 export const removeBox = query => {
     return request({
-        url: `${IP}/admin/box/delete`,
+        url: `${IP}/admin/service/deleteKind`,
         method: 'post',
         data: query
     });
 };
 
-/* 包厢详情 */
+/* 服务详情 */
 export const getDetail = query => {
     return request({
-        url: `${IP}/admin/box/detail`,
+        url: `${IP}/admin/service/detail`,
         method: 'get',
         params: query
     });
 };
 
-/* 添加/编辑包厢 */
+/* 添加/编辑服务 */
 export const addOrEditBox = query => {
     return request({
-        url: `${IP}/admin/box/save`,
+        url: `${IP}/admin/service/save`,
         method: 'post',
         data: query
     });
 };
 
-/* 包厢上下架 */
+/* 服务上下架 */
 export const setPublish = query => {
     return request({
-        url: `${IP}/admin/box/setPublish`,
+        url: `${IP}/admin/card/setPublish`,
         method: 'post',
         data: query
     });
 };
 
-/* 获取商品分类列表 */
+/* 获取服务分类列表 */
 export const getCategoryList = query => {
     return request({
-        url: `${IP}/admin/goods/kind`,
+        url: `${IP}/admin/service/kind`,
         method: 'get',
         params: query
     });
 };
 
-/* 添加包厢分类 */
+/* 获取服务标签列表 */
+export const getServiceTags = query => {
+    return request({
+        url: `${IP}/admin/service/tag`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 添加服务分类 */
 export const addCategory = query => {
     return request({
-        url: `${IP}/admin/box/saveKind`,
+        url: `${IP}/admin/service/saveKind`,
         method: 'post',
         data: query
     });
 };
 
-/* 删除包厢分类 */
+/* 删除服务分类 */
 export const removeCategory = query => {
     return request({
-        url: `${IP}/admin/box/deleteKind`,
+        url: `${IP}/admin/service/deleteKind`,
         method: 'post',
         data: query
+    });
+};
+
+/* 获取服务标签列表 */
+export const getTagList = query => {
+    return request({
+        url: `${IP}/admin/service/tag`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 保存服务标签 */
+export const saveTag = query => {
+    return request({
+        url: `${IP}/admin/service/saveTag`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 删除服务标签 */
+export const removeTag = query => {
+    return request({
+        url: `${IP}/admin/service/deleteTag`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 卡项是否展示 */
+export const setShow = query => {
+    return request({
+        url: `${IP}/admin/card/setShow`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 卡项排序 */
+export const setSort = query => {
+    return request({
+        url: `${IP}/admin/card/sort`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 保存次卡 */
+export const saveCika = query => {
+    return request({
+        url: `${IP}/admin/card/time/save`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 获取服务列表 */
+export const getServiceList = query => {
+    return request({
+        url: `${IP}/admin/service/list`,
+        method: 'get',
+        params: query
     });
 };

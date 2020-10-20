@@ -19,44 +19,47 @@
                         <div>
                             <p class="category-text">{{ scope.row.name }}</p>
                             <p class="category-text">￥{{ scope.row.price }}</p>
+                            <p class="category-tip">￥{{ scope.row.tip }}</p>
                         </div>
                     </div>
                 </template>
             </el-table-column>
             <el-table-column
-                    prop="kind_name"
+                    prop="expire_day"
                     label="有效期">
             </el-table-column>
             <el-table-column
-                    prop="tag_names"
+                    prop="is_online"
                     label="线上售卡">
+                <template slot-scope="scope">
+                    {{ scope.row.is_online === '1' ? '支持' : '不支持' }}
+                </template>
             </el-table-column>
             <el-table-column
-                    prop="sort"
-                    label="线上排序"
-            >
+                prop="sort"
+                label="线上排序">
                 <template slot-scope="scope">
                     <el-popover
-                            v-model="scope.row.isSortShow"
-                            popper-class="GOODPOPOVER2"
-                            placement="top-start"
-                            width="260"
-                            trigger="click"
+                        v-model="delVisibles[scope.$index]"
+                        popper-class="GOODPOPOVER3"
+                        placement="top-start"
+                        width="260"
+                        trigger="click"
                     >
                         <div>
-                            <el-input v-model="scope.row.sort"></el-input>
-                            <el-button style="margin-left: 5px;" @click="scope.row.isSortShow = false">取消</el-button>
-                            <el-button style="margin-left: 5px;" type="primary" @click="handleCorrectSort(scope.row)">确认</el-button>
+                            <el-input v-model="curSort"></el-input>
+                            <el-button style="margin-left: 5px;" @click="canclePopover(scope.row, scope.$index)">取消</el-button>
+                            <el-button style="margin-left: 5px;" type="primary" @click="handleCorrectSort(scope.row, scope.$index)">确认</el-button>
                         </div>
                         <div slot="reference">
                             <span>{{ scope.row.sort }}</span>
-                            <i class="el-icon-edit"></i>
+                            <i class="el-icon-edit" @click="curSort = scope.row.sort"></i>
                         </div>
                     </el-popover>
                 </template>
             </el-table-column>
             <el-table-column
-                    prop="sell_count"
+                    prop="sell_amount"
                     label="总销量">
             </el-table-column>
             <el-table-column label="操作">
@@ -102,7 +105,7 @@
                     <el-button style="margin-top: 5px;" @click="setShow(1)">展示</el-button>
                     <el-button style="margin-top: 5px;" @click="setShow(0)">不展示</el-button>
                 </div>
-                <el-button :disabled="selection.length <= 0" slot="reference" type="primary">批量操作</el-button>
+                <el-button class="batch-ope-btn" :disabled="selection.length <= 0" slot="reference" type="primary">批量操作</el-button>
             </el-popover>
             <el-pagination
                     :current-page="curPage"
@@ -128,7 +131,9 @@ export default {
     data () {
         return {
             selection: [],
-            curPage: 1
+            curPage: 1,
+            delVisibles: [],
+            curSort: ''
         };
     },
     methods: {
@@ -141,21 +146,32 @@ export default {
         },
         handleEdit (index, row) {
             this.$emit('handleEdit', { index, row });
+            this.$router.push('/cika?id=' + row.id);
         },
         handleView (row) {
             this.$emit('handleView', row);
         },
         handlePublish (id, isPublish) {
-            this.$emit('handleView', { id, isPublish });
+            if (id) {
+                this.$emit('handlePublish', { id, isPublish });
+            } else {
+                const selectedIds = this.selection.map(item => item.id).join(',');
+                this.$emit('handlePublish', { id: selectedIds, isPublish });
+            }
         },
-        handleCorrectSort (row) {
-            this.$emit('handleCorrectSort', row);
+        handleCorrectSort (row, index) {
+            this.$set(this.delVisibles, index, false);
+            this.$emit('handleCorrectSort', { ...row, sort: this.curSort });
         },
         removeBox () {
             this.$emit('remove', this.selection);
         },
         setShow (isShow) {
-            this.$emit('setShow', { selection: this.selection, isShow });
+            const id = this.selection.map(item => item.id).join(',');
+            this.$emit('setShow', { id, isShow });
+        },
+        canclePopover (row, index) {
+            this.$set(this.delVisibles, index, false);
         }
     }
 };
@@ -164,5 +180,50 @@ export default {
 <style lang="css" scoped>
 .card-table-container {
 
+}
+.box-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.img-wrapper {
+    max-width: 100px;
+    height: auto;
+}
+.category-tip {
+    color: #bbbbbb;
+}
+.el-icon-edit {
+    display: inline-block;
+    margin-left: 5px;
+    cursor: pointer;
+}
+.el-icon-edit:hover {
+    color: #2d8cf0;
+}
+.batch-ope-btn {
+    margin: 8px 0;
+}
+.page-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+</style>
+
+<style lang="css">
+.GOODPOPOVER3  /deep/ .el-input {
+    width: 100px;
+}
+.POPOVER1 {
+    min-width: 60px;
+    text-align: center;
+}
+.POPOVER1 .el-button+.el-button {
+    margin-left: 0;
+}
+.GOODPOPOVER2  /deep/ .el-input {
+    width: 100px;
 }
 </style>
