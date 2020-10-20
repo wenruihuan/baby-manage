@@ -14,13 +14,12 @@ body,
 }
 
 body {
-    font-family: 'PingFang SC', "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif;
+    font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, 'microsoft yahei', arial, STHeiTi, sans-serif;
 }
 
 a {
-    text-decoration: none
+    text-decoration: none;
 }
-
 
 .content-box {
     position: absolute;
@@ -29,8 +28,8 @@ a {
     top: 70px;
     bottom: 0;
     padding-bottom: 30px;
-    -webkit-transition: left .3s ease-in-out;
-    transition: left .3s ease-in-out;
+    -webkit-transition: left 0.3s ease-in-out;
+    transition: left 0.3s ease-in-out;
     background: #f0f0f0;
 }
 
@@ -85,7 +84,7 @@ a {
 
 .move-enter-active,
 .move-leave-active {
-    transition: opacity .5s;
+    transition: opacity 0.5s;
 }
 
 .move-enter,
@@ -193,7 +192,7 @@ a {
     font-size: 16px;
     align-items: center;
     position: relative;
-    background-color: #EBEEF5;
+    background-color: #ebeef5;
     padding-left: 25px;
 }
 
@@ -204,18 +203,17 @@ a {
     height: 20px;
     left: 10px;
     top: 15px;
-    background-color: #409EFF;
+    background-color: #409eff;
 }
 
-
-.dialog-box .item{
+.dialog-box .item {
     display: flex;
     margin-bottom: 20px;
 }
-.dialog-box .item span{
+.dialog-box .item span {
     line-height: 32px;
 }
-.width200{
+.width200 {
     width: 200px;
 }
 
@@ -230,11 +228,28 @@ a {
     padding: 5px 0;
 }
 
-.service-cascader .el-cascader-panel .el-cascader-menu .el-cascader-menu__wrap .el-cascader-menu__list .el-cascader-node .node-item .el-image {
+.service-cascader
+    .el-cascader-panel
+    .el-cascader-menu
+    .el-cascader-menu__wrap
+    .el-cascader-menu__list
+    .el-cascader-node
+    .node-item
+    .el-image {
     width: 60px;
     height: 50px;
     margin-right: 5px;
-    background-color: #F5F7FA;
+    background-color: #f5f7fa;
+    color: #c0c4cc;
+    font-size: 21px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.error-image-slot {
+    height: inherit;
+    background-color: #f5f7fa;
     color: #c0c4cc;
     font-size: 21px;
     display: flex;

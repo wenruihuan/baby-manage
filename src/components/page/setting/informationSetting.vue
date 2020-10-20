@@ -1,5 +1,5 @@
 <template>
-    <div class="information-setting">
+    <div class="information-setting" v-loading="loading">
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
         <div class="header-bar">
             <el-button type="primary" @click="handleDetail()">添加文章资讯</el-button>
@@ -18,31 +18,31 @@
                 </div>
                 <div class="header-bar-search-input">
                     <el-input placeholder="请输入" prefix-icon="el-icon-search" v-model="searchValue" clearable> </el-input>
-                    <el-button class="search-btn">搜索</el-button>
+                    <el-button class="search-btn" @click="handleSearch">搜索</el-button>
                 </div>
             </div>
         </div>
         <div class="container">
             <el-table :data="tableData" style="width: 100%">
-                <el-table-column label="资讯标题" align="left"></el-table-column>
+                <el-table-column prop="title" label="资讯标题" align="left"></el-table-column>
                 <el-table-column label="头图" align="left">
                     <template slot-scope="scope">
-                        <el-image style="width: 100px; height: 80px" :src="url" fit="cover">
-                            <div slot="error" class="image-slot">
+                        <el-image style="width: 100px; height: 80px" :src="scope.row.img" fit="cover">
+                            <div slot="error" class="error-image-slot">
                                 <i class="el-icon-picture-outline"></i>
                             </div>
                         </el-image>
                     </template>
                 </el-table-column>
-                <el-table-column prop="shop_name" label="发布时间" align="center"> </el-table-column>
+                <el-table-column prop="create_time" label="发布时间" align="center"> </el-table-column>
                 <el-table-column label="" align="center">
                     <template slot-scope="scope">
-                        <el-checkbox v-model="scope.row.isRelease">发布</el-checkbox>
+                        <el-checkbox v-model="scope.row.is_publish" @change="handleChangeStatus(scope.row)">发布</el-checkbox>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="handleDetail(scope.row.id)">编辑</el-button>
+                        <el-button type="text" @click="handleDetail(scope.row)">编辑</el-button>
                         <el-button type="text" @click="handleRemove(scope.row.id)">删除</el-button>
                     </template>
                 </el-table-column>
@@ -63,6 +63,8 @@
 <script>
     import breadcrumb from '@/components/common/address';
     import informationSettingDetail from './component/informationSettingDetail';
+    import { getArticleList, updateArticleStatus, deleteArticle } from '@/api/setting';
+    import { formatDate } from '@/utils/utils';
     export default {
         name: 'InformationSetting',
         components: {
@@ -91,6 +93,7 @@
                 ],
                 selectDate: '',
                 searchValue: '',
+                loading: false,
                 page: {
                     size: 10,
                     number: 1,
@@ -99,11 +102,49 @@
                 tableData: []
             };
         },
+        created() {
+            this.getList();
+        },
         methods: {
-            handleDetail(id) {
-                this.$refs.detail.paramsId = id;
-                this.$refs.detail.dialogType = id ? 'edit' : 'add';
-                this.$refs.detail.dialogTitle = id ? '修改' : '添加' + '文章资讯';
+            async getList() {
+                this.loading = true;
+                const start_date = Array.isArray(this.selectDate) ? formatDate(this.selectDate[0], 'Y-M-D') : '';
+                const end_date = Array.isArray(this.selectDate) ? formatDate(this.selectDate[1], 'Y-M-D') : '';
+                const params = {
+                    page_no: this.page.number,
+                    keyword: this.searchValue,
+                    start_date,
+                    end_date
+                };
+                const res = await getArticleList(params);
+                if (res.data) {
+                    res.data.data.forEach((m) => {
+                        m.create_time = formatDate(m.create_time, 'Y-M-D h:m:s');
+                        m.is_publish = !!m.is_publish;
+                    });
+                    this.tableData = res.data.data;
+                    this.page.total = res.data.allCount;
+                }
+                this.loading = false;
+            },
+            handleSearch() {
+                this.page.number = 1;
+                this.getList();
+            },
+            async handleChangeStatus(row) {
+                const params = {
+                    id: row.id,
+                    is_publish: row.is_publish ? 1 : 0
+                };
+                const res = await updateArticleStatus(params);
+                if (res.code === 200) {
+                    this.getList();
+                }
+            },
+            handleDetail(row) {
+                this.$refs.detail.paramsRow = row;
+                this.$refs.detail.dialogType = row ? 'edit' : 'add';
+                this.$refs.detail.dialogTitle = row ? '修改' : '添加' + '文章资讯';
                 this.$refs.detail.dialogVisible = true;
             },
             handleRemove(id) {
@@ -112,12 +153,18 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 })
-                    .then(() => {
-                        this.$message.success('删除成功!');
+                    .then(async () => {
+                        const res = await deleteArticle({ id });
+                        if (res.code === 200) {
+                            this.$message.success(res.msg || '删除成功!');
+                        }
                     })
                     .catch(() => {});
             },
-            handleCurrentChange() {}
+            handleCurrentChange(val) {
+                this.page.number = val;
+                this.getList();
+            }
         }
     };
 </script>
