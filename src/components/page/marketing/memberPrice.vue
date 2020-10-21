@@ -4,18 +4,18 @@
     <div class="main-body">
       <div class="info-title">
         单个商品设置会员价
-        <el-button type="primary" plain>添加商品</el-button>
+        <el-button type="primary" plain @click="handleAdd">添加商品</el-button>
       </div>
       <el-table :data="tableData" border style="width: 100%; margin-top: 20px;">
-        <el-table-column label="商品名称" align="center">
+        <el-table-column label="商品名称" align="center" min-width="220">
           <template slot-scope="scope">
-            <div>
+            <div class="product-info">
               <img src="" alt="" width="50px" height="50px">
-              <span></span>
+              <span>{{scope.row.shop_name}}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column 
+        <el-table-column
           v-for="item in columnCfg" :key="item.prop"
           :label="item.label"
           :prop="item.prop"
@@ -25,9 +25,9 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="downloadCode">下载邀请码</el-button>
+            <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
             <span>|</span>
-            <el-button type="text" @click="handleRepay">清退</el-button>
+            <el-button type="text" @click="handleRemove">移除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -41,18 +41,36 @@
         @current-change="handleCurChange"
       ></el-pagination>
     </div>
+    <el-dialog
+      v-if="dialogShow"
+      :visible.sync="dialogShow"
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+
+    >
+      <component
+        :is="componentName"
+        @success="handleSuccess"
+        @cancel="handleCancel"
+        :rowData="rowData"
+      ></component>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import breadcrumb from '@/components/common/address'
+import AddProduct from './components/addProduct'
+// import EditProduct from './components/editProduct'
 import dayjs from 'dayjs'
 import { getMemberPriceList, addMemberProducts, setMemberProduct, removeMemberPrice } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
   components: {
-    breadcrumb
+    breadcrumb,
+    AddProduct,
+    // EditProduct
   },
   data() {
     return {
@@ -75,7 +93,11 @@ export default {
       ],
       tableData: [],
       total: 0,
-      dateArr: []
+      dateArr: [],
+      dialogShow: false,
+      dialogTitle: '',
+      componentName: '',
+      rowData: {}
     }
   },
   created() {
@@ -99,6 +121,35 @@ export default {
     handleDateChange(val) {
       this.form.start_time = val[0]
       this.form.end_time = val[1]
+    },
+    handleAdd() {
+      this.componentName = 'addProduct'
+      this.dialogShow = true
+      this.dialogTitle = '添加商品'
+    },
+    handleEdit(rowData) {
+      this.componentName = 'editProduct'
+      this.dialogShow = true
+      this.rowData = rowData
+      this.dialogTitle = '设置会员价'
+    },
+    handleRemove(id) {
+      const prm = {id}
+      removeMemberPrice(prm).then(res => {
+        if (res.code === 200) {
+          this.$message.success('移除成功')
+          this.getTableData(1)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    handleSuccess() {
+      this.dialogShow = false
+      this.getTableData(1)
+    },
+    handleCancel() {
+      this.dialogShow = false
     }
   }
 }
@@ -130,4 +181,13 @@ export default {
   .form-item {
     margin-right: 120px;
   }
+  .product-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .product-info img {
+    margin-right: 10px;
+  }
+
 </style>

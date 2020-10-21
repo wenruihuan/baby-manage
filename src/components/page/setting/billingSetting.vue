@@ -1,5 +1,6 @@
 <template>
     <div class="billing-setting">
+        <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
         <div class="container">
             <div class="info-title">记账方式</div>
             <p class="tip">默认记账方式</p>
@@ -46,10 +47,28 @@
     </div>
 </template>
 <script>
+    import breadcrumb from '@/components/common/address';
     export default {
         name: 'BillingSetting',
+        components: {
+            breadcrumb
+        },
         data() {
             return {
+                breadcrumbList: [
+                    {
+                        name: '首页',
+                        router: 'dashboard'
+                    },
+                    {
+                        name: '设置',
+                        router: 'Setting'
+                    },
+                    {
+                        name: '开单设置',
+                        router: 'BillingSetting'
+                    }
+                ],
                 customList: [],
                 index: '',
                 dialogType: '',

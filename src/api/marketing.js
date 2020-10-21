@@ -43,7 +43,7 @@ export const removeAgent = query => {
 // 会员价列表
 export const getMemberPriceList = query => {
   return request({
-    url: `${IP}/admin/publicist/statistics`,
+    url: `${IP}/admin/memberLevel/priceList`,
     method: 'get',
     params: query
   })
@@ -51,7 +51,7 @@ export const getMemberPriceList = query => {
 // 添加会员价商品
 export const addMemberProducts = query => {
   return request({
-    url: `${IP}/admin/publicist/statistics`,
+    url: `${IP}/admin/memberLevel/addGoods`,
     method: 'post',
     params: query
   })
@@ -59,7 +59,7 @@ export const addMemberProducts = query => {
 // 设置会员价商品
 export const setMemberProduct = query => {
   return request({
-    url: `${IP}/admin/publicist/statistics`,
+    url: `${IP}/admin/memberLevel/setMemberPrice`,
     method: 'post',
     params: query
   })
@@ -67,7 +67,7 @@ export const setMemberProduct = query => {
 // 移出会员价
 export const removeMemberPrice = query => {
   return request({
-    url: `${IP}/admin/publicist/statistics`,
+    url: `${IP}/admin/memberLevel/deletePrice`,
     method: 'post',
     params: query
   })

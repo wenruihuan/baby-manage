@@ -127,6 +127,7 @@
 <script>
     import breadcrumb from '@/components/common/address';
     import appointmentDetail from '@/components/page/appointment/appointmentDetail';
+    import { getAppointmentList } from '@/api/appointment';
 
     const getDateRange = (number) => {
         const end = new Date();
@@ -211,68 +212,21 @@
                     number: 1,
                     total: 0
                 },
-                tableData: [
-                    {
-                        customer: '王太太',
-                        phone: '+86 12312311231',
-                        arrive_time: '2020-08-20 13:14:23',
-                        booking_id: '1696f79e4f4644fb85da200335049412',
-                        booking_no: '7897539745135',
-                        shop_id: '76679a29fc044b5a89f75c4f3768e56f',
-                        shop_name: '多多亲子一店',
-                        service_id: '1696f79e4f4644fb85da200335049412',
-                        service_name: '少儿精油',
-                        technician_id: '1696f79e4f4644fb85da200335049412',
-                        technician_name: '小花',
-                        source: '线下门店',
-                        source_type: 'shop',
-                        create_time: '2020-08-20 13:14:23',
-                        is_read: false,
-                        back_booking_status: '！这是一个待定参数！',
-                        warn_text: ['超时6天']
-                    },
-                    {
-                        customer: '王太太',
-                        phone: '+86 12312311231',
-                        arrive_time: '2020-08-20 13:14:23',
-                        booking_id: '1696f79e4f4644fb85da200335049412',
-                        booking_no: '7897539745135',
-                        shop_id: '76679a29fc044b5a89f75c4f3768e56f',
-                        shop_name: '多多亲子一店',
-                        service_id: '1696f79e4f4644fb85da200335049412',
-                        service_name: '少儿精油',
-                        technician_id: '1696f79e4f4644fb85da200335049412',
-                        technician_name: '小花',
-                        source: '线下门店',
-                        source_type: 'shop',
-                        create_time: '2020-08-20 13:14:23',
-                        is_read: false,
-                        back_booking_status: '！这是一个待定参数！',
-                        warn_text: []
-                    },
-                    {
-                        customer: '王太太',
-                        phone: '+86 12312311231',
-                        arrive_time: '2020-08-20 13:14:23',
-                        booking_id: '1696f79e4f4644fb85da200335049412',
-                        booking_no: '7897539745135',
-                        shop_id: '76679a29fc044b5a89f75c4f3768e56f',
-                        shop_name: '多多亲子一店',
-                        service_id: '1696f79e4f4644fb85da200335049412',
-                        service_name: '少儿精油',
-                        technician_id: '1696f79e4f4644fb85da200335049412',
-                        technician_name: '小花',
-                        source: '线下门店',
-                        source_type: 'shop',
-                        create_time: '2020-08-20 13:14:23',
-                        is_read: true,
-                        back_booking_status: '！这是一个待定参数！',
-                        warn_text: ['技师排版冲突']
-                    }
-                ]
+                tableData: []
             };
         },
+        created() {
+            this.getList();
+        },
         methods: {
+            async getList() {
+                const params = {
+                    page_no: this.page.number,
+                    page_size: this.page.size
+                };
+                const res = await getAppointmentList(params);
+                console.log(res);
+            },
             handleClickDropdown(command) {
                 this.$refs.detail.appointmentType = command;
                 this.$refs.detail.dialogType = 'add';

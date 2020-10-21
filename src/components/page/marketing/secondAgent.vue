@@ -98,7 +98,7 @@ export default {
         {label: '手机号码', prop: 'phone'},
         // todo: 接口未返回
         {label: '所属一级推广员', prop: '5'},
-        {label: '推荐用户', prop: '6'},
+        {label: '推荐用户', prop: 'member_count'},
         {label: '加入时间', prop: 'create_time'}
       ],
       tableData: [],

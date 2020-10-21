@@ -2,9 +2,8 @@
     <div class="card-item">
         <div class="top-container">
             <el-popover
+                    popper-class="POPPER3"
                     placement="top-start"
-                    title="标题"
-                    width="200"
                     trigger="click"
             >
                 <div class="btn-group">
@@ -12,7 +11,7 @@
                     <el-button @click="addCard">折扣卡</el-button>
                     <el-button @click="addCard">充值卡</el-button>
                 </div>
-                <el-button slot="reference">添加卡项</el-button>
+                <el-button type="primary" slot="reference">添加卡项</el-button>
             </el-popover>
             <div class="search-container">
                 <el-input
@@ -28,6 +27,11 @@
                 <card-table
                     :table-data="tableData1"
                     @handleEdit="handleEdit"
+                    @handleView="handleView"
+                    @handleCorrectSort="handleCorrectSort"
+                    @remove="removeCard"
+                    @handlePublish="handlePublish"
+                    @setShow="setShow"
                 />
             </el-tab-pane>
             <el-tab-pane label="次卡">
@@ -60,7 +64,8 @@ import CikaEdit from './component/cika-edit';
 import DiscountCard from './component/discount-card';
 import InsertCard from './component/insert-card';
 import CardTable from './component/card-table';
-import { ERR_OK, getBoxList, getCategoryList, removeBox, setPublish } from './api';
+import { ERR_OK, getBoxList, getCategoryList, removeBox, removeCard, setPublish, setShow, setSort } from './api';
+import { tableData1 } from '@/components/page/goodsmanage/card-item/mock';
 
 export default {
     components: {
@@ -72,9 +77,7 @@ export default {
     data () {
         return {
             tableData: [],
-            tableData1: [
-                { id: 1 }
-            ],
+            tableData1: tableData1,
             searchVal: '',
             isCikaShow: false,
             isDiscountShow: false,
@@ -103,10 +106,90 @@ export default {
         },
         handleEdit ({ index, row }) {
             this.$router.push(`/cika?id=${row.id}`);
+        },
+        /* 去到详情页 */
+        handleView (row) {
+            this.$router.push(`/cika-view?id=${ row.id }`);
+        },
+        /* 排序 */
+        async handleCorrectSort (row) {
+            try {
+                const data = await setSort({
+                    id: row.id,
+                    sort: row.sort,
+                });
+                if (data.code === ERR_OK) {
+                    this.getList();
+                }
+            } catch (e) {
+                console.log(`card-item handleCorrectSort error: ${e}`);
+            }
+        },
+        /* 删除卡包 */
+        async removeCard (selection) {
+            const id = selection.map(item => item.id).join(',');
+            try {
+                const data = await removeCard({ id });
+                if (data.code === ERR_OK) {
+                    this.getList();
+                }
+            } catch (e) {
+                console.log(`card-item removeCard error: ${e}`);
+            }
+        },
+        /* 上下架 */
+        async handlePublish ({ id, isPublish }) {
+            try {
+                const data = await setPublish({ id, is_publish: isPublish });
+                if (data.code === ERR_OK) {
+                    this.getList();
+                }
+            } catch (e) {
+                console.log(`card-item handlePublish error: ${e}`);
+            }
+        },
+        /* 是否展示 */
+        async setShow ({ id, isShow }) {
+            try {
+                const data = await setShow({ id, is_show: isShow });
+                if (data.code === ERR_OK) {
+                    this.getList();
+                }
+            } catch (e) {
+                console.log(`card-item setShow error: ${e}`);
+            }
         }
     }
 };
 </script>
 
 <style lang="css" scoped>
+.card-item .top-container {
+    width: 100%;
+    margin: 5px auto;
+    padding: 10px;
+    box-sizing: border-box;
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.card-item .top-container .search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.top-container .search-btn {
+    margin-left: 5px;
+}
+</style>
+
+<style lang="css">
+.POPOVER3 {
+    min-width: 60px;
+    text-align: center;
+}
+.POPOVER3 .el-button+.el-button {
+    margin-left: 0;
+}
 </style>

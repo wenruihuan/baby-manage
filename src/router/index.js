@@ -55,6 +55,11 @@ export default new Router({
                     meta: { title: '次卡' },
                 },
                 {
+                    path: '/cika-view',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/cika-view.vue'),
+                    meta: { title: '次卡' },
+                },
+                {
                     path: '/discount',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/discount-card.vue'),
                     meta: { title: '折扣卡' },
@@ -166,12 +171,12 @@ export default new Router({
                 },
                 {
                     path: '/GlobalSetting',
-                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/globalSetting.vue'),
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/appointmentSetting.vue'),
                     meta: { title: '全局设置' }
                 },
                 {
                     path: '/TechnicianSetting',
-                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/technicianSetting.vue'),
+                    component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/appointmentSetting.vue'),
                     meta: { title: '技师设置' }
                 },
                 {
