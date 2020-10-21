@@ -83,3 +83,48 @@ export const serviceList = [
         create_time: '2020-08-29 15:34:23'
     }
 ];
+
+export const quanlityList = [
+    {
+        id: 1,
+        content: 'dfsdfas法撒旦',
+        rule: '发噶山豆根是fdsgf',
+        expire_time: '2020-12-31'
+    },
+    {
+        id: 2,
+        content: 'dfsdfas法撒旦',
+        rule: '发噶山豆根是fdsgf',
+        expire_time: '2020-12-31'
+    },
+    {
+        id: 3,
+        content: 'dfsdfas法撒旦',
+        rule: '发噶山豆根是fdsgf',
+        expire_time: '2020-12-31'
+    },
+    {
+        id: 4,
+        content: 'dfsdfas法撒旦',
+        rule: '发噶山豆根是fdsgf',
+        expire_time: '2020-12-31'
+    },
+    {
+        id: 5,
+        content: 'dfsdfas法撒旦',
+        rule: '发噶山豆根是fdsgf',
+        expire_time: '2020-12-31'
+    },
+    {
+        id: 6,
+        content: 'dfsdfas法撒旦',
+        rule: '发噶山豆根是fdsgf',
+        expire_time: '2020-12-31'
+    },
+    {
+        id: 7,
+        content: 'dfsdfas法撒旦',
+        rule: '发噶山豆根是fdsgf',
+        expire_time: '2020-12-31'
+    }
+];

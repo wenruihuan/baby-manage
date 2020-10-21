@@ -165,3 +165,12 @@ export const getServiceList = query => {
         params: query
     });
 };
+
+/* 获取每种卡项默认图片 */
+export const getDefaultPic = query => {
+    return request({
+        url: `${IP}/admin/card/defaultImg`,
+        method: 'get',
+        params: query
+    });
+};

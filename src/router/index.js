@@ -55,6 +55,11 @@ export default new Router({
                     meta: { title: '次卡' },
                 },
                 {
+                    path: '/cika-view',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/cika-view.vue'),
+                    meta: { title: '次卡' },
+                },
+                {
                     path: '/discount',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/discount-card.vue'),
                     meta: { title: '折扣卡' },

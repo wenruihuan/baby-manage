@@ -27,6 +27,7 @@
                 <card-table
                     :table-data="tableData1"
                     @handleEdit="handleEdit"
+                    @handleView="handleView"
                     @handleCorrectSort="handleCorrectSort"
                     @remove="removeCard"
                     @handlePublish="handlePublish"
@@ -63,7 +64,7 @@ import CikaEdit from './component/cika-edit';
 import DiscountCard from './component/discount-card';
 import InsertCard from './component/insert-card';
 import CardTable from './component/card-table';
-import { ERR_OK, getBoxList, getCategoryList, removeBox, setPublish, setShow, setSort } from './api';
+import { ERR_OK, getBoxList, getCategoryList, removeBox, removeCard, setPublish, setShow, setSort } from './api';
 import { tableData1 } from '@/components/page/goodsmanage/card-item/mock';
 
 export default {
@@ -106,6 +107,10 @@ export default {
         handleEdit ({ index, row }) {
             this.$router.push(`/cika?id=${row.id}`);
         },
+        /* 去到详情页 */
+        handleView (row) {
+            this.$router.push(`/cika-view?id=${ row.id }`);
+        },
         /* 排序 */
         async handleCorrectSort (row) {
             try {
@@ -124,7 +129,7 @@ export default {
         async removeCard (selection) {
             const id = selection.map(item => item.id).join(',');
             try {
-                const data = await removeBox({ id });
+                const data = await removeCard({ id });
                 if (data.code === ERR_OK) {
                     this.getList();
                 }
