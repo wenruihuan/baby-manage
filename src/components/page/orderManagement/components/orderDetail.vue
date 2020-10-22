@@ -216,7 +216,7 @@
           </div>
           <div class="footer-bar" v-if="!isProductOrderInfo">
             <el-button>打印小票</el-button>
-            <el-button type="primary">主动退款</el-button>
+            <el-button type="primary" @click="handleRefund">主动退款</el-button>
           </div>
         </div>
       </div>
@@ -276,12 +276,31 @@
         </div>
       </div>
     </div>
+    <el-dialog 
+      v-if="dialogShow"
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :visible.sync="dialogShow"
+      width="700px"
+    >
+      <component 
+        :is="componentName" 
+        :params="dialogParams"
+        @nextStep="handleNextStep"
+      ></component>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import RefundStep1 from './refundStep1'
+import RefundStep2 from './refundStep2'
 export default {
   name: 'orderDetail',
+  components: {
+    RefundStep1,
+    RefundStep2
+  },
   data() {
     return {
       orderDetailObj: {},
@@ -292,7 +311,11 @@ export default {
       bookingInfo: {},
       totalPrice: 0,
       balancePrice: 0,
-      checkoutPrice: ''
+      checkoutPrice: '',
+      dialogShow: false,
+      dialogTitle: '',
+      dialogParams: null,
+      componentName: ''
     }
   },
   props: {
@@ -339,6 +362,19 @@ export default {
       this.balancePrice = balance_price || 0
       this.checkoutPrice = checkout_price || 0
     })
+  },
+  methods: {
+    handleRefund() {
+      this.dialogTitle = '退款商品'
+      this.componentName = 'refundStep1'
+      this.dialogShow = true
+    },
+    handleNextStep() {
+      this.dialogShow = false
+      this.dialogTitle = '主动退款'
+      this.componentName = 'refundStep2'
+      this.dialogShow = true
+    }
   }
 }
 </script>
