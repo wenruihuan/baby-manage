@@ -46,7 +46,6 @@
       :visible.sync="dialogShow"
       :title="dialogTitle"
       :close-on-click-modal="false"
-
     >
       <component
         :is="componentName"
@@ -61,7 +60,7 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import AddProduct from './components/addProduct'
-// import EditProduct from './components/editProduct'
+import EditProduct from './components/editProduct'
 import dayjs from 'dayjs'
 import { getMemberPriceList, addMemberProducts, setMemberProduct, removeMemberPrice } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
@@ -70,7 +69,7 @@ export default {
   components: {
     breadcrumb,
     AddProduct,
-    // EditProduct
+    EditProduct
   },
   data() {
     return {

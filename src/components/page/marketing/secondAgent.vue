@@ -47,7 +47,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="downloadCode">下载邀请码</el-button>
+            <el-button type="text" @click="downloadCode(scope.row.name)">下载邀请码</el-button>
             <span>|</span>
             <el-button type="text" @click="handleRemove">清退</el-button>
           </template>
@@ -63,18 +63,28 @@
         @current-change="handleCurChange"
       ></el-pagination>
     </div>
+    <el-dialog
+      v-if="dialogShow"
+      title="推广码-二级推广员姓名"
+      :visible.sync="dialogShow"
+      :close-on-click-modal="false"
+    >
+     <qrcode-dialog :params="{codeContent: codeText}"></qrcode-dialog> 
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import breadcrumb from '@/components/common/address'
+import QrcodeDialog from './components/qrcodeDialog'
 import dayjs from 'dayjs'
 import { getFirstAgentList, getSecondAgentList, removeAgent } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
   components: {
-    breadcrumb
+    breadcrumb,
+    QrcodeDialog
   },
   data() {
     return {
@@ -103,7 +113,9 @@ export default {
       ],
       tableData: [],
       total: 0,
-      dateArr: []
+      dateArr: [],
+      dialogShow: false,
+      codeText: ''
     }
   },
   created() {
@@ -129,8 +141,18 @@ export default {
       this.form.start_date = val[0]
       this.form.end_date = val[1]
     },
-    downloadCode() {},
-    handleRemove() {}
+    downloadCode(name) {
+      this.dialogShow = true
+      this.codeText = name
+    },
+    handleRemove() {
+      this.$confirm('是否确认清退该二级推广员？', '是否清退', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        console.log('清退')
+      })
+    }
   }
 }
 </script>
