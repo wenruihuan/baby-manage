@@ -6,7 +6,7 @@
         <el-form ref="form" :inline="true" :model="form" label-width="80">
           <el-row class="form-row">
             <el-form-item class="form-row-left">
-              <el-button type="primary">添加一级推广员</el-button>
+              <el-button type="primary" @click="handleAdd">添加一级推广员</el-button>
             </el-form-item>
             <el-form-item>
               <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号"></el-input>
@@ -45,7 +45,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="downloadCode">下载邀请码</el-button>
+            <el-button type="text" @click="downloadCode(scope.row.name)">下载邀请码</el-button>
             <el-button type="text" @click="handleRemove">清退</el-button>
           </template>
         </el-table-column>
@@ -60,18 +60,33 @@
         @current-change="handleCurChange"
       ></el-pagination>
     </div>
+    <el-dialog 
+      :title="dialogTitle" 
+      :visible.sync="dialogShow"
+      width="460px"
+      :close-on-click-modal="false"
+    >
+      <component
+        :is="dialogName"
+        :params="dialogPrms"
+      ></component>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import breadcrumb from '@/components/common/address'
+import QrcodeDialog from './components/qrcodeDialog'
+import AddAgent from './components/addAgent'
 import dayjs from 'dayjs'
 import { getFirstAgentList, addFirstAgent, removeAgent } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
   components: {
-    breadcrumb
+    breadcrumb,
+    QrcodeDialog,
+    AddAgent
   },
   data() {
     return {
@@ -97,7 +112,11 @@ export default {
       ],
       tableData: [],
       total: 0,
-      dateArr: []
+      dateArr: [],
+      dialogTitle: '',
+      dialogShow: false,
+      dialogName: '',
+      dialogPrms: {}
     }
   },
   created() {
@@ -122,8 +141,26 @@ export default {
       this.form.start_date = val[0]
       this.form.end_date = val[1]
     },
-    downloadCode() {},
-    handleRemove() {}
+    handleAdd() {
+      this.dialogTitle = '添加一级推广员'
+      this.dialogName = 'addAgent',
+      this.dialogPrms = null
+      this.dialogShow = true
+    },
+    downloadCode(name) {
+      this.dialogTitle = '邀请码-一级推广员姓名'
+      this.dialogName = 'qrcodeDialog',
+      this.dialogPrms = {codeContent: name}
+      this.dialogShow = true
+    },
+    handleRemove() {
+      this.$confirm('是否确认清退该一级推广员？', '是否清退', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        console.log('清退')
+      })
+    }
   }
 }
 </script>

@@ -35,22 +35,22 @@
                 />
             </el-tab-pane>
             <el-tab-pane label="次卡">
-                <card-table
-                        :table-data="tableData1"
-                        @handleEdit="handleEdit"
-                />
+<!--                <card-table-->
+<!--                        :table-data="tableData1"-->
+<!--                        @handleEdit="handleEdit"-->
+<!--                />-->
             </el-tab-pane>
             <el-tab-pane label="折扣卡">
-                <card-table
-                        :table-data="tableData1"
-                        @handleEdit="handleEdit"
-                />
+<!--                <card-table-->
+<!--                        :table-data="tableData1"-->
+<!--                        @handleEdit="handleEdit"-->
+<!--                />-->
             </el-tab-pane>
             <el-tab-pane label="充值卡">
-                <card-table
-                        :table-data="tableData1"
-                        @handleEdit="handleEdit"
-                />
+<!--                <card-table-->
+<!--                        :table-data="tableData1"-->
+<!--                        @handleEdit="handleEdit"-->
+<!--                />-->
             </el-tab-pane>
         </el-tabs>
         <cika-edit v-if="isCikaShow" ref="cika" />
@@ -105,11 +105,11 @@ export default {
             }
         },
         handleEdit ({ index, row }) {
-            this.$router.push(`/cika?id=${row.id}`);
+            this.$router.push(`/insert-card?id=${row.id}`);
         },
         /* 去到详情页 */
         handleView (row) {
-            this.$router.push(`/cika-view?id=${ row.id }`);
+            this.$router.push(`/discount-view?id=${ row.id }`);
         },
         /* 排序 */
         async handleCorrectSort (row) {

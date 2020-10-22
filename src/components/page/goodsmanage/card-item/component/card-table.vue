@@ -146,7 +146,6 @@ export default {
         },
         handleEdit (index, row) {
             this.$emit('handleEdit', { index, row });
-            this.$router.push('/cika?id=' + row.id);
         },
         handleView (row) {
             this.$emit('handleView', row);

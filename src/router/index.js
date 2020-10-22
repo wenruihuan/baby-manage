@@ -57,7 +57,7 @@ export default new Router({
                 {
                     path: '/cika-view',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/cika-view.vue'),
-                    meta: { title: '次卡' },
+                    meta: { title: '次卡详情' },
                 },
                 {
                     path: '/discount',
@@ -65,9 +65,19 @@ export default new Router({
                     meta: { title: '折扣卡' },
                 },
                 {
+                    path: '/discount-view',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/discount-view.vue'),
+                    meta: { title: '折扣卡详情' },
+                },
+                {
                     path: '/insert-card',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/insert-card.vue'),
                     meta: { title: '充值卡' },
+                },
+                {
+                    path: '/insert-card-view',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/insert-card-view.vue'),
+                    meta: { title: '充值卡详情' },
                 },
                 {
                     path: '/servicelist',
