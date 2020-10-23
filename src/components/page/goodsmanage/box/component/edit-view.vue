@@ -195,19 +195,31 @@ export default {
         },
         /* 上下架状态 */
         async setPublishStatus () {
-            this.handleSave();
-            try {
-                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
-                if (data.code === ERR_OK) {
-                    this.$message({
-                        message: data.msg,
-                        type: 'success'
-                    });
-                    this.isPublish = !this.isPublish;
+            this.$refs.boxForm.validate(async valid => {
+                if (valid) {
+                    try {
+                        let { kind_name, ...obj } = this.form;
+                        obj.img = this.files.join(',');
+                        const data = await addOrEditBox(obj);
+                        if (data.code === ERR_OK) {
+                            try {
+                                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
+                                if (data.code === ERR_OK) {
+                                    this.$message({
+                                        message: data.msg,
+                                        type: 'success'
+                                    });
+                                    this.isPublish = !this.isPublish;
+                                }
+                            } catch (e) {
+                                console.log(`box edit-view setPublishStatus error: ${e}`);
+                            }
+                        }
+                    } catch (e) {
+                        console.log(`box edit-view handleSave error: ${e}`);
+                    }
                 }
-            } catch (e) {
-                console.log(`setPublishStatus error: ${e}`);
-            }
+            });
         },
         async handleRemove () {
             try {

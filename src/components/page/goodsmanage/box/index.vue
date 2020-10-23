@@ -193,7 +193,7 @@ export default {
                 });
                 this.tableData = data.data;
             } catch (e) {
-                console.log(`getList error: ${e}`);
+                console.log(`box getList error: ${e}`);
             }
         },
         /* 当前页改变时触发 */
