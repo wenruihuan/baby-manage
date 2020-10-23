@@ -1,6 +1,10 @@
 <template>
     <div class="edit-view">
-        <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
+        <el-steps :active="activeStep" simple>
+            <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
+            <el-step title="详情介绍" ></el-step>
+        </el-steps>
+        <el-form v-show="activeStep === 1" class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
             <el-form-item label="名称:" prop="name">
                 <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
                 <span v-else>{{ form.name }}</span>
@@ -95,8 +99,20 @@
                 <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
             </el-form-item>
         </el-form>
+        <edit-wechat v-show="activeStep === 2" ref="editWechat" />
         <div class="btn-group" v-if="isEdit">
-            <el-button type="primary" @click="handleSave">下一步</el-button>
+            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
+            <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
+            <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
+            <el-popover
+                placement="top-start"
+                trigger="click"
+                v-if="activeStep === 2"
+            >
+                <div id="SERVICE_QRCODE"></div>
+                <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
+            </el-popover>
+            <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
         <service-manage v-if="serviceManageVisible" ref="serviceManage" />
@@ -106,22 +122,28 @@
 <script>
 import BoxCategory from './box-category';
 import ServiceManage from './service-manage';
+import editWechat from './edit-wechat';
+
 import {
     addOrEditBox,
     ERR_OK,
     getCategoryList,
     getDetail,
     getUploadToken, removeBox, setPublish,
-    getServiceTags
+    getServiceTags,
+    qrCodeView
 } from '@/components/page/goodsmanage/service/api';
+import QRCode from 'qrcodejs2';
 
 export default {
     components: {
         BoxCategory,
-        ServiceManage
+        ServiceManage,
+        editWechat
     },
     data () {
         return {
+            activeStep: 1,
             baseUrl: '',
             uploadBody: {
                 token: '',
@@ -158,7 +180,8 @@ export default {
             tagList: [],
             isEdit: '',
             isPublish: false,
-            files: []
+            files: [],
+            qrCode: null
         };
     },
     created() {
@@ -262,20 +285,37 @@ export default {
         },
         /* 上下架状态 */
         async setPublishStatus () {
-            this.handleSave();
-            try {
-                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
-                if (data.code === ERR_OK) {
-                    this.$message({
-                        message: data.msg,
-                        type: 'success'
-                    });
-                    this.isPublish = !this.isPublish;
+            this.$refs.boxForm.validate(async valid => {
+                if (valid) {
+                    try {
+                        let { kind_name, ...obj } = this.form;
+                        obj.img = this.files.join(',');
+                        const data = await addOrEditBox(obj);
+                        if (data.code === ERR_OK) {
+                            this.$message({
+                                message: data.msg,
+                                type: 'success'
+                            });
+                            try {
+                                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
+                                if (data.code === ERR_OK) {
+                                    this.$message({
+                                        message: data.msg,
+                                        type: 'success'
+                                    });
+                                    this.isPublish = !this.isPublish;
+                                }
+                            } catch (e) {
+                                console.log(`src/components/page/goodsmanage/service/component/edit-view.vue setPublishStatus error: ${e}`);
+                            }
+                        }
+                    } catch (e) {
+                        console.log(`service edit-view handleSave error: ${e}`);
+                    }
                 }
-            } catch (e) {
-                console.log(`setPublishStatus error: ${e}`);
-            }
+            });
         },
+        /* 删除服务 */
         async handleRemove () {
             try {
                 const data = await removeBox({ id: this.form.id });
@@ -286,7 +326,32 @@ export default {
                     });
                 }
             } catch (e) {
-                console.log(`handleRemove error: ${e}`);
+                console.log(`src/components/page/goodsmanage/service/component/edit-view.vue handleRemove error: ${e}`);
+            }
+        },
+        /* 二维码预览 */
+        async handleView () {
+            try {
+                let { kind_name, ...obj } = this.form;
+                obj.img = this.files.join(',');
+                obj.img_list = obj.img;
+                obj.intr = this.$refs.editWechat.content;
+                const data = await qrCodeView(obj);
+                if (data.code === ERR_OK) {
+                    if (document.getElementById('SERVICE_QRCODE')) {
+                        document.getElementById('SERVICE_QRCODE').innerHTML = '';
+                    }
+                    this.qrCode = new QRCode("SERVICE_QRCODE", {
+                        text: data.data,
+                        width: 128,
+                        height: 128,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.L
+                    });
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/service/component/edit-view.vue handleView error: ${e}`);
             }
         }
     }
@@ -302,6 +367,7 @@ export default {
 .edit-form {
     width: 30%;
     margin: 0 auto;
+    margin-top: 15px;
 }
 .btn-group {
     text-align: center;
@@ -336,5 +402,8 @@ export default {
 .img-list li img {
     max-width: 100px;
     display: inline-block;
+}
+.btn-item {
+    margin-left: 10px;
 }
 </style>

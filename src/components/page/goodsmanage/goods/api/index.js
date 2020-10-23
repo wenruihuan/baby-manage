@@ -120,3 +120,12 @@ export const removeTag = query => {
         data: query
     });
 };
+
+/* 二维码预览 */
+export const qrCodeView = query => {
+    return request({
+        url: `${IP}/admin/goods/previewQr`,
+        method: 'post',
+        data: query
+    });
+};
