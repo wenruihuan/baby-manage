@@ -15,7 +15,7 @@
         >
             <el-table-column
                     prop="name"
-                    label="分类"
+                    label="分类名称"
                     width="180">
                 <template slot-scope="scope">
                     <el-input v-if="scope.row.isEdit" v-model="scope.row.name"></el-input>
