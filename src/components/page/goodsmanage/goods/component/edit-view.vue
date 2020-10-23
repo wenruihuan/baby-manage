@@ -4,13 +4,13 @@
             <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
             <el-step title="详情介绍" ></el-step>
         </el-steps>
-        <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
+        <el-form v-show="activeStep === 1" class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
             <el-form-item label="名称:" prop="name">
-                <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
+                <el-input style="width: 300px;" v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
                 <span v-else>{{ form.name }}</span>
             </el-form-item>
             <el-form-item label="分类:" prop="kind_id">
-                <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择商品分类">
+                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择商品分类">
                     <el-option
                         v-for="item in categoryList"
                         :key="item.id"
@@ -23,7 +23,7 @@
                 <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理商品分类</el-button>
             </el-form-item>
             <el-form-item label="标签:" prop="tag_ids">
-                <el-select v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择商品标签">
+                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择商品标签">
                     <el-option
                         v-for="item in tagList"
                         :key="item.id"
@@ -49,40 +49,32 @@
                     <i class="el-icon-plus"></i>
                 </el-upload>
                 <ul class="img-list" v-if="files.length > 0">
-                    <li v-for="item in files"
-                        :key="setUUID()"
+                    <li v-for="(item, index) in files"
+                        :key="index"
                     >
                         <img :src="item" alt=''>
                     </li>
                 </ul>
             </el-form-item>
             <el-form-item label="单位:" prop="unit">
-                <el-input v-if="isEdit" v-model="form.unit"></el-input>
+                <el-input style="width: 300px;" v-if="isEdit" v-model="form.unit"></el-input>
                 <span v-else>{{ form.unit }}</span>
             </el-form-item>
             <el-form-item label="规格:" prop="unit">
                 <div class="size-group">
-                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="setUUID()">
+                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="index">
                         <div class="size-name">
                             <span>规格名：</span>
-                            <el-input class="size-key" v-model="item.name" placeholder="请输入规格名称">
-                                <template slot="append">
-                                    <i class="el-icon-close" style="cursor: pointer;" @click="removeSizeKey(index)"></i>
-                                </template>
-                            </el-input>
+                            <el-input v-model="item.name"></el-input>
                         </div>
                         <div v-if="item.values && item.values.length > 0" class="size-value">
                             <span>规格值：</span>
                             <el-input
-                                :key="setUUID()"
+                                :key="index"
                                 v-for="(innerItem, index) in item.values"
                                 v-model="innerItem.value"
                                 class="size-input"
-                                placeholder="请输入规格值"
                             >
-                                <template slot="append">
-                                    <i class="el-icon-close" style="cursor: pointer;" @click="removeSizeVal(item, index)"></i>
-                                </template>
                             </el-input>
                             <el-button type="text" @click="addSizeValue(item)">添加规格值</el-button>
                         </div>
@@ -93,13 +85,13 @@
                 </div>
                 <ul v-if="!isEdit" class="size-readonly">
                     <li
-                        class="readonly-item"
-                        v-for="item in sizeGroup"
-                        :key="setUUID()"
+                        class="item"
+                        v-for="(item, index) in sizeGroup"
+                        :key="index"
                     >
                         <span>{{ item.name }}:</span>
                         <ul class="size-value-readonly">
-                            <li class="item" v-for="innerItem in item.values" :key="setUUID()">
+                            <li class="item" v-for="(innerItem, index) in item.values" :key="index">
                                 {{ innerItem.value }}
                             </li>
                         </ul>
@@ -107,20 +99,33 @@
                 </ul>
             </el-form-item>
             <el-form-item label="成本价:" prop="cost_price">
-                <el-input v-if="isEdit" v-model="form.cost_price">
+                <el-input style="width: 300px;" v-if="isEdit" v-model="form.cost_price">
                     <template slot="prepend">￥</template>
                 </el-input>
                 <span v-else>{{ form.cost_price }}</span>
             </el-form-item>
             <el-form-item label="售价:" prop="price">
-                <el-input v-if="isEdit" v-model="form.price">
+                <el-input style="width: 300px;" v-if="isEdit" v-model="form.price">
                     <template slot="prepend">￥</template>
                 </el-input>
                 <span v-else>{{ form.price }}</span>
             </el-form-item>
         </el-form>
+        <edit-wechat ref="editWechat" v-show="activeStep === 2" />
         <div class="btn-group" v-if="isEdit">
-            <el-button type="primary" @click="handleSave">下一步</el-button>
+            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
+            <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
+            <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
+            <el-popover
+                v-if="activeStep === 2"
+                placement="top-start"
+                width="260"
+                trigger="click"
+            >
+                <div id="SERVICE_QRCODE"></div>
+                <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
+            </el-popover>
+            <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
         <service-manage v-if="serviceVisible" ref="serviceManage" />
@@ -130,20 +135,22 @@
 <script>
 import BoxCategory from './box-category';
 import ServiceManage from './service-manage';
-import { guid } from '../../utils';
+import editWechat from './edit-wechat';
 import {
     addOrEditBox,
     ERR_OK,
     getCategoryList,
     getDetail,
-    getUploadToken, removeBox, setPublish
+    getUploadToken
 } from '@/components/page/goodsmanage/box/api';
-import { getTagList } from '@/components/page/goodsmanage/goods/api';
+import { getTagList, setPublish, removeBox, qrCodeView } from '@/components/page/goodsmanage/goods/api';
+import QRCode from 'qrcodejs2';
 
 export default {
     components: {
         BoxCategory,
-        ServiceManage
+        ServiceManage,
+        editWechat
     },
     data () {
         return {
@@ -184,7 +191,8 @@ export default {
             isEdit: '',
             isPublish: false,
             files: [],
-            sizeGroup: []
+            sizeGroup: [],
+            qrCode: null
         };
     },
     created() {
@@ -197,9 +205,6 @@ export default {
         this.getUploadToken();
     },
     methods: {
-        setUUID () {
-            guid();
-        },
         /* 获取上传图片的token */
         async getUploadToken () {
             try{
@@ -228,9 +233,7 @@ export default {
                             });
                         }
                         this.form.sku = [
-                            { name: '个', value: ['80', '60'] },
-                            { name: '个', value: ['80', '60'] },
-                            { name: '个', value: ['80', '60'] },
+                            { name: '个', value: ['80', '60'] }
                         ];
                         this.sizeGroup = this.form.sku.map(item => {
                             return { ...item, values: item.value.map(i => ({ value: i })) };
@@ -285,6 +288,9 @@ export default {
                 this.$refs.serviceManage.getTagList();
             });
         },
+        nextStep () {
+            this.activeStep = 2;
+        },
         /* 保存 */
         handleSave () {
             this.$refs.boxForm.validate(async valid => {
@@ -296,34 +302,85 @@ export default {
                             ...item,
                             value: item.values.map(i => i.value)
                         }));
+                        obj.img_list = obj.img;
+                        obj.intr = this.$refs.editWechat.content;
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
                                 message: data.msg,
                                 type: 'success'
                             });
-                            this.activeStep = 2;
+                            return true;
                         }
                     } catch (e) {
-                        console.log(`handleSave error: ${e}`);
+                        console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue handleSave error: ${e}`);
                     }
                 }
             });
         },
         /* 上下架状态 */
         async setPublishStatus () {
-            this.handleSave();
+            this.$refs.boxForm.validate(async valid => {
+                if (valid) {
+                    try {
+                        let { kind_name, ...obj } = this.form;
+                        obj.img = this.files.join(',');
+                        obj.sku = this.sizeGroup.map(item => ({
+                            ...item,
+                            value: item.values.map(i => i.value)
+                        }));
+                        obj.img_list = obj.img;
+                        obj.intr = this.$refs.editWechat.content;
+                        const data = await addOrEditBox(obj);
+                        if (data.code === ERR_OK) {
+                            this.$message({
+                                message: data.msg,
+                                type: 'success'
+                            });
+                            try {
+                                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
+                                if (data.code === ERR_OK) {
+                                    this.$message({
+                                        message: data.msg,
+                                        type: 'success'
+                                    });
+                                    this.isPublish = !this.isPublish;
+                                }
+                            } catch (e) {
+                                console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue setPublishStatus error: ${e}`);
+                            }
+                        }
+                    } catch (e) {
+                        console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue handleSave error: ${e}`);
+                    }
+                }
+            });
+        },
+        /* 二维码预览 */
+        async handleView () {
             try {
-                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
+                let { kind_name, ...obj } = this.form;
+                obj.img = this.files.join(',');
+                obj.sku = this.sizeGroup.map(item => ({
+                    ...item,
+                    value: item.values.map(i => i.value)
+                }));
+                obj.img_list = obj.img;
+                obj.intr = this.$refs.editWechat.content;
+                const data = await qrCodeView(obj);
                 if (data.code === ERR_OK) {
-                    this.$message({
-                        message: data.msg,
-                        type: 'success'
+                    this.qrCode = data.data;
+                    this.qrCode = new QRCode("SERVICE_QRCODE", {
+                        text: data.data,
+                        width: 128,
+                        height: 128,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.L
                     });
-                    this.isPublish = !this.isPublish;
                 }
             } catch (e) {
-                console.log(`setPublishStatus error: ${e}`);
+                console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue handleView error: ${e}`);
             }
         },
         async handleRemove () {
@@ -349,15 +406,6 @@ export default {
         /* 添加规格值 */
         addSizeValue (item) {
             item.values.push({ value: '' });
-        },
-        /* 删除规格key */
-        removeSizeKey (index) {
-            this.sizeGroup.splice(index, 1);
-        },
-        /* 删除规格值 */
-        removeSizeVal (item, index) {
-            item.values.splice(index, 1);
-            this.sizeGroup = this.sizeGroup.filter(item => item.values.length > 0);
         }
     }
 };
@@ -378,7 +426,7 @@ export default {
 }
 .category-manage {
     position: absolute;
-    right: -80px;
+    left: 317px;
     top: 0;
 }
 .tips {
@@ -411,16 +459,11 @@ export default {
     padding: 8px;
     background: #eeeeee;
 }
-.size-key {
-    width: 30%;
-    margin: 5px;
-}
 .size-value {
     padding: 8px;
 }
 .size-input {
-    width: 30%;
-    margin: 5px;
+    margin-bottom: 5px;
 }
 .add-size {
     padding: 8px;
@@ -443,5 +486,8 @@ export default {
     display: inline-block;
     float: left;
     margin-right: 5px;
+}
+.btn-item {
+    margin-left: 10px;
 }
 </style>

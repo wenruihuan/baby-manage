@@ -1,6 +1,10 @@
 <template>
     <div class="edit-view">
-        <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
+        <el-steps :active="activeStep" simple>
+            <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
+            <el-step title="详情介绍" ></el-step>
+        </el-steps>
+        <el-form v-show="activeStep === 1" class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
             <el-form-item label="名称:" prop="name">
                 <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
                 <span v-else>{{ form.name }}</span>
@@ -53,51 +57,9 @@
                     </li>
                 </ul>
             </el-form-item>
-            <el-form-item label="规格:" prop="unit">
-                <div class="size-group">
-                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="setUUID()">
-                        <div class="size-name">
-                            <span>规格名：</span>
-                            <el-input class="size-key" v-model="item.name" placeholder="请输入规格名称">
-                                <template slot="append">
-                                    <i class="el-icon-close" style="cursor: pointer;" @click="removeSizeKey(index)"></i>
-                                </template>
-                            </el-input>
-                        </div>
-                        <div v-if="item.values && item.values.length > 0" class="size-value">
-                            <span>规格值：</span>
-                            <el-input
-                                    :key="setUUID()"
-                                    v-for="(innerItem, index) in item.values"
-                                    v-model="innerItem.value"
-                                    class="size-input"
-                                    placeholder="请输入规格值"
-                            >
-                                <template slot="append">
-                                    <i class="el-icon-close" style="cursor: pointer;" @click="removeSizeVal(item, index)"></i>
-                                </template>
-                            </el-input>
-                            <el-button type="text" @click="addSizeValue(item)">添加规格值</el-button>
-                        </div>
-                    </div>
-                </div>
-                <div v-if="isEdit" class="add-size">
-                    <el-button @click="addSize">添加规格</el-button>
-                </div>
-                <ul v-if="!isEdit" class="size-readonly">
-                    <li
-                            class="readonly-item"
-                            v-for="item in sizeGroup"
-                            :key="setUUID()"
-                    >
-                        <span>{{ item.name }}:</span>
-                        <ul class="size-value-readonly">
-                            <li class="item" v-for="innerItem in item.values" :key="setUUID()">
-                                {{ innerItem.value }}
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+            <el-form-item label="规格:" prop="people_count">
+                <el-input v-if="isEdit" v-model="form.people_count"></el-input>
+                <span v-else>{{ form.people_count }}</span>
             </el-form-item>
             <el-form-item label="售价:" prop="price">
                 <el-input v-if="isEdit" v-model="form.price">
@@ -137,8 +99,20 @@
                 <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
             </el-form-item>
         </el-form>
+        <edit-wechat v-show="activeStep === 2" ref="editWechat" />
         <div class="btn-group" v-if="isEdit">
-            <el-button type="primary" @click="handleSave">下一步</el-button>
+            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
+            <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
+            <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
+            <el-popover
+                placement="top-start"
+                trigger="click"
+                v-if="activeStep === 2"
+            >
+                <div id="SERVICE_QRCODE"></div>
+                <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
+            </el-popover>
+            <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
         </div>
         <box-category v-if="boxCategoryVisible" ref="boxCategory" />
         <service-manage v-if="serviceManageVisible" ref="serviceManage" />
@@ -148,23 +122,28 @@
 <script>
 import BoxCategory from './box-category';
 import ServiceManage from './service-manage';
+import editWechat from './edit-wechat';
+
 import {
     addOrEditBox,
     ERR_OK,
     getCategoryList,
     getDetail,
     getUploadToken, removeBox, setPublish,
-    getServiceTags
+    getServiceTags,
+    qrCodeView
 } from '@/components/page/goodsmanage/service/api';
-import { guid } from '../../utils';
+import QRCode from 'qrcodejs2';
 
 export default {
     components: {
         BoxCategory,
-        ServiceManage
+        ServiceManage,
+        editWechat
     },
     data () {
         return {
+            activeStep: 1,
             baseUrl: '',
             uploadBody: {
                 token: '',
@@ -202,7 +181,7 @@ export default {
             isEdit: '',
             isPublish: false,
             files: [],
-            sizeGroup: []
+            qrCode: null
         };
     },
     created() {
@@ -215,9 +194,6 @@ export default {
         this.getUploadToken();
     },
     methods: {
-        setUUID () {
-            guid();
-        },
         /* 获取上传图片的token */
         async getUploadToken () {
             try{
@@ -237,22 +213,6 @@ export default {
                     if (data.code === ERR_OK) {
                         this.form = data.data;
                         this.files = this.form.img.split(',');
-                        if (Array.isArray(this.form.sku)) {
-                            this.form.sku = [
-                                { name: '个', value: ['80', '60'] }
-                            ];
-                            this.sizeGroup = this.form.sku.map(item => {
-                                return { ...item, values: item.value.map(i => ({ value: i })) };
-                            });
-                        }
-                        this.form.sku = [
-                            { name: '个', value: ['80', '60'] },
-                            { name: '个', value: ['80', '60'] },
-                            { name: '个', value: ['80', '60'] },
-                        ];
-                        this.sizeGroup = this.form.sku.map(item => {
-                            return { ...item, values: item.value.map(i => ({ value: i })) };
-                        });
                     }
                 } catch (e) {
                     console.log(`getList error: ${e}`);
@@ -310,10 +270,6 @@ export default {
                     try {
                         let { kind_name, ...obj } = this.form;
                         obj.img = this.files.join(',');
-                        obj.sku = this.sizeGroup.map(item => ({
-                            ...item,
-                            value: item.values.map(i => i.value)
-                        }));
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
@@ -329,20 +285,37 @@ export default {
         },
         /* 上下架状态 */
         async setPublishStatus () {
-            this.handleSave();
-            try {
-                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
-                if (data.code === ERR_OK) {
-                    this.$message({
-                        message: data.msg,
-                        type: 'success'
-                    });
-                    this.isPublish = !this.isPublish;
+            this.$refs.boxForm.validate(async valid => {
+                if (valid) {
+                    try {
+                        let { kind_name, ...obj } = this.form;
+                        obj.img = this.files.join(',');
+                        const data = await addOrEditBox(obj);
+                        if (data.code === ERR_OK) {
+                            this.$message({
+                                message: data.msg,
+                                type: 'success'
+                            });
+                            try {
+                                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
+                                if (data.code === ERR_OK) {
+                                    this.$message({
+                                        message: data.msg,
+                                        type: 'success'
+                                    });
+                                    this.isPublish = !this.isPublish;
+                                }
+                            } catch (e) {
+                                console.log(`src/components/page/goodsmanage/service/component/edit-view.vue setPublishStatus error: ${e}`);
+                            }
+                        }
+                    } catch (e) {
+                        console.log(`service edit-view handleSave error: ${e}`);
+                    }
                 }
-            } catch (e) {
-                console.log(`setPublishStatus error: ${e}`);
-            }
+            });
         },
+        /* 删除服务 */
         async handleRemove () {
             try {
                 const data = await removeBox({ id: this.form.id });
@@ -353,28 +326,33 @@ export default {
                     });
                 }
             } catch (e) {
-                console.log(`handleRemove error: ${e}`);
+                console.log(`src/components/page/goodsmanage/service/component/edit-view.vue handleRemove error: ${e}`);
             }
         },
-        /* 添加规格 */
-        addSize () {
-            this.sizeGroup.push({
-                name: '',
-                values: [{ value: '' }]
-            });
-        },
-        /* 添加规格值 */
-        addSizeValue (item) {
-            item.values.push({ value: '' });
-        },
-        /* 删除规格key */
-        removeSizeKey (index) {
-            this.sizeGroup.splice(index, 1);
-        },
-        /* 删除规格值 */
-        removeSizeVal (item, index) {
-            item.values.splice(index, 1);
-            this.sizeGroup = this.sizeGroup.filter(item => item.values.length > 0);
+        /* 二维码预览 */
+        async handleView () {
+            try {
+                let { kind_name, ...obj } = this.form;
+                obj.img = this.files.join(',');
+                obj.img_list = obj.img;
+                obj.intr = this.$refs.editWechat.content;
+                const data = await qrCodeView(obj);
+                if (data.code === ERR_OK) {
+                    if (document.getElementById('SERVICE_QRCODE')) {
+                        document.getElementById('SERVICE_QRCODE').innerHTML = '';
+                    }
+                    this.qrCode = new QRCode("SERVICE_QRCODE", {
+                        text: data.data,
+                        width: 128,
+                        height: 128,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.L
+                    });
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/service/component/edit-view.vue handleView error: ${e}`);
+            }
         }
     }
 };
@@ -387,7 +365,9 @@ export default {
     padding: 10px;
 }
 .edit-form {
+    width: 30%;
     margin: 0 auto;
+    margin-top: 15px;
 }
 .btn-group {
     text-align: center;
@@ -423,41 +403,7 @@ export default {
     max-width: 100px;
     display: inline-block;
 }
-.size-name {
-    padding: 8px;
-    background: #eeeeee;
-}
-.size-key {
-    width: 30%;
-    margin: 5px;
-}
-.size-value {
-    padding: 8px;
-}
-.size-input {
-    width: 30%;
-    margin: 5px;
-}
-.add-size {
-    padding: 8px;
-    box-sizing: border-box;
-    background: #eeeeee;
-}
-.size-readonly {
-    float: left;
-    list-style: none;
-    overflow: hidden;
-}
-.size-readonly .item {
-    float: left;
-}
-.size-value-readonly {
-    float: right;
-    list-style: none;
-}
-.size-value-readonly .item {
-    display: inline-block;
-    float: left;
-    margin-right: 5px;
+.btn-item {
+    margin-left: 10px;
 }
 </style>

@@ -138,3 +138,12 @@ export const setSort = query => {
         data: query
     });
 };
+
+/* 二维码预览 */
+export const qrCodeView = query => {
+    return request({
+        url: `${IP}/admin/service/previewQr`,
+        method: 'post',
+        data: query
+    });
+};
