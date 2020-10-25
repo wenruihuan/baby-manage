@@ -215,7 +215,7 @@
             </div>
           </div>
           <div class="footer-bar" v-if="!isProductOrderInfo">
-            <el-button>打印小票</el-button>
+            <el-button @click="handlePrint">打印小票</el-button>
             <el-button type="primary" @click="handleRefund">主动退款</el-button>
           </div>
         </div>
@@ -281,12 +281,15 @@
       :title="dialogTitle"
       :close-on-click-modal="false"
       :visible.sync="dialogShow"
-      width="700px"
+      :width="dialogWidth"
+      :class="dialogClassName"
     >
       <component 
         :is="componentName" 
         :params="dialogParams"
         @nextStep="handleNextStep"
+        @cancel="handleCancle"
+        @success="handlePrintSuccess"
       ></component>
     </el-dialog>
   </div>
@@ -295,11 +298,13 @@
 <script>
 import RefundStep1 from './refundStep1'
 import RefundStep2 from './refundStep2'
+import PrintTicket from './printTicket'
 export default {
   name: 'orderDetail',
   components: {
     RefundStep1,
-    RefundStep2
+    RefundStep2,
+    PrintTicket
   },
   data() {
     return {
@@ -315,7 +320,8 @@ export default {
       dialogShow: false,
       dialogTitle: '',
       dialogParams: null,
-      componentName: ''
+      componentName: '',
+      dialogWidth: '700px'
     }
   },
   props: {
@@ -365,26 +371,47 @@ export default {
   },
   methods: {
     handleRefund() {
-      this.dialogTitle = '退款商品'
-      this.componentName = 'refundStep1'
       this.dialogShow = true
+      this.setDilogProp('refundStep1', '退款商品', '700px', '' )
     },
     handleNextStep() {
       this.dialogShow = false
-      this.dialogTitle = '主动退款'
-      this.componentName = 'refundStep2'
+      this.setDilogProp('refundStep2', '主动退款', '700px', '' )
+    },
+    handlePrint() {
+      this.setDilogProp('printTicket', '', '300px', 'print-dialog')
+    },
+    setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName) {
+      this.dialogTitle = dialogTitle
+      this.componentName = componentName
+      this.dialogWidth = dialogWidth
+      this.dialogClassName = dialogClassName
       this.dialogShow = true
+    },
+    handleCancel() {
+      this.dialogShow = false
+    },
+    handlePrintSuccess() {
+      this.dialogShow = false
     }
   }
 }
 </script>
-
+<style lang="css">
+  .print-dialog .el-dialog__body {
+    padding: 0
+  }
+  .print-dialog .el-dialog__header {
+    padding: 0
+  }
+</style>
 <style lang="css" scoped>
   .order-detail {
     background-color: #ffffff;
     border: none;
     border-radius: 5px;
     padding: 20px;
+    font-size: 14px;
   }
   .info-title {
     display: flex;
@@ -426,7 +453,7 @@ export default {
     display: flex;
   }
   .row>div {
-    width: 245px;
+    width: 280px;
     margin-right: 80px;
     line-height: 36px;
   }
@@ -476,6 +503,8 @@ export default {
   .product-ctner img {
     margin-right: 10px;
   }
+  .print-dialog {
 
+  }
   
 </style>
