@@ -98,11 +98,11 @@
                     </li>
                 </ul>
             </el-form-item>
-            <el-form-item label="成本价:" prop="cost_price">
-                <el-input style="width: 300px;" v-if="isEdit" v-model="form.cost_price">
+            <el-form-item label="成本价:" prop="original_price">
+                <el-input style="width: 300px;" v-if="isEdit" v-model="form.original_price">
                     <template slot="prepend">￥</template>
                 </el-input>
-                <span v-else>{{ form.cost_price }}</span>
+                <span v-else>{{ form.original_price }}</span>
             </el-form-item>
             <el-form-item label="售价:" prop="price">
                 <el-input style="width: 300px;" v-if="isEdit" v-model="form.price">
@@ -137,13 +137,16 @@ import BoxCategory from './box-category';
 import ServiceManage from './service-manage';
 import editWechat from './edit-wechat';
 import {
-    addOrEditBox,
     ERR_OK,
+    getTagList,
+    setPublish,
+    removeBox,
+    qrCodeView,
+    addOrEditBox,
     getCategoryList,
     getDetail,
     getUploadToken
-} from '@/components/page/goodsmanage/box/api';
-import { getTagList, setPublish, removeBox, qrCodeView } from '@/components/page/goodsmanage/goods/api';
+} from '@/components/page/goodsmanage/goods/api';
 import QRCode from 'qrcodejs2';
 
 export default {
@@ -169,7 +172,7 @@ export default {
                 img_list: '',
                 unit: '',
                 sku: '',
-                cost_price: '',
+                original_price: '',
                 price: '',
                 intr: ''
             },
@@ -225,19 +228,10 @@ export default {
                         this.form = data.data;
                         this.files = this.form.img && this.form.img.split(',');
                         if (Array.isArray(this.form.sku)) {
-                            this.form.sku = [
-                                { name: '个', value: ['80', '60'] }
-                            ];
                             this.sizeGroup = this.form.sku.map(item => {
                                 return { ...item, values: item.value.map(i => ({ value: i })) };
                             });
                         }
-                        this.form.sku = [
-                            { name: '个', value: ['80', '60'] }
-                        ];
-                        this.sizeGroup = this.form.sku.map(item => {
-                            return { ...item, values: item.value.map(i => ({ value: i })) };
-                        });
                     }
                 } catch (e) {
                     console.log(`goods edit-view.vue getDetail error: ${e}`);

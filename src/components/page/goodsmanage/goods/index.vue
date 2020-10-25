@@ -139,7 +139,7 @@
 </template>
 
 <script>
-import { ERR_OK, getBoxList, removeBox, setPublish, setShow } from './api';
+import { ERR_OK, getBoxList, removeBox, setPublish, setShow, setSort } from './api';
 import BoxCategory from './component/box-category';
 import ServiceManage from './component/service-manage';
 import EditView from './component/edit-view';
@@ -252,8 +252,16 @@ export default {
             }
         },
         /* 修改排序 */
-        handleCorrectSort (row) {
+        async handleCorrectSort (row) {
             row.isSortShow = false;
+            try {
+                const data = await setSort({ id: row.id, sort: row.sort });
+                if (data.code === ERR_OK) {
+                    this.getList();
+                }
+            } catch (e) {
+                console.log(`goods handleCorrectSort error: ${e}`);
+            }
         },
         /* 上下架 */
         async handlePublish (rowId = '', isPublish) {

@@ -25,7 +25,7 @@ export const getBoxList = query => {
 /* 删除包厢 */
 export const removeBox = query => {
     return request({
-        url: `${IP}/admin/box/delete`,
+        url: `${IP}/admin/goods/delete`,
         method: 'post',
         data: query
     });
@@ -125,6 +125,15 @@ export const removeTag = query => {
 export const qrCodeView = query => {
     return request({
         url: `${IP}/admin/goods/previewQr`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 商品排序 */
+export const setSort = query => {
+    return request({
+        url: `${IP}/admin/goods/sort`,
         method: 'post',
         data: query
     });
