@@ -71,3 +71,30 @@ export const getRecommendGoods = query => {
     params: query
   })
 }
+
+// 获取积分设置页信息
+export const getPoint = query => {
+  return request({
+    url: `/admin/point/getConfig`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 保存积分说明
+export const savePointMessage = params => {
+  return request({
+    url: `/admin/point/messageSave`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 保存积分规则
+export const savePointRules = params => {
+  return request({
+    url: `/admin/point/save`,
+    method: 'post',
+    data: params
+  })
+}

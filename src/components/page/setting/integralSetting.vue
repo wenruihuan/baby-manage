@@ -5,10 +5,10 @@
             <div class="info-title">设置积分有效期</div>
             <el-form :model="formData" label-width="100px">
                 <el-form-item label="积分说明：">
-                    <el-input type="textarea" :autosize="{ minRows: 6, maxRows: 10 }" v-model="formData.explain"></el-input>
+                    <el-input type="textarea" :autosize="{ minRows: 6, maxRows: 10 }" v-model="formData.message"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" style="float: right">保存说明</el-button>
+                    <el-button type="primary" style="float: right" @click="handleSaveMessage">保存说明</el-button>
                 </el-form-item>
             </el-form>
             <div class="info-title">设置积分规则</div>
@@ -24,41 +24,65 @@
                 </el-table-column>
                 <el-table-column label="获取积分" align="center" min-width="200px">
                     <template slot-scope="scope">
-                        <div class="integral-input">
-                            <el-input v-model="tableFormData[scope.row.key].count[0]"></el-input>
+                        <div class="integral-input" v-if="['booking'].includes(scope.row.key)">
+                            <el-input v-model="tableFormData[scope.row.key].count"></el-input>
                             <span class="integral-input-span">积分/次</span>
                         </div>
                         <div class="integral-input" v-if="!['booking'].includes(scope.row.key)">
-                            <el-input v-model="tableFormData[scope.row.key].count[1]"></el-input>
+                            <el-input v-model="tableFormData[scope.row.key].balance.count"></el-input>
+                            <span class="integral-input-span">积分/次</span>
+                        </div>
+                        <div class="integral-input" v-if="!['booking'].includes(scope.row.key)">
+                            <el-input v-model="tableFormData[scope.row.key].other.count"></el-input>
                             <span class="integral-input-span">积分/次</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="单日上限" align="center" min-width="200px">
                     <template slot-scope="scope">
-                        <div class="limit-item">
-                            <el-radio-group v-model="tableFormData[scope.row.key].unlimit[0]">
-                                <el-radio :label="true">无上限</el-radio>
-                                <el-radio :label="false">
+                        <div class="limit-item" v-if="['booking'].includes(scope.row.key)">
+                            <el-radio-group v-model="scope.row.isLimit[0]">
+                                <el-radio :label="false">无上限</el-radio>
+                                <el-radio :label="true">
                                     <div class="limit-input">
-                                        <el-input
-                                            :disabled="tableFormData[scope.row.key].unlimit[0]"
-                                            v-model="tableFormData[scope.row.key].limit[0]"
-                                        ></el-input>
+                                        <el-input-number
+                                            :disabled="!scope.row.isLimit[0]"
+                                            v-model="tableFormData[scope.row.key].limit"
+                                            :min="0"
+                                            :controls="false"
+                                        ></el-input-number>
                                         <span class="limit-input-span">积分/天</span>
                                     </div>
                                 </el-radio>
                             </el-radio-group>
                         </div>
                         <div class="limit-item" v-if="!['booking'].includes(scope.row.key)">
-                            <el-radio-group v-model="tableFormData[scope.row.key].unlimit[1]">
-                                <el-radio :label="true">无上限</el-radio>
-                                <el-radio :label="false">
+                            <el-radio-group v-model="scope.row.isLimit[0]">
+                                <el-radio :label="false">无上限</el-radio>
+                                <el-radio :label="true">
                                     <div class="limit-input">
-                                        <el-input
-                                            :disabled="tableFormData[scope.row.key].unlimit[1]"
-                                            v-model="tableFormData[scope.row.key].limit[1]"
-                                        ></el-input>
+                                        <el-input-number
+                                            :disabled="!scope.row.isLimit[0]"
+                                            v-model="tableFormData[scope.row.key].balance.limit"
+                                            :min="0"
+                                            :controls="false"
+                                        ></el-input-number>
+                                        <span class="limit-input-span">积分/天</span>
+                                    </div>
+                                </el-radio>
+                            </el-radio-group>
+                        </div>
+                        <div class="limit-item" v-if="!['booking'].includes(scope.row.key)">
+                            <el-radio-group v-model="scope.row.isLimit[1]">
+                                <el-radio :label="false">无上限</el-radio>
+                                <el-radio :label="true">
+                                    <div class="limit-input">
+                                        <el-input-number
+                                            :disabled="!scope.row.isLimit[1]"
+                                            v-model="tableFormData[scope.row.key].other.limit"
+                                            :min="0"
+                                            :controls="false"
+                                        ></el-input-number>
                                         <span class="limit-input-span">积分/天</span>
                                     </div>
                                 </el-radio>
@@ -75,6 +99,7 @@
 </template>
 <script>
     import breadcrumb from '@/components/common/address';
+    import { getPoint, savePointMessage, savePointRules } from '@/api/setting';
     export default {
         name: 'IntegralSetting',
         components: {
@@ -101,53 +126,125 @@
                     }
                 ],
                 formData: {
-                    explain: ''
+                    message: ''
                 },
                 tableFormData: {
                     booking: {
-                        count: [],
-                        limit: [],
-                        unlimit: [true]
+                        count: '',
+                        limit: ''
                     },
                     service: {
-                        count: [],
-                        limit: [],
-                        unlimit: [true, true]
+                        balance: {
+                            count: '',
+                            limit: ''
+                        },
+                        other: {
+                            count: '',
+                            limit: ''
+                        }
                     },
                     goods: {
-                        count: [],
-                        limit: [],
-                        unlimit: [true, true]
+                        balance: {
+                            count: '',
+                            limit: ''
+                        },
+                        other: {
+                            count: '',
+                            limit: ''
+                        }
                     },
                     time_card: {
-                        count: [],
-                        limit: [],
-                        unlimit: [false, true]
+                        balance: {
+                            count: '',
+                            limit: ''
+                        },
+                        other: {
+                            count: '',
+                            limit: ''
+                        }
                     },
                     recharge_card: {
-                        count: [],
-                        limit: [],
-                        unlimit: [true, false]
+                        balance: {
+                            count: '',
+                            limit: ''
+                        },
+                        other: {
+                            count: '',
+                            limit: ''
+                        }
                     },
                     discount_card: {
-                        count: [],
-                        limit: [],
-                        unlimit: [true, true]
+                        balance: {
+                            count: '',
+                            limit: ''
+                        },
+                        other: {
+                            count: '',
+                            limit: ''
+                        }
                     }
                 },
                 tableData: [
-                    { condition: '完成预约', key: 'booking', value: 1 },
-                    { condition: '购买服务', key: 'service', value: 2 },
-                    { condition: '购买商品', key: 'goods', value: 3 },
-                    { condition: '购买次卡', key: 'time_card', value: 4 },
-                    { condition: '购买充值卡', key: 'recharge_card', value: 5 },
-                    { condition: '购买折扣卡', key: 'discount_card', value: 6 }
+                    { condition: '完成预约', key: 'booking', value: 1, isLimit: [false] },
+                    { condition: '购买服务', key: 'service', value: 2, isLimit: [false, false] },
+                    { condition: '购买商品', key: 'goods', value: 3, isLimit: [false, false] },
+                    { condition: '购买次卡', key: 'time_card', value: 4, isLimit: [false, false] },
+                    { condition: '购买充值卡', key: 'recharge_card', value: 5, isLimit: [false, false] },
+                    { condition: '购买折扣卡', key: 'discount_card', value: 6, isLimit: [false, false] }
                 ]
             };
         },
+        created() {
+            this.getPointSetting();
+        },
         methods: {
-            handleSaveRules() {
-                console.log('this.tableFormData: ', this.tableFormData);
+            async getPointSetting() {
+                const res = await getPoint();
+                if (res.code === 200) {
+                    this.formData.message = res.data.message;
+                    this.tableFormData = res.data.rule;
+                    this.tableData.forEach((m) => {
+                        if (m.key === 'booking') {
+                            m.isLimit[0] = this.tableFormData[m.key].limit !== '-1';
+                        } else {
+                            m.isLimit[0] = this.tableFormData[m.key].balance.limit !== '-1';
+                            m.isLimit[1] = this.tableFormData[m.key].other.limit !== '-1';
+                        }
+                    });
+                }
+            },
+            async handleSaveMessage() {
+                const res = await savePointMessage({ message: this.formData.message });
+                if (res.code === 200) {
+                    this.$message.success(res.msg);
+                }
+            },
+            async handleSaveRules() {
+                const tableFormData = JSON.parse(JSON.stringify(this.tableFormData));
+                this.tableData.forEach((m) => {
+                    if (m.key === 'booking') {
+                        if (m.isLimit[0]) {
+                            tableFormData[m.key].limit = String(tableFormData[m.key].limit)
+                        } else {
+                            tableFormData[m.key].limit = '-1'
+                        }
+                    } else {
+                        if (m.isLimit[0]) {
+                            tableFormData[m.key].balance.limit = String(tableFormData[m.key].balance.limit)
+                        } else {
+                            tableFormData[m.key].balance.limit = '-1'
+                        }
+                        if (m.isLimit[1]) {
+                            tableFormData[m.key].other.limit = String(tableFormData[m.key].other.limit)
+                        } else {
+                            tableFormData[m.key].other.limit = '-1'
+                        }
+                    }
+                });
+                const res = await savePointRules({ ...tableFormData });
+                if (res.code === 200) {
+                    this.$message.success(res.msg);
+                }
             }
         }
     };
@@ -178,8 +275,11 @@
         padding-bottom: 5px;
     }
     .integral-input >>> .el-input,
-    .limit-input >>> .el-input {
+    .limit-input >>> .el-input-number {
         width: 80px;
+    }
+    .limit-input >>> .el-input {
+        width: 100%;
     }
     .integral-input-span,
     .limit-input-span {
