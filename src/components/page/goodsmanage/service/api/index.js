@@ -25,7 +25,7 @@ export const getBoxList = query => {
 /* 删除服务分类 */
 export const removeBox = query => {
     return request({
-        url: `${IP}/admin/service/deleteKind`,
+        url: `${IP}/admin/service/delete`,
         method: 'post',
         data: query
     });

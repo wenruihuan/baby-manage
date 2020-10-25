@@ -4,13 +4,13 @@
             <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
             <el-step title="详情介绍" ></el-step>
         </el-steps>
-        <el-form v-show="activeStep === 1" class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
+        <el-form v-show="activeStep === 1" class="edit-form" ref="boxForm" :model="form" label-width="100px" :rules="isEdit ? rules : {}">
             <el-form-item label="名称:" prop="name">
-                <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
+                <el-input style="width: 300px;" v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
                 <span v-else>{{ form.name }}</span>
             </el-form-item>
             <el-form-item label="分类:" prop="kind_id">
-                <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
+                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
                     <el-option
                         v-for="item in categoryList"
                         :key="item.id"
@@ -23,7 +23,7 @@
                 <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理包厢分类</el-button>
             </el-form-item>
             <el-form-item label="标签:" prop="box_no">
-                <el-select v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择服务标签">
+                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择服务标签">
                     <el-option
                         v-for="item in tagList"
                         :key="item.id"
@@ -57,44 +57,78 @@
                     </li>
                 </ul>
             </el-form-item>
-            <el-form-item label="规格:" prop="people_count">
-                <el-input v-if="isEdit" v-model="form.people_count"></el-input>
-                <span v-else>{{ form.people_count }}</span>
+            <el-form-item label="规格:" prop="unit">
+                <div class="size-group">
+                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="index">
+                        <div class="size-name">
+                            <span>规格名：</span>
+                            <el-input v-model="item.name"></el-input>
+                        </div>
+                        <div v-if="item.value && item.value.length > 0" class="size-value">
+                            <span>规格值：</span>
+                            <el-input
+                                    :key="index"
+                                    v-for="(innerItem, index) in item.value"
+                                    v-model="innerItem.value"
+                                    class="size-input"
+                            >
+                            </el-input>
+                            <el-button type="text" @click="addSizeValue(item)">添加规格值</el-button>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="isEdit" class="add-size">
+                    <el-button @click="addSize">添加规格</el-button>
+                </div>
+                <ul v-if="!isEdit" class="size-readonly">
+                    <li
+                            class="item"
+                            v-for="(item, index) in sizeGroup"
+                            :key="index"
+                    >
+                        <span>{{ item.name }}:</span>
+                        <ul class="size-value-readonly">
+                            <li class="item" v-for="(innerItem, index) in item.value" :key="index">
+                                {{ innerItem.value }}
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </el-form-item>
             <el-form-item label="售价:" prop="price">
-                <el-input v-if="isEdit" v-model="form.price">
+                <el-input style="width: 300px;" v-if="isEdit" v-model="form.price">
                     <template slot="prepend">￥</template>
                 </el-input>
                 <span v-else>{{ form.price }}</span>
             </el-form-item>
             <el-form-item label="划线价:" prop="original_price">
-                <el-input v-if="isEdit" v-model="form.original_price" placeholder="原价：￥99.99"></el-input>
+                <el-input style="width: 300px;" v-if="isEdit" v-model="form.original_price" placeholder="原价：￥99.99"></el-input>
                 <span v-else>{{ form.original_price }}</span>
             </el-form-item>
             <el-form-item label="服务时长:" prop="service_time">
-                <el-input v-if="isEdit" v-model="form.service_time">
+                <el-input style="width: 300px;" v-if="isEdit" v-model="form.service_time">
                     <template slot="suffix">分钟</template>
                 </el-input>
                 <span v-else>{{ form.service_time }}分钟</span>
             </el-form-item>
             <el-form-item label="线上预约:" prop="is_needpay">
                 <el-radio-group v-if="isEdit" v-model="form.is_needpay">
-                    <el-radio :label="0">无需支付</el-radio>
-                    <el-radio :label="1">需支付</el-radio>
+                    <el-radio label="0">无需支付</el-radio>
+                    <el-radio label="1">需支付</el-radio>
                 </el-radio-group>
                 <span v-else>{{ form.is_needpay === '1' ? '需支付' : '无需支付' }}</span>
             </el-form-item>
             <el-form-item label="服务方式:" prop="is_todoor">
                 <el-radio-group v-if="isEdit" v-model="form.is_todoor">
-                    <el-radio :label="0">到店</el-radio>
-                    <el-radio :label="1">上门</el-radio>
+                    <el-radio label="0">到店</el-radio>
+                    <el-radio label="1">上门</el-radio>
                 </el-radio-group>
                 <span v-else>{{ form.is_todoor === '1' ? '上门' : '到店' }}</span>
             </el-form-item>
             <el-form-item label="网店展示:" prop="is_show">
                 <el-radio-group v-if="isEdit" v-model="form.is_show">
-                    <el-radio :label="0">不展示</el-radio>
-                    <el-radio :label="1">展示</el-radio>
+                    <el-radio label="0">不展示</el-radio>
+                    <el-radio label="1">展示</el-radio>
                 </el-radio-group>
                 <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
             </el-form-item>
@@ -154,13 +188,14 @@ export default {
                 name: '',
                 kind_id: '',
                 kind_name: '',
-                img: '',
-                price: '',
-                is_todoor: '',
-                service_time: '',
-                need_pay: '',
-                original_price: '',
                 tag_ids: '',
+                img: '',
+                sku: [],
+                price: '',
+                service_time: '',
+                original_price: '',
+                is_needpay: '',
+                is_todoor: '',
                 is_show: ''
             },
             rules: {
@@ -170,8 +205,11 @@ export default {
                 kind_id: [
                     { required: true, message: '请选择分类', trigger: 'change' }
                 ],
-                people_count: [
-                    { required: true, message: '请输入人数', trigger: 'blur' }
+                price: [
+                    { required: true, message: '请输入售价', trigger: 'blur' }
+                ],
+                service_time: [
+                    { required: true, message: '请输入服务时长', trigger: 'blur' }
                 ]
             },
             boxCategoryVisible: false,
@@ -181,7 +219,8 @@ export default {
             isEdit: '',
             isPublish: false,
             files: [],
-            qrCode: null
+            qrCode: null,
+            sizeGroup: []
         };
     },
     created() {
@@ -213,6 +252,10 @@ export default {
                     if (data.code === ERR_OK) {
                         this.form = data.data;
                         this.files = this.form.img.split(',');
+                        this.sizeGroup = (this.form.sku || []).map(item => ({
+                            ...item,
+                            value: item.value.map(innerItem => ({ value: innerItem }))
+                        }));
                     }
                 } catch (e) {
                     console.log(`getList error: ${e}`);
@@ -230,7 +273,7 @@ export default {
         /* 获取包厢分类下拉框 */
         async getCategory () {
             try {
-                const data = await getCategoryList();
+                const data = await getCategoryList({ page_no: 1, page_size: 100000 });
                 if (data.code === ERR_OK) {
                     this.categoryList = data.data.data;
                 }
@@ -269,7 +312,8 @@ export default {
                 if (valid) {
                     try {
                         let { kind_name, ...obj } = this.form;
-                        obj.img = this.files.join(',');
+                        obj.img_list = this.files.join(',');
+                        obj.intr = this.$refs.editWechat.content;
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
@@ -353,6 +397,17 @@ export default {
             } catch (e) {
                 console.log(`src/components/page/goodsmanage/service/component/edit-view.vue handleView error: ${e}`);
             }
+        },
+        /* 添加规格 */
+        addSize () {
+            this.sizeGroup.push({
+                name: '',
+                value: [{ value: '' }]
+            });
+        },
+        /* 添加规格值 */
+        addSizeValue (item) {
+            item.value.push({ value: '' });
         }
     }
 };
@@ -365,7 +420,6 @@ export default {
     padding: 10px;
 }
 .edit-form {
-    width: 30%;
     margin: 0 auto;
     margin-top: 15px;
 }
@@ -405,5 +459,42 @@ export default {
 }
 .btn-item {
     margin-left: 10px;
+}
+.size-name {
+    padding: 8px;
+    background: #eeeeee;
+}
+.size-value {
+    padding: 8px;
+}
+.size-input {
+    margin-bottom: 5px;
+}
+.add-size {
+    padding: 8px;
+    box-sizing: border-box;
+    background: #eeeeee;
+}
+.size-readonly {
+    float: left;
+    list-style: none;
+    overflow: hidden;
+}
+.size-readonly .item {
+    float: left;
+}
+.size-value-readonly {
+    float: right;
+    list-style: none;
+}
+.size-value-readonly .item {
+    display: inline-block;
+    float: left;
+    margin-right: 5px;
+}
+.category-manage {
+    position: absolute;
+    left: 317px;
+    top: 0;
 }
 </style>

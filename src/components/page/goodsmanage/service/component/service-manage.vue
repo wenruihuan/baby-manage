@@ -9,7 +9,7 @@
             <el-button @click="isAdd = false">取消</el-button>
             <el-button @click="handleAdd" type="primary">确认</el-button>
         </div>
-        <el-button class="add-btn" type="primary" v-else @click="isAdd = true">新建分类</el-button>
+        <el-button class="add-btn" type="primary" v-else @click="isAdd = true">新建标签</el-button>
         <el-table
             :data="boxCategoryData"
         >
