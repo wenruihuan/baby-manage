@@ -34,8 +34,8 @@
                     </el-form-item>
                     <el-form-item label="有效时间:" prop="isInfinity">
                         <el-radio-group v-if="isEdit" v-model="form.isInfinity">
-                            <el-radio :label="1">永久有效</el-radio>
-                            <el-radio :label="0">
+                            <el-radio label="1">永久有效</el-radio>
+                            <el-radio label="0">
                                 <el-input style="width: 90px" :disabled="form.isInfinity === 1" v-model="form.day" placeholder="自定义"></el-input>
                                 <span style="margin-left: 5px;">天</span>
                             </el-radio>
@@ -44,8 +44,8 @@
                     </el-form-item>
                     <el-form-item label="网店展示:" prop="is_show">
                         <el-radio-group v-if="isEdit" v-model="form.is_show">
-                            <el-radio :label="0">不展示</el-radio>
-                            <el-radio :label="1">展示</el-radio>
+                            <el-radio label="0">不展示</el-radio>
+                            <el-radio label="1">展示</el-radio>
                         </el-radio-group>
                         <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
                     </el-form-item>
@@ -57,8 +57,8 @@
             <div class="content">
                 <div class="left">
                     <el-radio-group v-model="form.isDefaultPic">
-                        <el-radio :label="0">默认背景图</el-radio>
-                        <el-radio :label="1">
+                        <el-radio label="0">默认背景图</el-radio>
+                        <el-radio label="1">
                             <span>自定义图片</span>
                             <el-upload
                                 action="https://jsonplaceholder.typicode.com/posts/"
