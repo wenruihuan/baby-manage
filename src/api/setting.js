@@ -44,3 +44,30 @@ export const saveArticle = params => {
     data: params
   })
 }
+
+// 获取banner
+export const getBanner = query => {
+  return request({
+    url: `/admin/mp/getBanner`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取推荐服务
+export const getRecommendService = query => {
+  return request({
+    url: `/admin/mp/getRecommendService`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取推荐商品
+export const getRecommendGoods = query => {
+  return request({
+    url: `/admin/mp/getRecommendGoods`,
+    method: 'get',
+    params: query
+  })
+}

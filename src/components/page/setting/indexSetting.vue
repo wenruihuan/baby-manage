@@ -3,21 +3,36 @@
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
         <div class="index-container">
             <div class="container-left">
-                <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                    <el-tab-pane label="banner" name="1"></el-tab-pane>
-                    <el-tab-pane label="推荐服务" name="2"></el-tab-pane>
-                    <el-tab-pane label="推荐商品" name="3"></el-tab-pane>
+                <el-tabs v-model="activeName" type="card" :before-leave="beforeChangeTab">
+                    <el-tab-pane v-for="tab in tabList" :key="tab.value" :label="tab.label" :name="tab.value"></el-tab-pane>
                 </el-tabs>
                 <div class="upload-list">
-                    <div class="upload-list-item" v-for="item in 2" :key="item">
-                        <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false">
-                            <img v-if="url" :src="url" class="avatar" />
+                    <div class="upload-list-item" v-for="(item, index) in tableList" :key="index">
+                        <el-upload
+                            class="avatar-uploader"
+                            action="http://up-z0.qiniu.com"
+                            :disabled="item.disabled"
+                            :data="uploadBody"
+                            :before-upload="beforeUpload"
+                            :on-success="(res) => handleUploadSuccess(res, index)"
+                            :show-file-list="false"
+                        >
+                            <el-image
+                                :ref="`imgRef${index}`"
+                                style="width: 100%; height: 100%"
+                                v-if="item.img"
+                                :src="item.img"
+                                fit="contain"
+                            ></el-image>
                             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         </el-upload>
                         <div class="action-btn">
-                            <el-button type="text">编辑</el-button>
-                            <el-button type="text">删除</el-button>
+                            <el-button type="text" @click="handleEdit(index)">编辑</el-button>
+                            <el-button type="text" v-if="(index + 1) > showDeleteIndex" @click="handleDelete(index)">删除</el-button>
                         </div>
+                    </div>
+                    <div class="add-btn">
+                        <el-button @click="handleAdd">{{ `添加${tabList.find((m) => m.value === activeName).label}` }}</el-button>
                     </div>
                 </div>
                 <div class="footer-btn">
@@ -32,6 +47,7 @@
 </template>
 <script>
     import breadcrumb from '@/components/common/address';
+    import { getUploadToken, getBanner, getRecommendService, getRecommendGoods } from '@/api/setting';
     export default {
         name: 'IndexSetting',
         components: {
@@ -58,12 +74,107 @@
                     }
                 ],
                 activeName: '1',
-                url: ''
+                tabList: [
+                    { label: 'banner', value: '1' },
+                    { label: '推荐服务', value: '2' },
+                    { label: '推荐商品', value: '3' }
+                ],
+                url: '',
+                tableList: [],
+                baseUrl: '',
+                uploadBody: {
+                    token: '',
+                    key: ''
+                }
             };
         },
+        computed: {
+            showDeleteIndex() {
+                return this.activeName === '1' ? 2 : this.activeName === '2' ? 4 : 6
+            }
+        },
+        watch: {
+            activeName(newVal) {
+                this.getTableList()
+            }
+        },
+        mounted() {
+            this.getUploadToken();
+            this.getTableList();
+        },
         methods: {
-            handleClick(tab, event) {
-                console.log(tab, event);
+            beforeChangeTab(tab) {
+                if (this.tableList.findIndex((m) => !m.img) > -1) {
+                    return new Promise((resolve, reject) => {
+                        this.$confirm('此离开此页后操作将不被保存，是否确认切换？', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        })
+                            .then(() => {
+                                resolve();
+                            })
+                            .catch(() => {
+                                reject();
+                            });
+                    });
+                }
+            },
+            handleAdd() {
+                this.tableList.push({ img: '' });
+            },
+            setDisable(index, boolean) {
+                this.tableList.forEach((m, i) => {
+                    if (i === index) {
+                        this.$set(m, 'disabled', boolean);
+                    }
+                });
+            },
+            handleEdit(index) {
+                this.setDisable(index, false);
+                this.$nextTick(() => {
+                    this.$refs[`imgRef${index}`][0].$el.click();
+                    this.setDisable(index, true);
+                });
+            },
+            handleDelete(index) {
+                this.tableList.splice(index, 1);
+            },
+            async getTableList() {
+                const apiFn = ['', getBanner, getRecommendService, getRecommendGoods][this.activeName]
+                const res = await apiFn();
+                if (res.code === 200) {
+                    res.data.forEach((m) => {
+                        m.disabled = true;
+                    });
+                    this.tableList = res.data;
+                }
+                console.log(res);
+            },
+            /* 获取上传图片的token */
+            async getUploadToken() {
+                try {
+                    const data = await getUploadToken();
+                    if (data.code === 200) {
+                        this.uploadBody.token = data.data.uptoken;
+                        this.baseUrl = data.data.baseUrl;
+                    }
+                } catch (e) {
+                    console.log(`getUploadToken error: ${e}`);
+                }
+            },
+            beforeUpload(file) {
+                this.uploadBody.key = file.name;
+                return true;
+            },
+            /* 成功上传 */
+            handleUploadSuccess(res, index) {
+                this.tableList.forEach((m, i) => {
+                    if (i === index) {
+                        this.$set(m, 'img', `${this.baseUrl}/${res.key}`);
+                        this.$set(m, 'disabled', true);
+                    }
+                });
             }
         }
     };
@@ -95,10 +206,17 @@
         height: calc(100% - 40px);
     }
 
+    .add-btn {
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+    }
+
     .footer-btn {
         display: inline-block;
         width: 100%;
         text-align: center;
+        margin-top: 20px;
     }
 
     .container-right {
