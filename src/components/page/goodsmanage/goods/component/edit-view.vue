@@ -294,7 +294,7 @@ export default {
                         let { kind_name, ...obj } = this.form;
                         obj.img = this.files.join(',');
                         obj.sku = this.sizeGroup.map(item => ({
-                            ...item,
+                            name: item.name,
                             value: item.values.map(i => i.value)
                         }));
                         obj.img_list = obj.img;

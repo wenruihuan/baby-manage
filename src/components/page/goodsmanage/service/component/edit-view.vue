@@ -1,6 +1,6 @@
 <template>
     <div class="edit-view">
-        <el-steps :active="activeStep" simple>
+        <el-steps v-if="isEdit" :active="activeStep" simple>
             <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
             <el-step title="详情介绍" ></el-step>
         </el-steps>
@@ -310,11 +310,16 @@ export default {
         /* 保存 */
         handleSave () {
             this.$refs.boxForm.validate(async valid => {
+                console.log(435345);
                 if (valid) {
                     try {
                         let { kind_name, ...obj } = this.form;
                         obj.img_list = this.files.join(',');
                         obj.intr = this.$refs.editWechat.content;
+                        obj.sku = this.sizeGroup.map(item => ({
+                            name: item.name,
+                            value: item.value.map(i => i.value)
+                        }));
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
@@ -335,6 +340,10 @@ export default {
                     try {
                         let { kind_name, ...obj } = this.form;
                         obj.img = this.files.join(',');
+                        obj.sku = this.sizeGroup.map(item => ({
+                            ...item,
+                            value: item.value.map(i => i.value)
+                        }));
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
