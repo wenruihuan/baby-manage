@@ -1,6 +1,6 @@
 <template>
     <div class="edit-view">
-        <el-steps :active="activeStep" simple>
+        <el-steps v-if="isEdit" :active="activeStep" simple>
             <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
             <el-step title="详情介绍" ></el-step>
         </el-steps>
@@ -31,12 +31,13 @@
                         :value="item.id">
                     </el-option>
                 </el-select>
-                <span v-else>{{ form.tag_names }}</span>
+                <span v-else>{{ form.tag_name }}</span>
                 <p class="tips" v-if="isEdit">一个商品可打多个标签，用于小程序端查找商品</p>
                 <el-button v-if="isEdit" class="category-manage" type="text" @click="openServiceDialog">管理商品标签</el-button>
             </el-form-item>
             <el-form-item label="图片:" prop="img">
                 <el-upload
+                    v-if="isEdit"
                     multiple
                     action="http://up-z0.qiniu.com"
                     list-type="picture-card"
@@ -102,13 +103,13 @@
                 <el-input style="width: 300px;" v-if="isEdit" v-model="form.original_price">
                     <template slot="prepend">￥</template>
                 </el-input>
-                <span v-else>{{ form.original_price }}</span>
+                <span v-else>￥{{ form.original_price }}</span>
             </el-form-item>
             <el-form-item label="售价:" prop="price">
                 <el-input style="width: 300px;" v-if="isEdit" v-model="form.price">
                     <template slot="prepend">￥</template>
                 </el-input>
-                <span v-else>{{ form.price }}</span>
+                <span v-else>￥{{ form.price }}</span>
             </el-form-item>
         </el-form>
         <edit-wechat ref="editWechat" v-show="activeStep === 2" />
