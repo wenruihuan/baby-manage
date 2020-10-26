@@ -24,6 +24,7 @@
             </el-form-item>
             <el-form-item label="图片:" prop="img">
                 <el-upload
+                    v-if="isEdit"
                     multiple
                     action="http://up-z0.qiniu.com"
                     list-type="picture-card"
