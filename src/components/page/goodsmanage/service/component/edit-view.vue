@@ -37,6 +37,7 @@
             </el-form-item>
             <el-form-item label="图片:" prop="img">
                 <el-upload
+                    v-if="isEdit"
                     multiple
                     action="http://up-z0.qiniu.com"
                     list-type="picture-card"
@@ -99,11 +100,11 @@
                 <el-input style="width: 300px;" v-if="isEdit" v-model="form.price">
                     <template slot="prepend">￥</template>
                 </el-input>
-                <span v-else>{{ form.price }}</span>
+                <span v-else>￥{{ form.price }}</span>
             </el-form-item>
             <el-form-item label="划线价:" prop="original_price">
                 <el-input style="width: 300px;" v-if="isEdit" v-model="form.original_price" placeholder="原价：￥99.99"></el-input>
-                <span v-else>{{ form.original_price }}</span>
+                <span v-else>￥{{ form.original_price }}</span>
             </el-form-item>
             <el-form-item label="服务时长:" prop="service_time">
                 <el-input style="width: 300px;" v-if="isEdit" v-model="form.service_time">
