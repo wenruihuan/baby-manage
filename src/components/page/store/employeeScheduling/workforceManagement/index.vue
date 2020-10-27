@@ -16,14 +16,6 @@
         <div class="table">
             <div class="date-box"></div>
             <el-table :data="tableData" border style="width: 100%; margin-top: 20px;">
-                <el-table-column label="商品名称" align="center">
-                    <template slot-scope="scope">
-                        <div>
-                            <img src="" alt="" width="50px" height="50px">
-                            <span></span>
-                        </div>
-                    </template>
-                </el-table-column>
                 <el-table-column
                         v-for="item in columnCfg" :key="item.prop"
                         :label="item.label"
@@ -34,7 +26,7 @@
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="downloadCode">设置排班</el-button>
+                        <el-button type="text">设置排班</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -83,16 +75,16 @@
                     page_no: 1
                 },
                 columnCfg: [
-                    {label: '姓名', prop: 'price'},
-                    {label: '手机号', prop: 'type'},
-                    {label: '门店', width: 220},
-                    {label: '周一', prop: '1testDataLevelID.price'},
-                    {label: '周二', prop: '2testDataLevelID.price'},
-                    {label: '周三', prop: '3testDataLevelID.price'},
-                    {label: '周四', prop: '4testDataLevelID.price'},
-                    {label: '周五', prop: '4testDataLevelID.price'},
-                    {label: '周六', prop: '4testDataLevelID.price'},
-                    {label: '周日', prop: '4testDataLevelID.price'},
+                    {label: '姓名', prop: 'staff_name'},
+                    {label: '手机号', prop: 'staff_phone'},
+                    {label: '门店', prop: 'shop_name'},
+                    {label: `周一`, prop: 'worktime_list[0].worktime'},
+                    {label: '周二', prop: 'worktime_list[1].worktime'},
+                    {label: '周三', prop: 'worktime_list[2].worktime'},
+                    {label: '周四', prop: 'worktime_list[3].worktime'},
+                    {label: '周五', prop: 'worktime_list[4].worktime'},
+                    {label: '周六', prop: 'worktime_list[5].worktime'},
+                    {label: '周日', prop: 'worktime_list[6].worktime'},
                 ],
                 tableData: [],
                 total: 0,
@@ -109,12 +101,15 @@
             this.getFormData();
         },
         methods: {
+            handleCurChange(page) {
+                this.getTableData(page)
+            },
             async setPositionDelete (scope) {
                 api.positionDelete({ id: scope.row.id})
             },
             async getFormData () {
-                const { data } = await api.positionList();
-                this.tableData = data
+                const { data } = await api.worktimeStaffList();
+                this.tableData = data.data;
                 this.total = data.all_count
             },
             handleSizeChange(val) {

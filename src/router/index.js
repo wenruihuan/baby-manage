@@ -301,6 +301,26 @@ export default new Router({
                   path: '/MemberPrice',
                   component: () => import(/* webpackChunkName: "appointment" */ '../components/page/marketing/memberPrice.vue'),
                   meta: { title: '会员价' }
+                },
+                {
+                  path: '/billing',
+                  component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/billing.vue'),
+                  meta: { title: '开单' }
+                },
+                {
+                    path: '/cashier',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/cashier.vue'),
+                    meta: { title: '收银' }
+                },
+                {
+                    path: '/recharge',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/recharge.vue'),
+                    meta: { title: '充值' }
+                },
+                {
+                    path: '/activateCard',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/activateCard.vue'),
+                    meta: { title: '开卡' }
                 }
             ]
         },

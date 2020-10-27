@@ -210,7 +210,7 @@ a {
     display: flex;
     margin-bottom: 20px;
 }
-.dialog-box .item span {
+.dialog-box .item>span {
     line-height: 32px;
 }
 .width200 {

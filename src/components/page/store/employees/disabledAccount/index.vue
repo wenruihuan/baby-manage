@@ -155,7 +155,6 @@ export default {
         }
     },
     created () {
-        alert(123);
         this.getFormData();
     },
     methods: {
