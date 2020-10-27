@@ -174,3 +174,32 @@ export const getDefaultPic = query => {
         params: query
     });
 };
+
+/* 次卡 */
+/* 次卡详情 */
+export const getCikaDetial = query => {
+    return request({
+        url: `${IP}/admin/card/time/detail`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 充值卡 */
+/* 充值卡详情 */
+export const getInsertDetail = query => {
+    return request({
+        url: `${IP}/admin/card/recharge/detail`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 保存充值卡 */
+export const saveRechargeCard = query => {
+    return request({
+        url: `${IP}/admin/card/recharge/save`,
+        method: 'post',
+        data: query
+    });
+};

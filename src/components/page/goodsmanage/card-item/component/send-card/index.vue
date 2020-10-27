@@ -8,10 +8,13 @@
             <el-table
                 :data="list"
             >
-                <el-table-column prop="name" label="服务名称"></el-table-column>
-                <el-table-column prop="price" label="次数">
+                <el-table-column prop="right_name" label="次卡名称"></el-table-column>
+                <el-table-column prop="rel_type" label="卡项类别">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.num"></el-input>
+                        {{
+                            cardKindGrp.find(item => item.value === scope.row.rel_type) ?
+                                cardKindGrp.find(item => item.value === scope.row.rel_type).label : ''
+                        }}
                     </template>
                 </el-table-column>
                 <el-table-column label="操作">
@@ -31,10 +34,10 @@
                 <div class="select-container">
                     <el-select v-model="serviceKind">
                         <el-option
-                            v-for="item in serviceOptions"
-                            :key="item.id"
-                            :value="item.id"
-                            :label="item.name"
+                            v-for="item in cardKindGrp"
+                            :key="item.value"
+                            :value="item.value"
+                            :label="item.label"
                         >
                         </el-option>
                     </el-select>
@@ -92,15 +95,13 @@ export default {
             list: [],
             dialogVisible: false,
             serviceKind: '',
-            serviceOptions: [
-                { id: 'all', name: '所有分类' },
-                { id: 1, name: '123' },
-                { id: 2, name: '1254253' },
-                { id: 3, name: '124563' },
-            ],
             serviceList: serviceList,
             curPage: 1,
-            selection: []
+            selection: [],
+            cardKindGrp: [
+                { value: 'card_time', label: '次卡' },
+                { value: 'card_discount', label: '折扣卡' }
+            ]
         };
     },
     created() {
@@ -140,6 +141,7 @@ export default {
 .btn-container .tip {
     margin-left: 5px;
     color: #dddddd;
+    font-size: 12px;
 }
 .select-container {
     margin-bottom: 10px;
