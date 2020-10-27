@@ -4,15 +4,15 @@
         <div class="container">
             <el-button class="add_btn" type="primary" @click="handleDetail()">新增标签</el-button>
             <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="shop_name" label="标签名" align="center"> </el-table-column>
-                <el-table-column prop="service_name" label="会员数" align="center"> </el-table-column>
-                <el-table-column prop="source" label="创建人" align="center"></el-table-column>
-                <el-table-column prop="source" label="自动打标签条件" align="center"></el-table-column>
-                <el-table-column prop="source" label="更新时间" align="center"></el-table-column>
+                <el-table-column prop="tag_name" label="标签名" align="center"> </el-table-column>
+                <el-table-column prop="count" label="会员数" align="center"> </el-table-column>
+                <el-table-column prop="create_staff" label="创建人" align="center"></el-table-column>
+                <el-table-column prop="condition" label="自动打标签条件" align="center"></el-table-column>
+                <el-table-column prop="create_time" label="更新时间" align="center"></el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="handleDetail(scope.row.id)">编辑</el-button>
-                        <el-button type="text" @click="handleRemove(scope.row.id)">删除</el-button>
+                        <el-button type="text" @click="handleDetail(scope.row.tag_id)">编辑</el-button>
+                        <el-button type="text" @click="handleRemove(scope.row.tag_id)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -35,24 +35,39 @@
             width="680px"
         >
             <el-form :model="formData" :rules="formRules" ref="ruleForm" label-width="130px" class="demo-ruleForm">
-                <el-form-item label="标签名称：" prop="title">
-                    <el-input v-model="formData.title" placeholder="请填写标签名称"></el-input>
+                <el-form-item label="标签名称：" prop="tag_name">
+                    <el-input v-model="formData.tag_name" placeholder="请填写标签名称"></el-input>
                 </el-form-item>
                 <el-form-item label="自动打标签条件：">
                     <el-checkbox-group v-model="checkList">
                         <el-checkbox label="1">
                             <div class="check-box-item">
-                                累计消费超过<el-input v-model="formData.service" :disabled="!checkList.includes('1')"></el-input>元
+                                累计消费超过<el-input
+                                    type="number"
+                                    v-model.number="formData.consume"
+                                    :disabled="!checkList.includes('1')"
+                                ></el-input
+                                >元
                             </div>
                         </el-checkbox>
                         <el-checkbox label="2">
                             <div class="check-box-item">
-                                累计充值超过<el-input v-model="formData.card" :disabled="!checkList.includes('2')"></el-input>元
+                                累计充值超过<el-input
+                                    type="number"
+                                    v-model.number="formData.recharge"
+                                    :disabled="!checkList.includes('2')"
+                                ></el-input
+                                >元
                             </div>
                         </el-checkbox>
                         <el-checkbox label="3">
                             <div class="check-box-item">
-                                会员卡数超过<el-input v-model="formData.goods" :disabled="!checkList.includes('3')"></el-input>张
+                                会员卡数超过<el-input
+                                    type="number"
+                                    v-model.number="formData.card"
+                                    :disabled="!checkList.includes('3')"
+                                ></el-input
+                                >张
                             </div>
                         </el-checkbox>
                     </el-checkbox-group>
@@ -61,13 +76,19 @@
             </el-form>
             <span slot="footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">保 存</el-button>
+                <el-button type="primary" @click="handleSave">保 存</el-button>
             </span>
         </el-dialog>
     </div>
 </template>
 <script>
+    import { getMemberTagList, deleteTag, saveTag } from '@/api/setting';
     import breadcrumb from '@/components/common/address';
+    const mapType = {
+        1: 'consume',
+        2: 'recharge',
+        3: 'card'
+    };
     export default {
         name: 'TagSetting',
         components: {
@@ -99,20 +120,90 @@
                     total: 0
                 },
                 tableData: [],
-                paramsId: '',
                 dialogType: '',
                 dialogTitle: '',
                 dialogVisible: false,
-                formData: {},
-                formRules: {
-                    title: [{ required: true, message: '请填写标签名称', trigger: 'blur' }]
+                checkList: [],
+                formData: {
+                    tag_name: '',
+                    consume: '',
+                    recharge: '',
+                    card: ''
                 },
-                checkList: []
+                formRules: {
+                    tag_name: [{ required: true, message: '请填写标签名称', trigger: 'blur' }]
+                }
             };
         },
+        watch: {
+            dialogVisible(newVal) {
+                if (!newVal) {
+                    this.init();
+                }
+            }
+        },
+        created() {
+            this.getList();
+        },
         methods: {
+            init() {
+                this.checkList = [];
+                this.formData = {
+                    tag_name: '',
+                    consume: '',
+                    recharge: '',
+                    card: ''
+                };
+                this.$refs.ruleForm.resetFields();
+            },
+            async getList() {
+                const params = {
+                    page_no: this.page.number,
+                    page_size: this.page.size
+                };
+                const res = await getMemberTagList(params);
+                if (res.data) {
+                    this.tableData = res.data.data;
+                    this.page.total = res.data.all_count;
+                }
+            },
+            async handleSave() {
+                const condition = [];
+                this.checkList.forEach((m) => {
+                    let obj = { type: m, data: this.formData[mapType[m]] };
+                    condition.push(obj);
+                });
+                const params = {
+                    tag_name: this.formData.tag_name,
+                    condition
+                };
+                if (this.formData.tag_id) {
+                    params.tag_id = this.formData.tag_id;
+                }
+                const res = await saveTag(params);
+                if (res.code === 200) {
+                    this.$message.success(res.msg);
+                    this.dialogVisible = false;
+                    this.getList();
+                }
+            },
             handleDetail(id) {
-                this.paramsId = id;
+                if (id) {
+                    const row = this.tableData.find((m) => m.tag_id === id);
+                    const formData = {
+                        tag_id: row.tag_id,
+                        tag_name: row.tag_name
+                    };
+                    if (row.condition && row.condition.length > 0) {
+                        let list = [];
+                        row.condition.forEach((m) => {
+                            list.push(m.type);
+                            formData[mapType[m.type]] = m.data;
+                        });
+                        this.$set(this, 'checkList', list);
+                    }
+                    this.$set(this, 'formData', formData);
+                }
                 this.dialogType = id ? 'edit' : 'add';
                 this.dialogTitle = id ? '修改' : '新增' + '标签';
                 this.dialogVisible = true;
@@ -123,12 +214,19 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 })
-                    .then(() => {
-                        this.$message.success('删除成功!');
+                    .then(async () => {
+                        const res = await deleteTag({ tag_id: id });
+                        if (res.code === 200) {
+                            this.$message.success(res.msg || '删除成功!');
+                            this.getList();
+                        }
                     })
                     .catch(() => {});
             },
-            handleCurrentChange() {}
+            handleCurrentChange(val) {
+                this.page.number = val;
+                this.getList();
+            }
         }
     };
 </script>

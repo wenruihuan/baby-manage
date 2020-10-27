@@ -157,6 +157,7 @@
                         const res = await deleteArticle({ id });
                         if (res.code === 200) {
                             this.$message.success(res.msg || '删除成功!');
+                            this.getList();
                         }
                     })
                     .catch(() => {});
