@@ -2,7 +2,7 @@
     <div class="AddEmployees">
         <el-form ref="form" :model="form" label-width="80px">
             <el-form-item label="归属门店:">
-                <el-input v-model="form.name"></el-input>
+                <el-input v-model="form.shop_name"></el-input>
             </el-form-item>
             <el-form-item label="姓名:">
                 <el-input v-model="form.name"></el-input>
@@ -14,15 +14,32 @@
                 <el-input v-model="form.tel"></el-input>
             </el-form-item>
             <el-form-item label="选择职位:">
-                <el-select v-model="form.region" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="shanghai"></el-option>
-                    <el-option label="区域二" value="beijing"></el-option>
+                <el-select
+                        v-model="form.position_id"
+                        placeholder="选择职位"
+                        class="handle-select mr10"
+                >
+                    <el-option
+                            :key="item.id"
+                            v-for="item in positionSelectList"
+                            :label="item.name"
+                            :value="item.id"
+                    ></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="关联角色:">
-                <el-select v-model="form.region" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="shanghai"></el-option>
-                    <el-option label="区域二" value="beijing"></el-option>
+                <el-select
+                    multiple
+                    v-model="form.role_ids"
+                    placeholder="选择职位"
+                    class="handle-select mr10"
+                >
+                    <el-option
+                            :key="item.id"
+                            v-for="item in roleSelectList"
+                            :label="item.name"
+                            :value="item.id"
+                    ></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="头像:">
@@ -58,6 +75,8 @@ export default {
     name: 'AddEmployees',
     data() {
         return {
+            positionSelectList: [],
+            roleSelectList: [],
             form: {
                 name: '',
                 region: '',
@@ -74,11 +93,26 @@ export default {
     props: {
         employeesId: ''
     },
+    created () {
+        this.getPositionSelectList();
+        this.getRoleSelectList();
+    },
     methods: {
+        async getPositionSelectList () {
+            const { data } = await api.positionSelectList();
+            this.positionSelectList = data.data;
+            console.log(data.data);
+        },
+        async getRoleSelectList () {
+            const { data } = await api.roleSelectList();
+            this.roleSelectList = data.data;
+            console.log(data.data);
+        },
         getInfoData (value) {
             this.form = value.row;
         },
-        onSubmit() {
+        async onSubmit() {
+            const { data } = await api.staffSave(this.form);
             console.log('submit!');
         },
         onCancel () {

@@ -98,3 +98,30 @@ export const savePointRules = params => {
     data: params
   })
 }
+
+// 获取标签列表
+export const getMemberTagList = query => {
+  return request({
+    url: `/admin/memberTag/list`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 标签删除
+export const deleteTag = params => {
+  return request({
+    url: `/admin/memberTag/delete`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 添加（编辑）会员标签
+export const saveTag = params => {
+  return request({
+    url: `/admin/memberTag/save`,
+    method: 'post',
+    data: params
+  })
+}

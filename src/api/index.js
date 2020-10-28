@@ -105,3 +105,46 @@ export const roleAathList = query => {
         params: query
     });
 };
+
+// 获取班次列表
+export const worktimeList = query => {
+    return request({
+        url: IP + `/admin/worktime/list`,
+        method: 'get',
+        params: query
+    });
+};
+// 获取员工排班列表
+export const worktimeStaffList = query => {
+    return request({
+        url: IP + `/admin/worktime/staffList`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 添加（编辑）班次
+export const worktimeSave = query => {
+    return request({
+        url: IP + `/admin/worktime/save`,
+        method: 'post',
+        params: query
+    });
+};
+// 获取职位列表
+export const positionSelectList = query => {
+    return request({
+        url: IP + `/admin/position/selectList`,
+        method: 'get',
+        params: query
+    });
+};
+
+// .获取角色列表
+export const roleSelectList = query => {
+    return request({
+        url: IP + `/admin/role/selectList`,
+        method: 'get',
+        params: query
+    });
+};

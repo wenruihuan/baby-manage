@@ -1,15 +1,19 @@
 <template>
     <div class="edit-service">
         <div class="btn-container">
-            <el-button type="text" @click="addService">{{ list.length <= 0 ? '添加权益' : '编辑权益' }}</el-button>
+            <el-button type="text" @click="addService">{{ rightsList.length <= 0 ? '添加权益' : '编辑权益' }}</el-button>
             <p class="tip">设置卡可用优惠权益</p>
         </div>
         <div class="out-table">
             <el-table
-                :data="list"
+                :data="rightsList"
             >
-                <el-table-column prop="hasChoose" label="已选"></el-table-column>
-                <el-table-column prop="rule" label="优惠规则"></el-table-column>
+                <el-table-column prop="right_name" :label="`已选(${ rightsList.length })`"></el-table-column>
+                <el-table-column prop="discount" label="优惠规则">
+                    <template slot-scope="scope">
+                        {{ scope.row.discount }}折
+                    </template>
+                </el-table-column>
 <!--                <el-table-column label="操作">-->
 <!--                    <template slot-scope="scope">-->
 <!--                        <el-button type="text" @click="removeItem(scope.row, scope.$index)">删除</el-button>-->

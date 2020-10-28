@@ -4,7 +4,7 @@
             <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
             <el-step title="详情介绍" ></el-step>
         </el-steps>
-        <div class="content-container">
+        <div class="content-container" v-show="activeStep === 1">
             <div class="title">
                 <span class="text">卡信息</span>
             </div>
@@ -14,38 +14,40 @@
                         <el-input class="card-input" v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
                         <span v-else>{{ form.name }}</span>
                     </el-form-item>
-                    <el-form-item label="充值金额:" prop="insert_money">
-                        <el-input class="card-input" v-if="isEdit" v-model="form.insert_money">
+                    <el-form-item label="充值金额:" prop="price">
+                        <el-input class="card-input" v-if="isEdit" v-model="form.price">
                             <template slot="prepend">￥</template>
                         </el-input>
-                        <span v-else>{{ form.insert_money }}</span>
+                        <p v-if="isEdit" class="tip">可支持原价购买所有服务和产品，及次卡</p>
+                        <span v-else>￥{{ form.price }}</span>
                     </el-form-item>
-                    <el-form-item label="赠送金额:" prop="send_money">
-                        <el-input class="card-input" v-if="isEdit" v-model="form.send_money">
+                    <el-form-item label="赠送金额:" prop="gifts_amount">
+                        <el-input class="card-input" v-if="isEdit" v-model="form.gifts_amount">
                             <template slot="prepend">￥</template>
                         </el-input>
-                        <span v-else>{{ form.send_money }}</span>
+                        <p class="tip" v-if="isEdit">保存后赠送金额不可修改，请谨慎填写</p>
+                        <span v-else>￥{{ form.gifts_amount }}</span>
                     </el-form-item>
                     <el-form-item label="权益:" prop="access">
-                        <edit-quanlity :rights-list="rightsList" ref="editQuanlity" />
+                        <edit-quanlity v-if="rightsList" :rights-list="rightsList" ref="editQuanlity" />
                     </el-form-item>
                     <el-form-item label="购卡赠送:" prop="send">
                         <send-card v-if="buyList" :buy-list="buyList" ref="buyCard" />
                     </el-form-item>
                     <el-form-item label="有效时间:" prop="isInfinity">
-                        <el-radio-group v-if="isEdit" v-model="form.isInfinity">
-                            <el-radio label="1">永久有效</el-radio>
-                            <el-radio label="0">
-                                <el-input style="width: 90px" :disabled="form.isInfinity === 1" v-model="form.day" placeholder="自定义"></el-input>
+                        <el-radio-group v-if="isEdit" v-model="isInfinity">
+                            <el-radio :label="1">永久有效</el-radio>
+                            <el-radio :label="0">
+                                <el-input style="width: 90px" :disabled="!form.validity" v-model="form.validity" placeholder="自定义"></el-input>
                                 <span style="margin-left: 5px;">天</span>
                             </el-radio>
                         </el-radio-group>
-                        <span v-else>{{ form.is_needpay === '1' ? '需支付' : '无需支付' }}</span>
+                        <span v-else>{{ form.validity }}</span>
                     </el-form-item>
                     <el-form-item label="网店展示:" prop="is_show">
                         <el-radio-group v-if="isEdit" v-model="form.is_show">
-                            <el-radio label="0">不展示</el-radio>
-                            <el-radio label="1">展示</el-radio>
+                            <el-radio :label="0">不展示</el-radio>
+                            <el-radio :label="1">展示</el-radio>
                         </el-radio-group>
                         <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
                     </el-form-item>
@@ -56,9 +58,9 @@
             </div>
             <div class="content">
                 <div class="left">
-                    <el-radio-group v-model="form.isDefaultPic">
-                        <el-radio label="0">默认背景图</el-radio>
-                        <el-radio label="1">
+                    <el-radio-group v-model="form.is_custom_cover">
+                        <el-radio :label="0">默认背景图</el-radio>
+                        <el-radio :label="1">
                             <span>自定义图片</span>
                             <el-upload
                                 action="https://jsonplaceholder.typicode.com/posts/"
@@ -73,6 +75,22 @@
                 </div>
             </div>
         </div>
+        <edit-wechat :html="form.intr" v-if="form.intr !== null" v-show="activeStep === 2" />
+        <div class="btn-group" v-if="isEdit">
+            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
+            <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
+            <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
+            <el-popover
+                v-if="activeStep === 2"
+                placement="top-start"
+                width="260"
+                trigger="click"
+            >
+                <div id="SERVICE_QRCODE"></div>
+                <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
+            </el-popover>
+            <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
+        </div>
     </div>
 </template>
 
@@ -80,10 +98,14 @@
 import editQuanlity from './edit-quanlity';
 import sendCard from './send-card';
 import { serviceList } from '@/components/page/goodsmanage/card-item/mock';
+import { ERR_OK, getInsertDetail, removeCard, saveRechargeCard } from '@/components/page/goodsmanage/card-item/api';
+import editWechat from '@/components/page/goodsmanage/card-item/component/edit-wechat';
+
 export default {
     components: {
         editQuanlity,
-        sendCard
+        sendCard,
+        editWechat
     },
     data () {
         return {
@@ -92,11 +114,14 @@ export default {
             form: {
                 name: '',
                 price: '',
+                gifts_amount: '',
                 expire_day: '',
                 is_show: '',
-                isInfinity: 1,
-                isDefaultPic: '1'
+                is_custom_cover: 0,
+                validity: '',
+                intr: null
             },
+            isInfinity: 1,
             rules: {
                 name: [
                     { required: true, message: '请输入名称', trigger: 'blur' }
@@ -111,15 +136,61 @@ export default {
             /* 权益list */
             rightsList: null,
             /* 赠送list */
-            buyList: null
+            buyList: null,
+            isPublish: 0
         };
     },
     created() {
-        setTimeout(() => {
-            // this.rightsList = serviceList;
-            this.rightsList = [];
-            this.buyList = serviceList;
-        }, 200);
+        const id = this.$route.query.id;
+        this.getInsertDetail(id);
+    },
+    methods: {
+        async getInsertDetail (id = '') {
+            if (id) {
+               try {
+                   const data = await getInsertDetail({ id: 'aaaaaaa' });
+                   if (data.code === ERR_OK) {
+                       this.form.intr = '';
+                       this.form = data.data;
+                       this.rightsList = data.data.right || [];
+                       this.buyList = data.data.gifts || [];
+                       this.isInfinity = data.data.validity ? 0 : 1;
+                   }
+               } catch (e) {
+                   console.log(`src/components/page/goodsmanage/card-item/component/insert-card.vue getInsertDetail error: ${e}`);
+               }
+            } else {
+                this.rightsList = [];
+                this.form.intr = '';
+            }
+        },
+        /* 保存 */
+        handleSave () {
+            saveRechargeCard(this.form).then(res => {
+
+            });
+        },
+        /* 设置上下架状态 */
+        setPublishStatus () {},
+        /* 二维码预览 */
+        handleView () {},
+        /* 删除 */
+        async handleRemove () {
+            const id = this.$route.query.id;
+            if (id) {
+                try {
+                    const data = await removeCard({ id });
+                    if (data.code === ERR_OK) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                    }
+                } catch (e) {
+                    console.log(`src/components/page/goodsmanage/card-item/component/insert-card-view.vue handleRemove error: ${e}`);
+                }
+            }
+        },
     }
 };
 </script>
@@ -197,5 +268,16 @@ export default {
 }
 /deep/ .el-radio-group {
     align-items: center;
+}
+.btn-group {
+    text-align: center;
+}
+.btn-item {
+    margin-left: 10px;
+}
+.tip {
+    margin-left: 5px;
+    color: #dddddd;
+    font-size: 12px;
 }
 </style>

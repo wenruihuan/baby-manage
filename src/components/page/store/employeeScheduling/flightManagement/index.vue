@@ -7,7 +7,7 @@
                         <el-button
                                 type="primary"
                                 class="handle-del mr10"
-                                @click="dialogVisible = true"
+                                @click="addWorktime"
                         >添加班次</el-button>
                     </el-col>
                     <el-col :span="6">
@@ -32,17 +32,17 @@
                 >
                 </el-table-column>
                 <el-table-column
-                    prop="description"
+                    prop="worktime"
                     label="班次时间"
                 >
                 </el-table-column>
                 <el-table-column
-                    prop="staff_count"
+                    prop="resttime"
                     label="休息时间"
                 >
                 </el-table-column>
                 <el-table-column
-                    prop="create_time"
+                    prop="count"
                     label="使用人数"
                 >
                 </el-table-column>
@@ -51,7 +51,7 @@
                     label="操作"
                 >
                     <template slot-scope="scope">
-                        <el-button @click="handleClick(scope)" type="text" size="small">编辑</el-button>
+                        <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -67,31 +67,51 @@
         <el-dialog
                 title="添加班次"
                 :visible.sync="dialogVisible"
-                width="600px"
+                width="700px"
                 :before-close="handleClose">
             <div class="dialog-box">
                 <div class="item">
                     <span>班次名称：</span>
                     <div class="width200">
-                        <el-input></el-input>
+                        <el-input v-model="worktime_name"></el-input>
                     </div>
-                    <span> 10:00-18:00</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <!--<span> 10:00-18:00</span>-->
                 </div>
                 <div class="item">
                     <span>班次时间：</span>
                     <el-time-picker
                         is-range
-                        v-model="value1"
+                        format='HH:mm'
+                        value-format="HH:mm"
+                        v-model="worktime"
                         range-separator="至"
                         start-placeholder="开始时间"
                         end-placeholder="结束时间"
                         placeholder="选择时间范围">
                     </el-time-picker>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <el-button size="small" @click="addResttimeListNum">添加休息时段</el-button>
+                </div>
+                <div class="item" v-for="(item, index) in resttimeList" :key="index">
+                    <span>休息时段：</span>
+                    <el-time-picker
+                        is-range
+                        format='HH:mm'
+                        value-format="HH:mm"
+                        v-model="resttimeList[index]"
+                        range-separator="至"
+                        start-placeholder="开始时间"
+                        end-placeholder="结束时间"
+                        placeholder="选择时间范围">
+                    </el-time-picker>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <el-button size="small" @click="removeWorktimeNum(index)">删除</el-button>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                <el-button type="primary" @click="setWorktimeSave">确 定</el-button>
               </span>
         </el-dialog>
         <div class="AddEmployees" v-if="isAddEmployees">
@@ -113,7 +133,14 @@
         },
         data () {
             return {
-                value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+                worktime_id: '',
+                worktime_name: '',
+                worktime: ['08:00', '08:00'],
+                resttimeList: [
+                    ['08:00', '08:00']
+                ],
+                resttime: [],
+                value1: [],
                 page: {
                     total: 30
                 },
@@ -128,11 +155,36 @@
             this.getFormData();
         },
         methods: {
-            async setPositionDelete (scope) {
-                api.positionDelete({ id: scope.row.id})
+            addWorktime () {
+                this.worktime_name = '';
+                this.resttimeList = [['08:00', '08:00']];
+                this.dialogVisible = true;
+            },
+            addResttimeListNum () {
+                this.resttimeList.push(['08:00', '08:00']);
+            },
+            removeWorktimeNum (index) {
+                this.resttimeList.splice(index, 1) ;
+            },
+            async setWorktimeSave () {
+                this.dialogVisible = false;
+                console.log(this.worktime);
+                this.resttimeList.forEach(m => {
+                    this.resttime.push(m[0] + '-' + m[1]);
+                });
+                let params = {
+                    worktime_name: this.worktime_name,
+                    worktime: this.worktime[0] + '-' + this.worktime[1],
+                    resttime: this.resttime
+                };
+                if (this.worktime_id !== '') {
+                    params.worktime_id = this.worktime_id;
+                }
+                console.log(params);
+                api.worktimeSave(params)
             },
             async getFormData () {
-                const { data } = await api.positionList();
+                const { data } = await api.worktimeList();
                 this.tableData = data.data;
                 this.page.total = data.all_count;
             },
@@ -144,10 +196,16 @@
             },
             handleClick (val) {
                 console.log(val);
-                this.isAddEmployees = true;
+                this.worktime_id = val.worktime_id;
+                this.worktime_name = val.name;
+                // this.worktime = val.worktime;
+                // this.resttime = val.worktime;
+                console.log(this.worktime_id);
+                console.log(this.worktime_name);
+                this.dialogVisible = true;
             },
             handleClose () {
-                this.isAddEmployees = false;
+                this.dialogVisible = false;
             }
         }
     };
