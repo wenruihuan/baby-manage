@@ -1,9 +1,8 @@
 import request from '../utils/request';
-const IP = 'https://result.eolinker.com/BxxMFUV803ea48c63410d63327c3ad2f649e76860d89dfd?uri=';
 // 获取一级推广员列表
 export const getFirstAgentList = query => {
   return request({
-    url: `${IP}/admin/publicist/list`,
+    url: `/admin/publicist/list`,
     method: 'get',
     params: query
   })
@@ -11,7 +10,7 @@ export const getFirstAgentList = query => {
 // 获取二级推广员列表
 export const getSecondAgentList = query => {
   return request({
-    url: `${IP}admin/publicist/secondList`,
+    url: `/admin/publicist/secondList`,
     method: 'get',
     params: query
   })
@@ -19,7 +18,7 @@ export const getSecondAgentList = query => {
 // 获取推广员贡献数据
 export const getAgentData = query => {
   return request({
-    url: `${IP}/admin/publicist/statistics`,
+    url: `/admin/publicist/statistics`,
     method: 'get',
     params: query
   })
@@ -27,23 +26,23 @@ export const getAgentData = query => {
 // 添加一级推广员
 export const addFirstAgent = query => {
   return request({
-    url: `${IP}/admin/publicist/statistics`,
+    url: `/admin/publicist/save`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 清退推广员
 export const removeAgent = query => {
   return request({
-    url: `${IP}/admin/publicist/statistics`,
+    url: `/admin/publicist/out`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 会员价列表
 export const getMemberPriceList = query => {
   return request({
-    url: `${IP}/admin/memberLevel/priceList`,
+    url: `/admin/memberLevel/priceList`,
     method: 'get',
     params: query
   })
@@ -51,25 +50,25 @@ export const getMemberPriceList = query => {
 // 添加会员价商品
 export const addMemberProducts = query => {
   return request({
-    url: `${IP}/admin/memberLevel/addGoods`,
+    url: `/admin/memberLevel/addGoods`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 设置会员价商品
 export const setMemberProduct = query => {
   return request({
-    url: `${IP}/admin/memberLevel/setMemberPrice`,
+    url: `/admin/memberLevel/setMemberPrice`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 移出会员价
 export const removeMemberPrice = query => {
   return request({
-    url: `${IP}/admin/memberLevel/deletePrice`,
+    url: `/admin/memberLevel/deletePrice`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 

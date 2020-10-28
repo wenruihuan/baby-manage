@@ -9,7 +9,7 @@
               <el-button type="primary" @click="handleAdd">添加一级推广员</el-button>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号"></el-input>
+              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号" clearable></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSearch">搜索</el-button>
@@ -25,7 +25,7 @@
                 end-placeholder="结束日期"
                 clearable
                 :default-time="['00:00:00', '23:59:59']"
-                value-format="yyyy-MM-dd HH:mm:ss"
+                value-format="yyyy-MM-dd"
                 @change="handleDateChange"
               ></el-date-picker>
             </el-form-item>
@@ -46,7 +46,8 @@
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="downloadCode(scope.row.name)">下载邀请码</el-button>
-            <el-button type="text" @click="handleRemove">清退</el-button>
+            <span v-if="scope.row.secondary === 0">|</span>
+            <el-button type="text" v-if="scope.row.secondary === 0" @click="handleRemove(scope.row.id)">清退</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -69,6 +70,8 @@
       <component
         :is="dialogName"
         :params="dialogPrms"
+        @success="handleAddSuccess"
+        @cancel="handleAddCancel"
       ></component>
     </el-dialog>
   </div>
@@ -107,7 +110,7 @@ export default {
         {label: '别名', prop: 'alias'},
         {label: '归属地', prop: 'city', width: 220},
         {label: '手机号码', prop: 'phone'},
-        {label: '下级推广员', prop: 'member_count'},
+        {label: '下级推广员', prop: 'secondary'},
         {label: '添加时间', prop: 'create_time'}
       ],
       tableData: [],
@@ -153,13 +156,28 @@ export default {
       this.dialogPrms = {codeContent: name}
       this.dialogShow = true
     },
-    handleRemove() {
+    handleRemove(id) {
       this.$confirm('是否确认清退该一级推广员？', '是否清退', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {
-        console.log('清退')
+        const params ={id: id}
+        removeAgent(params).then(res => {
+          if (res.code === 200) {
+            this.$message.success('清退成功')
+            this.getTableData(this.form.page_no)
+          }
+        }).catch(err => {
+          console.log(err)
+        })
       })
+    },
+    handleAddSuccess() {
+      this.getTableData(this.form.page_no)
+      this.dialogShow = false
+    },
+    handleAddCancel() {
+      this.dialogShow = false
     }
   }
 }

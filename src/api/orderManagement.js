@@ -61,7 +61,7 @@ export const refundValueCard = query => {
   return request({
     url: `${IP}/admin/refund/card/doRechargeRefund`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 提交折扣卡退款
@@ -69,7 +69,7 @@ export const refundDiscountCard= query => {
   return request({
     url: `${IP}/admin/refund/card/doDiscountRefund`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 提交服务退款
@@ -77,7 +77,7 @@ export const refundService = query => {
   return request({
     url: `${IP}/admin/refund/service/doRefund`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 提交次卡退款
@@ -85,7 +85,7 @@ export const refundTimeCard = query => {
   return request({
     url: `${IP}/admin/refund/card/doTimeRefund`,
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 获取退单列表
@@ -126,6 +126,6 @@ export const deliveryGoods = query => {
   return request({
     url: `${IP}/admin/order/goods/deliver`,
     method: 'post',
-    params: query
+    data: query
   })
 }

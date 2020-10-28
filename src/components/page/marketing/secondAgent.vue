@@ -26,8 +26,7 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 clearable
-                :default-time="['00:00:00', '23:59:59']"
-                value-format="yyyy-MM-dd HH:mm:ss"
+                value-format="yyyy-MM-dd"
                 @change="handleDateChange"
               ></el-date-picker>
             </el-form-item>
@@ -42,14 +41,16 @@
           :label="item.label"
           :prop="item.prop"
           :width="item.width"
+          :formatter="item.formatter"
           align="center"
         >
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="downloadCode(scope.row.name)">下载邀请码</el-button>
-            <span>|</span>
-            <el-button type="text" @click="handleRemove">清退</el-button>
+            <span>&nbsp;|&nbsp;</span>
+            <!-- <el-button type="text" v-if="scope.row.member_count === 0" @click="handleRemove(scope.row.id)"> | 清退</el-button> -->
+            <el-button type="text" @click="handleRemove(scope.row.id)"> 清退</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,6 +67,7 @@
     <el-dialog
       v-if="dialogShow"
       title="推广码-二级推广员姓名"
+      width="460px"
       :visible.sync="dialogShow"
       :close-on-click-modal="false"
     >
@@ -109,7 +111,7 @@ export default {
         // todo: 接口未返回
         {label: '所属一级推广员', prop: '5'},
         {label: '推荐用户', prop: 'member_count'},
-        {label: '加入时间', prop: 'create_time'}
+        {label: '加入时间', prop: 'create_time', formatter: this.dateFormatter}
       ],
       tableData: [],
       total: 0,
@@ -145,13 +147,28 @@ export default {
       this.dialogShow = true
       this.codeText = name
     },
-    handleRemove() {
+    handleRemove(id) {
       this.$confirm('是否确认清退该二级推广员？', '是否清退', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {
-        console.log('清退')
+        const params = { id: id }
+        removeAgent(params).then(res => {
+          if (res.code === 200) {
+            this.$message.success('清退成功')
+            this.getTableData(this.form.page_no)
+          }
+        }).catch(err => {
+          console.log(err)
+        })
       })
+    },
+    dateFormatter(row, column, cellValue, index) {
+      if (cellValue) {
+        return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
     }
   }
 }

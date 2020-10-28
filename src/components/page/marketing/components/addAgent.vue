@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="searchForm" :rules="formRules" label-width="120px">
+    <el-form ref="addForm" :model="searchForm" :rules="formRules" label-width="120px">
       <el-form-item prop="name" label="推广员姓名">
         <el-input v-model="searchForm.name" class="medium-input"></el-input>
       </el-form-item>
@@ -15,18 +15,23 @@
       </el-form-item>
     </el-form>
     <div class="footer-bar">
-      <el-button @click="">取消</el-button>
-      <el-button type="primary">保存</el-button>
+      <el-button @click="handleCancel">取消</el-button>
+      <el-button type="primary" @click="handleSave">保存</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import { addFirstAgent } from '@/api/marketing'
 export default {
   data() {
-    const isTel = (value, errorMsg = '请输入正确格式的电话号码') => {
-      const reg = /^((0\d{2,3})-)?(\d{7,8})(-(\d{3,}))?$/
-      return reg.test(value) ? '' : errorMsg
+    const isTel = (rule, value, callback) => {
+      const reg = /^1[3-9]\d{9}$/
+      if (!reg.test(value)) {
+        callback(new Error('请输入正确的手机号码'))
+      } else {
+        callback()
+      }
     }
     return {
       searchForm: {
@@ -47,6 +52,27 @@ export default {
           { required: true, message: '请输入归属地', trigger: 'blur' }
         ]
       }
+    }
+  },
+  methods: {
+    handleSave() {
+      this.$refs.addForm.validate((valid) => {
+        if (valid) {
+          console.log('1233')
+          addFirstAgent(this.searchForm).then(res => {
+            if (res.code === 200) {
+              this.$message.success('添加成功')
+              this.$emit('success')
+              this.$refs.addForm.resetFields()
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    handleCancel() {
+      this.$emit('cancel')
     }
   }
 }

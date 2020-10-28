@@ -21,13 +21,14 @@
           :prop="item.prop"
           :width="item.width"
           align="center"
+          :formatter="item.formatter"
         >
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-            <span>|</span>
-            <el-button type="text" @click="handleRemove">移除</el-button>
+            <span>&nbsp;|&nbsp;</span>
+            <el-button type="text" @click="handleRemove(scope.row.id)">移除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -83,7 +84,7 @@ export default {
       },
       columnCfg: [
         {label: '售价', prop: 'price'},
-        {label: '优惠方式', prop: 'type'},
+        {label: '优惠方式', prop: 'type', formatter: this.discountFormatter},
         {label: '多多会员', width: 220},
         {label: '亲子会员', prop: '1testDataLevelID.price'},
         {label: '黄金会员', prop: '2testDataLevelID.price'},
@@ -133,7 +134,7 @@ export default {
       this.dialogTitle = '设置会员价'
     },
     handleRemove(id) {
-      const prm = {id}
+      const prm = {id: id}
       removeMemberPrice(prm).then(res => {
         if (res.code === 200) {
           this.$message.success('移除成功')
@@ -149,6 +150,17 @@ export default {
     },
     handleCancel() {
       this.dialogShow = false
+    },
+    discountFormatter(row, column, cellValue, index) {
+      const textObj = {
+        target_discount: '优惠折扣',
+        target_price: '指定价格'
+      }
+      if (cellValue) {
+        return textObj[cellValue]
+      } else {
+        return ''
+      }
     }
   }
 }
