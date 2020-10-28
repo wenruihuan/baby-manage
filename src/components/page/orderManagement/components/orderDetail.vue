@@ -10,19 +10,19 @@
               <span class="label">订单编号：</span>
               <span class="text">{{orderInfo.order_no}}</span>
             </div>
-            <div>
-              <span class="label">收款时间：</span>
-              <span class="text">{{orderInfo.checkout_time}}</span>
+            <div v-if="['3','4','5'].includes(orderInfo.order_status)">
+              <span class="label">{{orderInfo.order_status === '5' ? '取消': '收款'}}时间：</span>
+              <span class="text">{{orderInfo.order_status === '5' ? orderInfo.cancel_time : orderInfo.checkout_time | timeFormatter}}</span>
             </div>
           </div>
           <div class="row">
             <div>
               <span class="label">下单时间：</span>
-              <span class="text">{{orderInfo.create_time}}</span>
+              <span class="text">{{orderInfo.create_time | timeFormatter}}</span>
             </div>
-            <div>
+            <div v-if="['3','4'].includes(orderInfo.order_status)">
               <span class="label">完成时间：</span>
-              <span class="text">1233131313131313</span>
+              <span class="text">{{orderInfo.complete_time | timeFormatter}}</span>
             </div>
           </div>
           <div class="row">
@@ -30,6 +30,12 @@
               <span class="label">下单门店：</span>
               <span class="text">{{orderInfo.shop_name}}</span>
             </div>
+            <div v-if="['3','4','5'].includes(orderInfo.order_status)">
+              <span class="label">收银员：&nbsp;&nbsp;&nbsp;</span>
+              <span class="text">{{orderInfo.checkout_staff}}</span>
+            </div>
+          </div>
+          <div class="row" v-if="['0'].includes(orderInfo.order_status)">
             <div>
               <span class="label">收银员：&nbsp;&nbsp;&nbsp;</span>
               <span class="text">{{orderInfo.checkout_staff}}</span>
@@ -56,11 +62,11 @@
           <div class="row">
             <div>
               <span class="label">操作时间：</span>
-              <span class="text">{{orderDetailObj.refund_create_time}}</span>
+              <span class="text">{{orderDetailObj.refund_create_time | timeFormatter}}</span>
             </div>
             <div>
               <span class="label">下单时间：</span>
-              <span class="text">{{orderDetailObj.order_create_time}}</span>
+              <span class="text">{{orderDetailObj.order_create_time | timeFormatter}}</span>
             </div>
           </div>
           <div class="row">
@@ -105,7 +111,7 @@
           <div class="row">
             <div>
               <span class="label">订购时间：</span>
-              <span class="text">{{orderInfo.create_time}}</span>
+              <span class="text">{{orderInfo.create_time | timeFormatter}}</span>
             </div>
             <div>
               <!-- 未返回信息 -->
@@ -125,7 +131,7 @@
     <div class="info">
       <p class="info-title">客户信息</p>
       <div class="info-body">
-        <p class="info-body-name"><img src="" alt="">{{memberInfo.member_name}}</p>
+        <p class="info-body-name"><img :src="memberInfo.member_url" alt="">{{memberInfo.member_name}}</p>
         <div class="info-body-main">
           <div class="row">
             <div>
@@ -148,9 +154,7 @@
         </div>
       </div>
     </div>
-    <!-- 服务单展示 -->
-    <!-- todo: 判断是服务订单 -->
-    <div class="info" v-if="isOrder && type==='service'">
+    <div class="info" v-if="bookingInfo">
       <p class="info-title">预约信息</p>
       <div class="info-body">
         <div class="info-body-main">
@@ -162,12 +166,11 @@
             </div>
             <div class="row-item">
               <span class="label">预约时间：</span>
-              <span class="text">{{bookingInfo.arrive_time}}</span>
+              <span class="text">{{bookingInfo.arrive_time | timeFormatter}}</span>
             </div>
             <div class="row-item">
               <span class="label">到店人：</span>
-              <!-- 服务端未返回电话号码 -->
-              <span class="text">{{bookingInfo.customer}}</span>
+              <span class="text">{{bookingInfo.customer}}/{{bookingInfo.phone}}</span>
             </div>
           </div>
         </div>
@@ -187,14 +190,15 @@
               </template>
             </el-table-column>
             <el-table-column v-if="!isProductOrderInfo" label="技师" align="center">--</el-table-column>
-            <!-- 订单来源未返回 -->
-            <el-table-column v-if="!isProductOrderInfo" label="订单来源" prop="2" align="center"></el-table-column>
+            <el-table-column v-if="!isProductOrderInfo" label="订单来源" prop="order_source" align="center"></el-table-column>
             <el-table-column v-if="isProductOrderInfo" label="规格" prop="2" align="center"></el-table-column>
-            <!-- 未返回 -->
-            <el-table-column label="单价（元）" prop="" align="center"></el-table-column>
-            <el-table-column label="数量" prop="service_time" align="center"></el-table-column>
-            <!-- 未返回 -->
-            <el-table-column label="商品优惠" prop="2" align="center"></el-table-column>
+            <el-table-column label="单价（元）" prop="price" align="center"></el-table-column>
+            <el-table-column label="数量" prop="count" align="center"></el-table-column>
+            <el-table-column v-if="!isProductOrderInfo" label="商品优惠" prop="2" align="center">
+              <template slot-scope="scope">
+                <span>{{scope.row.price*scope.row.count-scope.row.total_price}}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="小计（元）" prop="total_price" align="center"></el-table-column>
           </el-table>
           <div class="summary">
@@ -205,7 +209,7 @@
             </div>
             <div class="summary-item">
               <div class="space"></div>
-              <span class="summary-label">{{payText}}第三方</span>
+              <span class="summary-label">{{payText}}{{payTypeName}}</span>
               <span class="summary-amount">￥{{checkoutPrice}}</span>
             </div>
             <div class="summary-item">
@@ -221,16 +225,15 @@
         </div>
       </div>
     </div>
-    <!-- todo: 已退款status待确定 未返回-->
-    <div class="info" v-if="isOrder && orderInfo.order_status === 0">
+    <div class="info" v-if="refundData.length>0">
       <p class="info-title">退款记录</p>
       <div class="info-body">
         <div class="info-body-main">
           <el-table :data="refundData" style="width:100%">
-            <el-table-column label="退款单号" prop="1" align="center"></el-table-column>
-            <el-table-column label="操作时间" prop="2" width="220" align="center"></el-table-column>
-            <el-table-column label="操作人" prop="3" align="center"></el-table-column>
-            <el-table-column label="退款金额（元）" prop="4" align="center"></el-table-column>
+            <el-table-column label="退款单号" prop="refund_no" align="center"></el-table-column>
+            <el-table-column label="操作时间" prop="create_time" width="220" align="center" :formatter="dateFormate"></el-table-column>
+            <el-table-column label="操作人" prop="operator" align="center"></el-table-column>
+            <el-table-column label="退款金额（元）" prop="operator" align="center"></el-table-column>
             <el-table-column label="操作" prop="5" align="center">
               <template slot-scope="scoped">
                 <el-button type="text">详情</el-button>
@@ -240,16 +243,15 @@
         </div>
       </div>
     </div>
-    <!-- todo: 已退款订单status待确定 未返回-->
-    <div class="info" v-if="isOrder && orderInfo.order_status === 0">
+    <div class="info" v-if="logData.length>0">
       <p class="info-title">操作日志</p>
       <div class="info-body">
         <div class="info-body-main">
-          <el-table :data="refundData" style="width:100%">
-            <el-table-column label="操作人" prop="1" width="220" align="center"></el-table-column>
-            <el-table-column label="操作时间" prop="2" align="center"></el-table-column>
-            <el-table-column label="操作类型" prop="3" align="center"></el-table-column>
-            <el-table-column label="备注" prop="4" width="220" align="center"></el-table-column>
+          <el-table :data="logData" style="width:100%">
+            <el-table-column label="操作人" prop="operator" width="220" align="center"></el-table-column>
+            <el-table-column label="操作时间" prop="create_time" align="center" :formatter="dateFormate"></el-table-column>
+            <el-table-column label="操作类型" prop="operation_name" align="center"></el-table-column>
+            <el-table-column label="备注" prop="remark" width="220" align="center"></el-table-column>
           </el-table>
         </div>
       </div>
@@ -299,6 +301,7 @@
 import RefundStep1 from './refundStep1'
 import RefundStep2 from './refundStep2'
 import PrintTicket from './printTicket'
+import dayjs from 'dayjs'
 export default {
   name: 'orderDetail',
   components: {
@@ -317,11 +320,14 @@ export default {
       totalPrice: 0,
       balancePrice: 0,
       checkoutPrice: '',
+      payTypeName: '',
       dialogShow: false,
       dialogTitle: '',
       dialogParams: null,
       componentName: '',
-      dialogWidth: '700px'
+      dialogWidth: '700px',
+      logData: [],
+      refundData: []
     }
   },
   props: {
@@ -356,17 +362,19 @@ export default {
     const params = {order_id: this.orderId}
     this.reqFn(params).then(res => {
       const {order_info, member_info, type, consume,
-        booking_info, total_price, balance_price,
-        checkout_price } = res.data
+        booking_info, consume_info, refund_detail, oplog_detail } = res.data
       this.orderDetailObj = res.data
       this.orderInfo = order_info || {}
       this.memberInfo = member_info || {}
       this.type = type || ''
       this.consume = consume || []
-      this.bookingInfo = bookingInfo || {}
-      this.totalPrice = total_price || 0
-      this.balancePrice = balance_price || 0
-      this.checkoutPrice = checkout_price || 0
+      this.bookingInfo = booking_info || null
+      this.totalPrice = consume_info.total_price || 0
+      this.balancePrice = consume_info.balance_price || 0
+      this.checkoutPrice = consume_info.checkout_price || 0
+      this.payTypeName = consume_info.consume_info || ''
+      this.refundData.push(refund_detail)
+      this.logData.push(oplog_detail)
     })
   },
   methods: {
@@ -393,6 +401,18 @@ export default {
     },
     handlePrintSuccess() {
       this.dialogShow = false
+    },
+    dateFormate(row, column, cellValue, index) {
+      if (cellValue) {
+        return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
+  },
+  filters: {
+    timeFormatter(val) {
+      return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
     }
   }
 }

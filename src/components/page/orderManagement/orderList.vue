@@ -59,7 +59,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="订单类型：" class="form-item">
-              <el-select v-model="form.order_type">
+              <el-select v-model="form.type">
                 <el-option label="全部" :value="0"></el-option>
                 <el-option label="服务订单" value="service"></el-option>
                 <el-option label="卡项订单" :value="2"></el-option>
@@ -198,10 +198,10 @@ import dayjs from 'dayjs'
 import breadcrumb from '@/components/common/address'
 import { getOrderList, getPaymentList } from '@/api/orderManagement'
 const tabDataCfg = {
-  all: { data: 'dataAll', total: 'totalAll' },
-  unPay: { data: 'dataUnPay', total: 'totalUnPay' },
-  done: { data: 'dataDone', total: 'totalDone' },
-  cancel: { data: 'dataCancel', total: 'totalCancel'}
+  all: { data: 'dataAll', total: 'totalAll', orderStatus: '0' },
+  unPay: { data: 'dataUnPay', total: 'totalUnPay', orderStatus: '1' },
+  done: { data: 'dataDone', total: 'totalDone', orderStatus: '2' },
+  cancel: { data: 'dataCancel', total: 'totalCancel', orderStatus: '3' }
 }
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
@@ -227,7 +227,8 @@ export default {
         page_size: 20,
         order_source: '',
         pay_type_id: '',
-        order_type: ''
+        type: '',
+        order_status: ''
       },
       columnCfg: [
         {label: '订单编号', prop: 'order_no', width: '200'},
@@ -271,6 +272,7 @@ export default {
       this.getTableData(0)
     },
     handleTabClick() {
+      this.form.order_status = tabDataCfg[this.activeTab].orderStatus
       if (this[tabDataCfg[this.activeTab].data].length === 0) {
         this.getTableData(0)
       }
