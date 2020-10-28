@@ -109,7 +109,7 @@ export default {
         },
         /* 去到详情页 */
         handleView (row) {
-            this.$router.push(`/discount-view?id=${ row.id }`);
+            this.$router.push(`/insert-card-view?id=${ row.id }`);
         },
         /* 排序 */
         async handleCorrectSort (row) {
