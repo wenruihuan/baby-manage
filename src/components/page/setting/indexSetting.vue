@@ -86,7 +86,7 @@
             <el-select v-model="goodsSelectValue" :style="'margin-bottom: 10px'">
                 <el-option v-for="item in goodsSelectOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
             </el-select>
-            <el-table :data="goodSTableData" @selection-change="handleSelectionGoodsChange" style="width: 100%">
+            <el-table :data="goodsTableData" @selection-change="handleSelectionGoodsChange" style="width: 100%">
                 <el-table-column type="selection" width="55"> </el-table-column>
                 <el-table-column prop="shop_name" label="商品名称" align="center">
                     <template slot-scope="scope">
