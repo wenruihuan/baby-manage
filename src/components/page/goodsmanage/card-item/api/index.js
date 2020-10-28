@@ -203,3 +203,31 @@ export const saveRechargeCard = query => {
         data: query
     });
 };
+
+/* 储蓄卡历史详情 */
+export const getRechargeHistoryDetail = query => {
+    return request({
+        url: `${IP}/admin/card/recharge/historyDetail`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 储蓄卡已售列表 */
+export const getSoldList = query => {
+    return request({
+        url: `${IP}/admin/card/recharge/sell`,
+        method: 'get',
+        params: query
+    });
+};
+
+// /admin/card/recharge/sellDetail
+/* 储蓄卡已售详情 */
+export const getSoldDetail = query => {
+    return request({
+        url: `${IP}/admin/card/recharge/sellDetail`,
+        method: 'get',
+        params: query
+    });
+};
