@@ -28,7 +28,7 @@
                         </el-upload>
                         <div class="action-btn">
                             <el-button type="text" @click="handleEdit(index)">编辑</el-button>
-                            <el-button type="text" v-if="(index + 1) > showDeleteIndex" @click="handleDelete(index)">删除</el-button>
+                            <el-button type="text" v-if="index + 1 > showDeleteIndex" @click="handleDelete(index)">删除</el-button>
                         </div>
                     </div>
                     <div class="add-btn">
@@ -43,6 +43,70 @@
                 <iframe src="https://m.toutiao.com/?W2atIF=1" frameborder="0"></iframe>
             </div>
         </div>
+        <el-dialog
+            class="index_setting_server_detail"
+            title="选择服务"
+            :visible.sync="dialogVisibleServer"
+            :close-on-click-modal="false"
+            :close-on-press-escape="false"
+            width="680px"
+        >
+            <el-select v-model="serverSelectValue" :style="'margin-bottom: 10px'">
+                <el-option v-for="item in serverSelectOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+            </el-select>
+            <el-table :data="serverTableData" @selection-change="handleSelectionServerChange" style="width: 100%">
+                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column prop="shop_name" label="服务名称" align="center">
+                    <template slot-scope="scope">
+                        <div class="table-name">
+                            <el-image style="width: 30px; height: 30px" src="" fit="cover"></el-image>
+                            <div class="info">
+                                <p>服务名称</p>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="service_name" label="价格" align="center"> </el-table-column>
+                <el-table-column prop="service_name" label="分类" align="center"> </el-table-column>
+                <el-table-column prop="service_name" label="创建时间" align="center"> </el-table-column>
+            </el-table>
+            <span slot="footer">
+                <el-button @click="dialogVisibleServer = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisibleServer = false">保 存</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog
+            class="index_setting_goods_detail"
+            title="选择商品"
+            :visible.sync="dialogVisibleGoods"
+            :close-on-click-modal="false"
+            :close-on-press-escape="false"
+            width="680px"
+        >
+            <el-select v-model="goodsSelectValue" :style="'margin-bottom: 10px'">
+                <el-option v-for="item in goodsSelectOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+            </el-select>
+            <el-table :data="goodSTableData" @selection-change="handleSelectionGoodsChange" style="width: 100%">
+                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column prop="shop_name" label="商品名称" align="center">
+                    <template slot-scope="scope">
+                        <div class="table-name">
+                            <el-image style="width: 30px; height: 30px" src="" fit="cover"></el-image>
+                            <div class="info">
+                                <p>商品名称</p>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="service_name" label="价格" align="center"> </el-table-column>
+                <el-table-column prop="service_name" label="分类" align="center"> </el-table-column>
+                <el-table-column prop="service_name" label="创建时间" align="center"> </el-table-column>
+            </el-table>
+            <span slot="footer">
+                <el-button @click="dialogVisibleGoods = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisibleGoods = false">保 存</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -85,17 +149,25 @@
                 uploadBody: {
                     token: '',
                     key: ''
-                }
+                },
+                dialogVisibleServer: false,
+                serverSelectValue: 1,
+                serverSelectOptions: [{ value: 1, label: '所有分类' }],
+                serverTableData: [],
+                dialogVisibleGoods: false,
+                goodsSelectValue: 1,
+                goodsSelectOptions: [{ value: 1, label: '所有分类' }],
+                goodsTableData: []
             };
         },
         computed: {
             showDeleteIndex() {
-                return this.activeName === '1' ? 2 : this.activeName === '2' ? 4 : 6
+                return this.activeName === '1' ? 2 : this.activeName === '2' ? 4 : 6;
             }
         },
         watch: {
             activeName(newVal) {
-                this.getTableList()
+                this.getTableList();
             }
         },
         mounted() {
@@ -131,17 +203,25 @@
                 });
             },
             handleEdit(index) {
-                this.setDisable(index, false);
-                this.$nextTick(() => {
-                    this.$refs[`imgRef${index}`][0].$el.click();
-                    this.setDisable(index, true);
-                });
+                if (this.activeName === '1') {
+                    this.setDisable(index, false);
+                    this.$nextTick(() => {
+                        this.$refs[`imgRef${index}`][0].$el.click();
+                        this.setDisable(index, true);
+                    });
+                }
+                if (this.activeName === '2') {
+                    this.dialogVisibleServer = true;
+                }
+                if (this.activeName === '3') {
+                    this.dialogVisibleGoods = true;
+                }
             },
             handleDelete(index) {
                 this.tableList.splice(index, 1);
             },
             async getTableList() {
-                const apiFn = ['', getBanner, getRecommendService, getRecommendGoods][this.activeName]
+                const apiFn = ['', getBanner, getRecommendService, getRecommendGoods][this.activeName];
                 const res = await apiFn();
                 if (res.code === 200) {
                     res.data.forEach((m) => {
@@ -151,6 +231,8 @@
                 }
                 console.log(res);
             },
+            handleSelectionServerChange() {},
+            handleSelectionGoodsChange() {},
             /* 获取上传图片的token */
             async getUploadToken() {
                 try {
