@@ -222,12 +222,20 @@ export const getSoldList = query => {
     });
 };
 
-// /admin/card/recharge/sellDetail
 /* 储蓄卡已售详情 */
 export const getSoldDetail = query => {
     return request({
         url: `${IP}/admin/card/recharge/sellDetail`,
         method: 'get',
         params: query
+    });
+};
+
+/* 二维码 */
+export const previewQr = query => {
+    return request({
+        url: `${IP}/admin/card/recharge/previewQr`,
+        method: 'post',
+        data: query
     });
 };
