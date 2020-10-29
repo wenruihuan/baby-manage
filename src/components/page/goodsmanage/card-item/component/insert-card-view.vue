@@ -2,17 +2,17 @@
     <div class="cika-view">
         <div class="top-container">
             <el-button type="primary" @click="gotoEdit">编辑</el-button>
-            <el-button @click="setDownPublish">下架</el-button>
+            <el-button @click="setDownPublish">{{ isPublish === '1' ? '下架' : '上架' }}</el-button>
         </div>
         <div class="content-container">
             <div class="top">
                 <div class="left">
                     <el-card class="box-card-left">
-                        <img class="card-img" :src="defaultPic" alt="">
+                        <img class="card-img" :src="insertDetail.img || defaultPic" alt="">
                         <ul class="card-detail">
                             <li>
                                 <span class="key">卡类型:</span>
-                                <span class="val">次卡</span>
+                                <span class="val">充值卡</span>
                             </li>
                             <li>
                                 <span class="key">状态:</span>
@@ -20,19 +20,15 @@
                             </li>
                             <li>
                                 <span class="key">售价:</span>
-                                <span class="val">￥1000.00</span>
+                                <span class="val">￥{{ insertDetail.price }}</span>
                             </li>
                             <li>
                                 <span class="key">网店展示:</span>
-                                <span class="val">展示</span>
-                            </li>
-                            <li>
-                                <span class="key">服务产品:</span>
-                                <span class="val">尚未关联</span>
+                                <span class="val">{{ insertDetail.is_show === '1' ? '展示' : '不展示' }}</span>
                             </li>
                             <li>
                                 <span class="key">卡包名称:</span>
-                                <span class="val">卡名称名称名称</span>
+                                <span class="val">{{ insertDetail.name }}</span>
                             </li>
                         </ul>
                     </el-card>
@@ -43,18 +39,13 @@
                             <el-table
                                     :data="quanlityList"
                             >
-                                <el-table-column prop="content" label="适用内容"></el-table-column>
-                                <el-table-column prop="rule" label="优惠规则"></el-table-column>
-                                <el-table-column prop="expire_time" label="有效期"></el-table-column>
-                            </el-table>
-                        </el-tab-pane>
-                        <el-tab-pane label="赠送权益">
-                            <el-table
-                                    :data="sendList"
-                            >
-                                <el-table-column prop="content" label="适用内容"></el-table-column>
-                                <el-table-column prop="rule" label="优惠规则"></el-table-column>
-                                <el-table-column prop="expire_time" label="有效期"></el-table-column>
+                                <el-table-column prop="right_name" label="适用内容"></el-table-column>
+                                <el-table-column prop="discount" label="优惠规则">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.discount }}折
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="expire" label="有效期"></el-table-column>
                             </el-table>
                         </el-tab-pane>
                     </el-tabs>
@@ -151,7 +142,7 @@
                             <el-table-column prop="amount" label="销量"></el-table-column>
                             <el-table-column>
                                 <template slot-scope="scope">
-                                    <el-button type="text" @click="hanldeCardView(scope.row, scope.$index)">历史卡项详情</el-button>
+                                    <el-button type="text" @click="hanldeCardView2(scope.row, scope.$index)">历史卡项详情</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -244,13 +235,14 @@
 
 <script>
 import { quanlityList } from '@/components/page/goodsmanage/card-item/mock';
-import { ERR_OK, getDefaultPic } from '@/components/page/goodsmanage/card-item/api';
+import { ERR_OK, getDefaultPic, getInsertDetail, setPublish } from '@/components/page/goodsmanage/card-item/api';
 import { getRechargeHistoryDetail, getSoldDetail, getSoldList } from '../api';
 import moment from 'moment';
 
 export default {
     data () {
         return {
+            insertDetail: {},
             dialogVisible: false,
             quanlityList: quanlityList,
             activeTab: '',
@@ -264,14 +256,32 @@ export default {
             curPage2: 1,
             searchVal: '',
             selection: [],
-            defaultPic: ''
+            defaultPic: '',
+            isPublish: '1'
         };
     },
     created() {
+        const id = this.$route.query.id;
+        this.getInsertDetail(id);
         this.getDefaultImg();
         this.getSoldList();
     },
     methods: {
+        /* 获取充值卡详情 */
+        async getInsertDetail (card_id = '') {
+            if (card_id) {
+                try {
+                    const data = await getInsertDetail({ card_id });
+                    if (data.code === ERR_OK) {
+                        this.insertDetail = data.data;
+                        this.isPublish = this.insertDetail.is_publish;
+                        this.quanlityList = data.data.right || [];
+                    }
+                } catch (e) {
+                    console.log(`goodsmanage/card-item/component/insert-card-view.vue getInsertDetail error: ${e}`);
+                }
+            }
+        },
         /* 获取默认图片 */
         async getDefaultImg () {
             try {
@@ -285,16 +295,30 @@ export default {
         },
         /* 去编辑页 */
         gotoEdit () {
-            this.$router.push(`/cika`);
+            const id = this.$route.query.id;
+            this.$router.push(`/insert-card?id=${ id }`);
         },
-        /* 下架 */
-        setDownPublish () {
-
+        /* 上下架 */
+        async setDownPublish () {
+            this.isPublish = this.isPublish === '1' ? '0' : '1';
+            try {
+                const id = this.$route.query.id;
+                const data = await setPublish({ id, is_publish: this.isPublish });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        message: data.msg,
+                        type: 'success'
+                    });
+                }
+            } catch (e) {
+                console.log(`goodsmanage/card-item/component/insert-card-view.vue setDownPublish error: ${ e }`);
+            }
         },
+        /* 查看已售卡详情 */
         async hanldeCardView1 (row, index) {
             this.dialogVisible = true;
             try {
-                const data = await getSoldDetail({ member_card_id: row.id });
+                const data = await getSoldDetail({ member_card_id: row.member_card_id });
                 if (data.code === ERR_OK) {
                     this.hasSellDeital = data.data;
                     this.hasSellDeital.expire = moment(data.data.expire).format("yyyy-MM-DD hh:mm:ss");
@@ -303,9 +327,18 @@ export default {
                 console.log(`goodsmanage/card-item/component/insert-card-view.vue hanldeCardView1 error: ${ e }`);
             }
         },
-        /* 查看卡详情 */
-        hanldeCardView2 (row, index) {
+        /* 查看历史卡详情 */
+        async hanldeCardView2 (row, index) {
             this.dialogVisible = true;
+            try {
+                const card_recharge_id = this.$route.query.id;
+                const data = await getRechargeHistoryDetail({ card_recharge_id: row.card_recharge_id });
+                if (data.code === ERR_OK) {
+                    this.historyList = data.data.data;
+                }
+            } catch (e) {
+                console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
+            }
         },
         /* 已售 */
         handleCurrentChange1 (value) {
@@ -345,19 +378,6 @@ export default {
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
-            }
-        },
-        /* 获取已售详情 */
-        async getSoldDetail (member_card_id = '') {
-            if (member_card_id) {
-                try {
-                    const data = await getSoldDetail({ member_card_id });
-                    if (data.code === ERR_OK) {
-                        this.hasSellDeital = data.data;
-                    }
-                } catch (e) {
-                    console.log(`/goodsmanage/card-item/component/insert-card-view.vue getSoldDetail error: ${ e }`);
-                }
             }
         },
         /* 获取历史详情 */

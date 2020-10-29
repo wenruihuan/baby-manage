@@ -145,10 +145,10 @@ export default {
         this.getInsertDetail(id);
     },
     methods: {
-        async getInsertDetail (id = '') {
+        async getInsertDetail (card_id = '') {
             if (id) {
                try {
-                   const data = await getInsertDetail({ id: 'aaaaaaa' });
+                   const data = await getInsertDetail({ card_id });
                    if (data.code === ERR_OK) {
                        this.form.intr = '';
                        this.form = data.data;
