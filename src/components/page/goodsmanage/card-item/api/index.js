@@ -204,6 +204,15 @@ export const saveRechargeCard = query => {
     });
 };
 
+/* 储蓄卡历史列表 */
+export const getRechargeHistoryList = query => {
+    return request({
+        url: `${IP}/admin/card/recharge/history`,
+        method: 'get',
+        params: query
+    });
+};
+
 /* 储蓄卡历史详情 */
 export const getRechargeHistoryDetail = query => {
     return request({
@@ -237,5 +246,23 @@ export const previewQr = query => {
         url: `${IP}/admin/card/recharge/previewQr`,
         method: 'post',
         data: query
+    });
+};
+
+/* 获取新增充值卡时可选权益（树形数据） */
+export const getRechargeRight = query => {
+    return request({
+        url: `${IP}/admin/card/recharge/right`,
+        method: 'get',
+        params: query
+    });
+};
+
+/*  获取卡列表（不分页版） */
+export const getCardQuanlityList = query => {
+    return request({
+        url: `${IP}/admin/card/listNoPage`,
+        method: 'get',
+        params: query
     });
 };
