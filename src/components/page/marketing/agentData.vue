@@ -7,7 +7,13 @@
           <el-row class="form-row">
             <el-form-item class="form-row-left" label="推广员：">
               <el-select v-model="form.publicist">
-                <el-option value="1"></el-option>
+                <el-option
+                  v-for="item in secondAgentOptions"
+                  :label="item.name"
+                  :value="item.id"
+                  :key="item.id"
+                >
+                </el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -50,11 +56,11 @@
           <template slot-scope="scope">
             <div class="member-info" v-if="item.prop === 'memeber_name'">
               <div class="avatar">
-                <img src="" alt="" width="50px" height="50px">
-                <p class="avart-tag">普通会员</p>
+                <img :src="scope.row.head_img" alt="" width="50px" height="50px">
+                <p class="avart-tag">{{scope.row.level_name}}</p>
               </div>
               <div class="member-name">
-                <p class="title">会员名</p>
+                <p class="title">{{scope.row.memeber_name}}</p>
                 <p class="phone">{{scope.row.memeber_phone}}</p>
                 <p class="code">编号{{scope.row.memeber_no}}</p>
               </div>
@@ -79,7 +85,7 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
-import { getAgentData } from '@/api/marketing'
+import { getAgentData, getSecondAgentOptions, exportData } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
@@ -95,7 +101,6 @@ export default {
       form: {
         start_time: '',
         end_time: '',
-        // todo: 待定
         publicist: '',
         keyword: '',
         page_size: 20,
@@ -113,10 +118,12 @@ export default {
       ],
       tableData: [],
       total: 0,
-      dateArr: []
+      dateArr: [],
+      secondAgentOptions: []
     }
   },
   created() {
+    this.getSecondAgentOpions()
     this.getTableData(1)
   },
   methods: {
@@ -131,6 +138,14 @@ export default {
         this.total = all_count
       })
     },
+    getSecondAgentOpions() {
+      getSecondAgentOptions().then(res => {
+        const { data } = res
+        this.secondAgentOptions = data
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     handleCurChange(page) {
       this.getTableData(page)
     },
@@ -138,7 +153,22 @@ export default {
       this.form.start_time = val[0]
       this.form.end_time = val[1]
     },
-    handleExport() {}
+    handleExport() {
+      const params = {
+        keyword: this.form.keyword,
+        start_date: this.form.start_time,
+        end_date: this.form.end_time,
+        publicist_id: this.form.publicist
+      }
+      exportData(params).then(res => {
+        const { code, data } = res
+        if (code === 200) {
+          this.$message.success('导出成功')
+          // todo: 下载过程
+          console.log(data)
+        }
+      })
+    }
   }
 }
 </script>

@@ -12,7 +12,7 @@
             </div>
             <div v-if="['3','4','5'].includes(orderInfo.order_status)">
               <span class="label">{{orderInfo.order_status === '5' ? '取消': '收款'}}时间：</span>
-              <span class="text">{{orderInfo.order_status === '5' ? orderInfo.cancel_time : orderInfo.checkout_time | timeFormatter}}</span>
+              <span class="text">{{(orderInfo.order_status === '5' ? orderInfo.cancel_time : orderInfo.checkout_time) | timeFormatter}}</span>
             </div>
           </div>
           <div class="row">
@@ -39,54 +39,6 @@
             <div>
               <span class="label">收银员：&nbsp;&nbsp;&nbsp;</span>
               <span class="text">{{orderInfo.checkout_staff}}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="info" v-if="isRefund">
-      <p class="info-title">订单信息</p>
-      <div class="info-body">
-        <p class="status">退款成功</p>
-        <div class="info-body-main">
-          <div class="row">
-            <div>
-              <span class="label">退款编号：</span>
-              <span class="text">{{orderDetailObj.refund_no}}</span>
-            </div>
-            <div>
-              <span class="label">订单编号：</span>
-              <span class="text">{{orderDetailObj.order_no}}</span>
-            </div>
-          </div>
-          <div class="row">
-            <div>
-              <span class="label">操作时间：</span>
-              <span class="text">{{orderDetailObj.refund_create_time | timeFormatter}}</span>
-            </div>
-            <div>
-              <span class="label">下单时间：</span>
-              <span class="text">{{orderDetailObj.order_create_time | timeFormatter}}</span>
-            </div>
-          </div>
-          <div class="row">
-            <div>
-              <span class="label">操作人员：</span>
-              <span class="text">{{orderDetailObj.operator}}</span>
-            </div>
-            <div>
-              <span class="label">收银员&nbsp;&nbsp;&nbsp;：</span>
-              <span class="text">{{orderDetailObj.cashier}}</span>
-            </div>
-          </div>
-          <div class="row">
-            <div>
-              <span class="label">现金退款</span>
-              <span class="text">{{orderDetailObj.refund_price}}</span>
-            </div>
-            <div>
-              <span class="label">下单门店：</span>
-              <span class="text">{{orderDetailObj.shop_name}}</span>
             </div>
           </div>
         </div>
@@ -191,10 +143,10 @@
             </el-table-column>
             <el-table-column v-if="!isProductOrderInfo" label="技师" align="center">--</el-table-column>
             <el-table-column v-if="!isProductOrderInfo" label="订单来源" prop="order_source" align="center"></el-table-column>
-            <el-table-column v-if="isProductOrderInfo" label="规格" prop="2" align="center"></el-table-column>
+            <el-table-column v-if="isProductOrderInfo" label="规格" prop="sku" align="center"></el-table-column>
             <el-table-column label="单价（元）" prop="price" align="center"></el-table-column>
             <el-table-column label="数量" prop="count" align="center"></el-table-column>
-            <el-table-column v-if="!isProductOrderInfo" label="商品优惠" prop="2" align="center">
+            <el-table-column v-if="!isProductOrderInfo" label="商品优惠" align="center">
               <template slot-scope="scope">
                 <span>{{scope.row.price*scope.row.count-scope.row.total_price}}</span>
               </template>
@@ -220,6 +172,7 @@
           </div>
           <div class="footer-bar" v-if="!isProductOrderInfo">
             <el-button @click="handlePrint">打印小票</el-button>
+            <!-- 判断可退款状态 -->
             <el-button type="primary" @click="handleRefund">主动退款</el-button>
           </div>
         </div>
@@ -382,6 +335,9 @@ export default {
       this.dialogShow = true
       this.setDilogProp('refundStep1', '退款商品', '700px', '' )
     },
+    getRefundInfo() {
+
+    },
     handleNextStep() {
       this.dialogShow = false
       this.setDilogProp('refundStep2', '主动退款', '700px', '' )
@@ -523,8 +479,8 @@ export default {
   .product-ctner img {
     margin-right: 10px;
   }
-  .print-dialog {
+  /* .print-dialog {
 
-  }
+  } */
   
 </style>

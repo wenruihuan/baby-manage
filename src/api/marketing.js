@@ -7,10 +7,26 @@ export const getFirstAgentList = query => {
     params: query
   })
 }
+// 获取一级推广员下拉列表
+export const getFirstAgentOptions = query => {
+  return request({
+    url: `/admin/publicist/topSelectList`,
+    method: 'get',
+    params: query
+  })
+}
 // 获取二级推广员列表
 export const getSecondAgentList = query => {
   return request({
     url: `/admin/publicist/secondList`,
+    method: 'get',
+    params: query
+  })
+}
+// 获取二级推广员下拉列表
+export const getSecondAgentOptions = query => {
+  return request({
+    url: `/admin/publicist/secondSelectlist`,
     method: 'get',
     params: query
   })
@@ -31,6 +47,7 @@ export const addFirstAgent = query => {
     data: query
   })
 }
+
 // 清退推广员
 export const removeAgent = query => {
   return request({
@@ -71,4 +88,39 @@ export const removeMemberPrice = query => {
     data: query
   })
 }
+// 导出推广员数据报表
+export const exportData = query => {
+  return request({
+    url: '/admin/publicist/export',
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取会员等级列表
+export const getMemberLevels = query => {
+  return request({
+    url: '/admin/member/level',
+    method: 'get',
+    params: query
+  })
+}
+// 获取商品分类下拉列表
+export const getGoodsCateOptions = query => {
+  return request({
+    url: '/admin/goods/selectKind',
+    method: 'get',
+    params: query
+  })
+}
+// 获取商品列表
+export const getGoodsList = query => {
+  return request({
+    url: '/admin/goods/selectList',
+    method: 'get',
+    params: query
+  })
+}
+
+
 

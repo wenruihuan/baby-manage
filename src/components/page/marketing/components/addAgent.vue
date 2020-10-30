@@ -5,7 +5,7 @@
         <el-input v-model="searchForm.name" class="medium-input"></el-input>
       </el-form-item>
       <el-form-item prop="alia" label="别名">
-        <el-input v-model="searchForm.alia" class="medium-input"></el-input>
+        <el-input v-model="searchForm.alias" class="medium-input"></el-input>
       </el-form-item>
       <el-form-item prop="phone" label="手机号码">
         <el-input v-model="searchForm.phone" class="medium-input"></el-input>
@@ -36,7 +36,7 @@ export default {
     return {
       searchForm: {
         name: '',
-        alia: '',
+        alias: '',
         phone: '',
         city: ''
       },
@@ -58,7 +58,6 @@ export default {
     handleSave() {
       this.$refs.addForm.validate((valid) => {
         if (valid) {
-          console.log('1233')
           addFirstAgent(this.searchForm).then(res => {
             if (res.code === 200) {
               this.$message.success('添加成功')

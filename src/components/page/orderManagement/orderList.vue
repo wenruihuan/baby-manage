@@ -284,6 +284,8 @@ export default {
         const { data, all_count } = res.data
         this[tabDataCfg[this.activeTab].total] = all_count
         this[tabDataCfg[this.activeTab].data] = data
+      }).catch(err => {
+        console.log(err)
       })
     },
     jumpToOrderDetail(orderId) {
