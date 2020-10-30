@@ -63,8 +63,13 @@
                         <el-radio :label="1">
                             <span>自定义图片</span>
                             <el-upload
-                                action="https://jsonplaceholder.typicode.com/posts/"
+                                v-if="isEdit"
+                                :show-file-list="false"
+                                action="http://up-z0.qiniu.com"
                                 list-type="picture-card"
+                                :data="uploadBody"
+                                :before-upload="beforeUpload"
+                                :on-success="handleUploadSuccess"
                             >
                                 <i class="el-icon-plus"></i>
                             </el-upload>
@@ -73,9 +78,14 @@
                         </el-radio>
                     </el-radio-group>
                 </div>
+                <div class="right">
+                    <div class="img-container">
+                        <img :src="form.img  || defaultPic" alt="">
+                    </div>
+                </div>
             </div>
         </div>
-        <edit-wechat :html="form.intr" v-if="form.intr !== null" v-show="activeStep === 2" />
+        <edit-wechat ref="editWechat" :html="form.intr" v-if="form.intr !== null" v-show="activeStep === 2" />
         <div class="btn-group" v-if="isEdit">
             <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
             <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
@@ -98,8 +108,16 @@
 import editQuanlity from './edit-quanlity';
 import sendCard from './send-card';
 import { serviceList } from '@/components/page/goodsmanage/card-item/mock';
-import { ERR_OK, getInsertDetail, removeCard, saveRechargeCard } from '@/components/page/goodsmanage/card-item/api';
+import {
+    ERR_OK,
+    getDefaultPic,
+    getInsertDetail, previewQr,
+    removeCard,
+    saveRechargeCard, setPublish
+} from '@/components/page/goodsmanage/card-item/api';
 import editWechat from '@/components/page/goodsmanage/card-item/component/edit-wechat';
+import { getUploadToken } from '@/components/page/goodsmanage/goods/api';
+import QRCode from 'qrcodejs2';
 
 export default {
     components: {
@@ -119,7 +137,8 @@ export default {
                 is_show: '',
                 is_custom_cover: 0,
                 validity: '',
-                intr: null
+                intr: null,
+                img: ''
             },
             isInfinity: 1,
             rules: {
@@ -137,18 +156,49 @@ export default {
             rightsList: null,
             /* 赠送list */
             buyList: null,
-            isPublish: 0
+            isPublish: 0,
+            baseUrl: '',
+            uploadBody: {
+                token: '',
+                key: ''
+            },
+            defaultPic: ''
         };
     },
     created() {
         const id = this.$route.query.id;
+        this.getUploadToken();
+        this.getDefaultImg();
         this.getInsertDetail(id);
     },
     methods: {
-        async getInsertDetail (id = '') {
-            if (id) {
+        /* 获取上传图片的token */
+        async getUploadToken () {
+            try{
+                const data = await getUploadToken();
+                if (data.code === ERR_OK) {
+                    this.uploadBody.token = data.data.uptoken;
+                    this.baseUrl = data.data.baseUrl;
+                }
+            } catch (e) {
+                console.log(`getUploadToken error: ${e}`);
+            }
+        },
+        /* 获取默认图片 */
+        async getDefaultImg () {
+            try {
+                const data = await getDefaultPic();
+                if (data.code === ERR_OK) {
+                    this.defaultPic = data.data.recharge;
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue error: ${e}`);
+            }
+        },
+        async getInsertDetail (card_id = '') {
+            if (card_id) {
                try {
-                   const data = await getInsertDetail({ id: 'aaaaaaa' });
+                   const data = await getInsertDetail({ card_id });
                    if (data.code === ERR_OK) {
                        this.form.intr = '';
                        this.form = data.data;
@@ -164,16 +214,65 @@ export default {
                 this.form.intr = '';
             }
         },
+        /* 上传之前 */
+        beforeUpload (file) {
+            this.uploadBody.key = file.name;
+            return true;
+        },
+        /* 成功上传 */
+        handleUploadSuccess (res, file) {
+            this.form.img = `${ this.baseUrl }/${ file.name }`;
+        },
         /* 保存 */
         handleSave () {
-            saveRechargeCard(this.form).then(res => {
-
+            this.form.intr = this.$refs.editWechat.content;
+            saveRechargeCard(this.form).then(data => {
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: data.msg
+                    });
+                }
             });
         },
         /* 设置上下架状态 */
-        setPublishStatus () {},
+        setPublishStatus () {
+            this.isPublish = this.isPublish === '1' ? '0' : '1';
+            this.form.intr = this.$refs.editWechat.content;
+            saveRechargeCard(this.form).then(data => {
+                if (data.code === ERR_OK) {
+                    const id = this.$route.query.id;
+                    setPublish({ id, is_publish: this.isPublish  }).then(data => {
+                        if (data.code === ERR_OK) {
+                            this.$message({
+                                type: 'success',
+                                message: data.msg
+                            });
+                        }
+                    });
+                }
+            });
+        },
         /* 二维码预览 */
-        handleView () {},
+        async handleView () {
+            try {
+                this.form.intr = this.$refs.editWechat.content;
+                const data = await previewQr(this.form);
+                if (data.code === ERR_OK) {
+                    this.qrCode = data.data;
+                    this.qrCode = new QRCode("SERVICE_QRCODE", {
+                        text: data.data,
+                        width: 128,
+                        height: 128,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.L
+                    });
+                }
+            } catch (e) {
+                console.log(`/goodsmanage/card-item/component/insert-card.vue handleView error: ${ e }`);
+            }
+        },
         /* 删除 */
         async handleRemove () {
             const id = this.$route.query.id;
@@ -244,6 +343,7 @@ export default {
     font-size: 13px;
 }
 .edit-form {
+    width: 100%;
     margin-top: 20px;
 }
 .card-input {
@@ -279,5 +379,13 @@ export default {
     margin-left: 5px;
     color: #dddddd;
     font-size: 12px;
+}
+.content {
+    display: flex;
+    justify-content: space-around;
+    align-items: start;
+}
+.content .img-container img {
+    max-width: 100%;
 }
 </style>

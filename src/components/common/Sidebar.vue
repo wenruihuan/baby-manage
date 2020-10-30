@@ -87,7 +87,7 @@
                             },
                             {
                                 index: 'EvaluateList',
-                                title: '预约列表'
+                                title: '预约评价'
                             }
                         ]
                     },

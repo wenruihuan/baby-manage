@@ -2,37 +2,33 @@
     <div class="cika-view">
         <div class="top-container">
             <el-button type="primary" @click="gotoEdit">编辑</el-button>
-            <el-button @click="setDownPublish">下架</el-button>
+            <el-button @click="setDownPublish">{{ isPublish === '1' ? '下架' : '上架' }}</el-button>
         </div>
         <div class="content-container">
             <div class="top">
                 <div class="left">
                     <el-card class="box-card-left">
-                        <img class="card-img" :src="defaultPic" alt="">
+                        <img class="card-img" :src="insertDetail.img || defaultPic" alt="">
                         <ul class="card-detail">
                             <li>
                                 <span class="key">卡类型:</span>
-                                <span class="val">次卡</span>
+                                <span class="val">充值卡</span>
                             </li>
                             <li>
                                 <span class="key">状态:</span>
-                                <span class="val">上架中</span>
+                                <span class="val">{{ insertDetail.is_publish === '1' ? '上架' : '下架' }}</span>
                             </li>
                             <li>
                                 <span class="key">售价:</span>
-                                <span class="val">￥1000.00</span>
+                                <span class="val">￥{{ insertDetail.price }}</span>
                             </li>
                             <li>
                                 <span class="key">网店展示:</span>
-                                <span class="val">展示</span>
-                            </li>
-                            <li>
-                                <span class="key">服务产品:</span>
-                                <span class="val">尚未关联</span>
+                                <span class="val">{{ insertDetail.is_show === '1' ? '展示' : '不展示' }}</span>
                             </li>
                             <li>
                                 <span class="key">卡包名称:</span>
-                                <span class="val">卡名称名称名称</span>
+                                <span class="val">{{ insertDetail.name }}</span>
                             </li>
                         </ul>
                     </el-card>
@@ -43,18 +39,22 @@
                             <el-table
                                     :data="quanlityList"
                             >
-                                <el-table-column prop="content" label="适用内容"></el-table-column>
-                                <el-table-column prop="rule" label="优惠规则"></el-table-column>
-                                <el-table-column prop="expire_time" label="有效期"></el-table-column>
+                                <el-table-column prop="right_name" label="适用内容"></el-table-column>
+                                <el-table-column prop="discount" label="优惠规则">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.discount }}折
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="validity" label="有效期"></el-table-column>
                             </el-table>
                         </el-tab-pane>
-                        <el-tab-pane label="赠送权益">
+                        <el-tab-pane label="赠送权益" v-if="Array.isArray(quanlityList) && quanlityList.length > 0">
                             <el-table
-                                    :data="sendList"
+                                :data="quanlityList"
                             >
-                                <el-table-column prop="content" label="适用内容"></el-table-column>
-                                <el-table-column prop="rule" label="优惠规则"></el-table-column>
-                                <el-table-column prop="expire_time" label="有效期"></el-table-column>
+                                <el-table-column prop="right_name" label="适用内容"></el-table-column>
+                                <el-table-column prop="typeName" label="卡项类别"></el-table-column>
+                                <el-table-column prop="validity" label="有效期"></el-table-column>
                             </el-table>
                         </el-tab-pane>
                     </el-tabs>
@@ -62,7 +62,7 @@
             </div>
             <div class="bottom">
                 <el-tabs type="border-card" @tab-click="handleTabClick">
-                    <el-tab-pane label="已售(1)">
+                    <el-tab-pane :label="`已售(${ hasSellList.length })`">
                         <div class="search-container">
                             <el-input
                                     class="search-input"
@@ -70,14 +70,18 @@
                                     prefix-icon="el-icon-search"
                                     v-model="searchVal">
                             </el-input>
-                            <el-button class="search-btn" @click="handleSearch">搜索</el-button>
+                            <el-button class="search-btn" @click="handleSearch1">搜索</el-button>
                         </div>
                         <el-table
                                 :data="hasSellList"
                         >
                             <el-table-column type="selection" width="55"></el-table-column>
                             <el-table-column prop="name" label="卡项名称"></el-table-column>
-                            <el-table-column prop="status" label="状态"></el-table-column>
+                            <el-table-column prop="invalidName" label="状态">
+                                <template slot-scope="scope">
+                                    {{ scope.row.invalidName }}
+                                </template>
+                            </el-table-column>
                             <el-table-column prop="validity" label="有效期">
                                 <template slot-scope="scope">
                                     {{ scope.row.validity }}天
@@ -87,7 +91,6 @@
                                 <template slot-scope="scope">
                                     <p>使用：{{ scope.row.rights_count }}项</p>
                                     <p>赠送：{{ scope.row.gifts_count }}项</p>
-                                    <p>剩余：100次</p>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="quanlity" label="购买人">
@@ -137,7 +140,7 @@
                                     prefix-icon="el-icon-search"
                                     v-model="searchVal">
                             </el-input>
-                            <el-button class="search-btn" @click="handleSearch">搜索</el-button>
+                            <el-button class="search-btn" @click="handleSearch2">搜索</el-button>
                         </div>
                         <el-table
                                 :data="historyList"
@@ -146,12 +149,16 @@
                             <el-table-column prop="update_time" label="修改时间"></el-table-column>
                             <el-table-column prop="update_person" label="修改人"></el-table-column>
                             <el-table-column prop="name" label="卡项名称"></el-table-column>
-                            <el-table-column prop="expire_time" label="有效期"></el-table-column>
+                            <el-table-column prop="validity" label="有效期">
+                                <template slot-scope="scope">
+                                    {{ scope.row.validity }}天
+                                </template>
+                            </el-table-column>
                             <el-table-column prop="price" label="售价"></el-table-column>
-                            <el-table-column prop="amount" label="销量"></el-table-column>
+                            <el-table-column prop="sell_count" label="销量"></el-table-column>
                             <el-table-column>
                                 <template slot-scope="scope">
-                                    <el-button type="text" @click="hanldeCardView(scope.row, scope.$index)">历史卡项详情</el-button>
+                                    <el-button type="text" @click="hanldeCardView2(scope.row, scope.$index)">历史卡项详情</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -182,28 +189,28 @@
         >
             <div class="img-container">
                 <div>
-                    <span class="title">{{ hasSellDeital.name }}</span>
+                    <span class="title">{{ cardDetail.name }}</span>
                     <el-tag class="tag">充值卡</el-tag>
                 </div>
                 <div class="content-cont">
                     <div class=" row">
                         <div class="item">
                             <span>卡编号：</span>
-                            <span>{{ hasSellDeital.card_no }}</span>
+                            <span>{{ cardDetail.card_no }}</span>
                         </div>
                         <div class="item">
                             <span>卡售价：</span>
-                            <span>￥{{ hasSellDeital.price }}</span>
+                            <span>￥{{ cardDetail.price }}</span>
                         </div>
                     </div>
                     <div class=" row">
                         <div class="item">
                             <span>有效期：</span>
-                            <span>{{ hasSellDeital.expire }}</span>
+                            <span>{{ cardDetail.validity }}</span>
                         </div>
                         <div class="item">
                             <span>适用门店：</span>
-                            <span>{{ hasSellDeital.shop_name }}</span>
+                            <span>{{ cardDetail.shop_name }}</span>
                         </div>
                     </div>
                 </div>
@@ -212,7 +219,7 @@
                 <el-tabs type="border-card" @tab-click="handleTabClick">
                     <el-tab-pane label="卡项权益">
                         <el-table
-                                :data="hasSellDeital.right || []"
+                                :data="cardDetail.right || []"
                         >
                             <el-table-column prop="right_name" label="适用内容"></el-table-column>
                             <el-table-column prop="discount" label="优惠规则">
@@ -223,17 +230,13 @@
                             <el-table-column prop="expire" label="有效期"></el-table-column>
                         </el-table>
                     </el-tab-pane>
-                    <el-tab-pane label="赠送权益">
+                    <el-tab-pane label="赠送权益" v-if="Array.isArray(cardDetail.gifts) && cardDetail.gifts.length > 0">
                         <el-table
-                                :data="hasSellDeital.right || []"
+                                :data="cardDetail.gifts || []"
                         >
                             <el-table-column prop="right_name" label="适用内容"></el-table-column>
-                            <el-table-column prop="discount" label="优惠规则">
-                                <template slot-scope="scope">
-                                    {{ scope.row.discount }}折
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="expire_time" label="有效期"></el-table-column>
+                            <el-table-column prop="typeName" label="卡项类别"></el-table-column>
+                            <el-table-column prop="validity" label="有效期"></el-table-column>
                         </el-table>
                     </el-tab-pane>
                 </el-tabs>
@@ -243,35 +246,63 @@
 </template>
 
 <script>
-import { quanlityList } from '@/components/page/goodsmanage/card-item/mock';
-import { ERR_OK, getDefaultPic } from '@/components/page/goodsmanage/card-item/api';
+import {
+    ERR_OK,
+    getDefaultPic,
+    getInsertDetail,
+    getRechargeHistoryList,
+    setPublish
+} from '@/components/page/goodsmanage/card-item/api';
 import { getRechargeHistoryDetail, getSoldDetail, getSoldList } from '../api';
 import moment from 'moment';
+import { CARD__KIND_GRP, CARD_STATUS_MAP } from '@/components/page/goodsmanage/utils';
 
 export default {
     data () {
         return {
+            insertDetail: {},
             dialogVisible: false,
-            quanlityList: quanlityList,
+            quanlityList: [],
             activeTab: '',
             sendList: [],
             hasSellPage: 1,
             hasSellTotal: 0,
             hasSellList: [],
-            hasSellDeital: {},
             historyList: [],
+            cardDetail: {},
             curPage1: 1,
             curPage2: 1,
             searchVal: '',
             selection: [],
-            defaultPic: ''
+            defaultPic: '',
+            isPublish: '1'
         };
     },
     created() {
+        const id = this.$route.query.id;
+        this.getInsertDetail(id);
         this.getDefaultImg();
         this.getSoldList();
     },
     methods: {
+        /* 获取充值卡详情 */
+        async getInsertDetail (card_id = '') {
+            if (card_id) {
+                try {
+                    const data = await getInsertDetail({ card_id });
+                    if (data.code === ERR_OK) {
+                        this.insertDetail = data.data;
+                        this.isPublish = this.insertDetail.is_publish;
+                        this.quanlityList = (data.data.right || []).map(item => ({
+                            ...item,
+                            typeName: CARD__KIND_GRP[item.rel_type]
+                        }));
+                    }
+                } catch (e) {
+                    console.log(`goodsmanage/card-item/component/insert-card-view.vue getInsertDetail error: ${e}`);
+                }
+            }
+        },
         /* 获取默认图片 */
         async getDefaultImg () {
             try {
@@ -285,27 +316,53 @@ export default {
         },
         /* 去编辑页 */
         gotoEdit () {
-            this.$router.push(`/cika`);
+            const id = this.$route.query.id;
+            this.$router.push(`/insert-card?id=${ id }`);
         },
-        /* 下架 */
-        setDownPublish () {
-
+        /* 上下架 */
+        async setDownPublish () {
+            this.isPublish = this.isPublish === '1' ? '0' : '1';
+            try {
+                const id = this.$route.query.id;
+                const data = await setPublish({ id, is_publish: this.isPublish });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        message: data.msg,
+                        type: 'success'
+                    });
+                }
+            } catch (e) {
+                console.log(`goodsmanage/card-item/component/insert-card-view.vue setDownPublish error: ${ e }`);
+            }
         },
+        /* 查看已售卡详情 */
         async hanldeCardView1 (row, index) {
             this.dialogVisible = true;
             try {
-                const data = await getSoldDetail({ member_card_id: row.id });
+                const data = await getSoldDetail({ member_card_id: row.member_card_id });
                 if (data.code === ERR_OK) {
-                    this.hasSellDeital = data.data;
-                    this.hasSellDeital.expire = moment(data.data.expire).format("yyyy-MM-DD hh:mm:ss");
+                    this.cardDetail = data.data;
+                    this.cardDetail.gifts = (data.data.gifts || []).map(item => ({
+                        ...item,
+                        typeName: CARD__KIND_GRP[item.rel_type]
+                    }));
+                    this.cardDetail.expire = moment(data.data.expire).format("yyyy-MM-DD hh:mm:ss");
                 }
             } catch (e) {
                 console.log(`goodsmanage/card-item/component/insert-card-view.vue hanldeCardView1 error: ${ e }`);
             }
         },
-        /* 查看卡详情 */
-        hanldeCardView2 (row, index) {
+        /* 查看历史卡详情 */
+        async hanldeCardView2 (row, index) {
             this.dialogVisible = true;
+            try {
+                const data = await getRechargeHistoryDetail({ card_recharge_id: row.card_recharge_id });
+                if (data.code === ERR_OK) {
+                    this.cardDetail = data.data;
+                }
+            } catch (e) {
+                console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
+            }
         },
         /* 已售 */
         handleCurrentChange1 (value) {
@@ -316,8 +373,11 @@ export default {
             this.getSoldList(value);
         },
         /* 搜索 */
-        handleSearch () {
-
+        handleSearch1 () {
+            this.getSoldList();
+        },
+        handleSearch2 () {
+            this.getHi();
         },
         /* 使得卡失效 */
         shixiao () {},
@@ -330,14 +390,15 @@ export default {
         async getSoldList (curPage = 1) {
             try {
                 const card_id = this.$route.query.id;
-                const data = await getSoldList({ card_id, page_no: curPage });
+                const data = await getSoldList({ card_id, page_no: curPage, keyword: this.searchVal });
                 if (data.code === ERR_OK) {
                     this.hasSellList = data.data.data.map(item => {
                         return {
                             ...item,
                             rights_count: item.rights.rights_count,
                             gifts_count: item.rights.gifts_count,
-                            create_time: moment(item.create_time).format("yyyy-MM-DD hh:mm:ss")
+                            create_time: moment(item.create_time).format("yyyy-MM-DD hh:mm:ss"),
+                            invalidName: CARD_STATUS_MAP[item.is_invalid]
                         };
                     });
 
@@ -347,24 +408,11 @@ export default {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
             }
         },
-        /* 获取已售详情 */
-        async getSoldDetail (member_card_id = '') {
-            if (member_card_id) {
-                try {
-                    const data = await getSoldDetail({ member_card_id });
-                    if (data.code === ERR_OK) {
-                        this.hasSellDeital = data.data;
-                    }
-                } catch (e) {
-                    console.log(`/goodsmanage/card-item/component/insert-card-view.vue getSoldDetail error: ${ e }`);
-                }
-            }
-        },
-        /* 获取历史详情 */
-        async getRechargeHistoryDetail () {
+        /* 获取历史列表 */
+        async getRechargeHistoryList () {
             try {
-                const card_recharge_id = this.$route.query.id;
-                const data = await getRechargeHistoryDetail({ card_recharge_id });
+                const card_id = this.$route.query.id;
+                const data = await getRechargeHistoryList({ card_id, page_no: this.curPage1 });
                 if (data.code === ERR_OK) {
                     this.historyList = data.data.data;
                 }
@@ -376,8 +424,9 @@ export default {
         handleTabClick (tab) {
             this.activeTab = tab.label;
             this.selection = [];
+            this.searchVal = '';
             if (tab.label === '历史卡项') {
-                this.getRechargeHistoryDetail();
+                this.getRechargeHistoryList();
             } else {
                 this.getSoldList();
             }

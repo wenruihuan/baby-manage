@@ -32,7 +32,7 @@
         >
             <div class="service-table-container">
                 <div class="select-container">
-                    <el-select v-model="serviceKind">
+                    <el-select v-model="type" @change="getCardQuanlityList">
                         <el-option
                             v-for="item in cardKindGrp"
                             :key="item.value"
@@ -58,8 +58,12 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="price" label="价格"></el-table-column>
-                    <el-table-column prop="create_time" label="创建时间"></el-table-column>
+                    <el-table-column prop="price" label="价格">
+                        <template slot-scope="scope">
+                            ￥{{ scope.row.price }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="createTime" label="创建时间"></el-table-column>
                 </el-table>
 <!--                <div class="paination-cont">-->
 <!--                    <el-pagination-->
@@ -81,7 +85,8 @@
 </template>
 
 <script>
-import { serviceList } from '@/components/page/goodsmanage/card-item/mock';
+import moment from 'moment';
+import { ERR_OK, getCardQuanlityList } from '@/components/page/goodsmanage/card-item/api';
 
 export default {
     props: {
@@ -94,13 +99,13 @@ export default {
         return {
             list: [],
             dialogVisible: false,
-            serviceKind: '',
-            serviceList: serviceList,
+            type: 'time_card',
+            serviceList: [],
             curPage: 1,
             selection: [],
             cardKindGrp: [
-                { value: 'card_time', label: '次卡' },
-                { value: 'card_discount', label: '折扣卡' }
+                { value: 'time_card', label: '次卡' },
+                { value: 'discount_card', label: '折扣卡' }
             ]
         };
     },
@@ -108,8 +113,23 @@ export default {
         this.list = this.buyList;
     },
     methods: {
+        /* 获取可添加的赠送卡项 */
+        async getCardQuanlityList () {
+            try {
+                const data = await getCardQuanlityList({ keyword: '', type: this.type  });
+                if (data.code === ERR_OK) {
+                    this.serviceList = data.data.map(item => ({
+                        ...item,
+                        createTime: moment(item.create_time).format('yyyy-MM-DD HH:mm:ss')
+                    }));
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/card-item/component/send-card/index.vue getCardQuanlityList error: ${ e }`);
+            }
+        },
         addService () {
             this.dialogVisible = true;
+            this.getCardQuanlityList();
         },
         removeItem (row, index) {
             this.list.splice(index, 1);
@@ -124,7 +144,8 @@ export default {
             this.dialogVisible = false;
             const list = this.selection.map(item => ({
                 ...item,
-                num: 1
+                right_name: item.name,
+                rel_type: item.type
             }));
             this.list = this.list.concat(list);
         }
@@ -155,8 +176,9 @@ export default {
     align-items: center;
 }
 .service-table-container .image {
-    max-width: 100px;
+    max-width: 60px;
     height: auto;
+    margin-right: 5px;
 }
 .paination-cont {
     height: 30px;
