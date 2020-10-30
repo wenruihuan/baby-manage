@@ -1,6 +1,6 @@
 <template>
   <div class="refund-step1">
-    <el-table border :data="tableData" style="width:100%">
+    <el-table border :data="params" style="width:100%">
       <el-table-column label="商品" prop="product">
         <template slot-scope="scope">
           <div class="product-ctner">
@@ -27,7 +27,7 @@ export default {
     }
   },
   props: {
-    tableData: {
+    params: {
       type: Array,
       default: () => []
     }

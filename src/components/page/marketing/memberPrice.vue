@@ -10,7 +10,7 @@
         <el-table-column label="商品名称" align="center" min-width="220">
           <template slot-scope="scope">
             <div class="product-info">
-              <img src="" alt="" width="50px" height="50px">
+              <img :src="scope.row.img" alt="" width="50px" height="50px">
               <span>{{scope.row.shop_name}}</span>
             </div>
           </template>
@@ -53,6 +53,7 @@
         @success="handleSuccess"
         @cancel="handleCancel"
         :rowData="rowData"
+        :memberLevels="memberLevels"
       ></component>
     </el-dialog>
   </div>
@@ -63,7 +64,7 @@ import breadcrumb from '@/components/common/address'
 import AddProduct from './components/addProduct'
 import EditProduct from './components/editProduct'
 import dayjs from 'dayjs'
-import { getMemberPriceList, addMemberProducts, setMemberProduct, removeMemberPrice } from '@/api/marketing'
+import { getMemberPriceList, addMemberProducts, setMemberProduct, removeMemberPrice, getMemberLevels } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
@@ -76,7 +77,7 @@ export default {
     return {
       breadcrumbList: [
         { name: '首页', router: 'dashboard' },
-        { name: '推广员列表', router: 'MemberPrice' },
+        { name: '会员价', router: 'MemberPrice' },
       ],
       form: {
         page_size: 20,
@@ -84,12 +85,7 @@ export default {
       },
       columnCfg: [
         {label: '售价', prop: 'price'},
-        {label: '优惠方式', prop: 'type', formatter: this.discountFormatter},
-        {label: '多多会员', width: 220},
-        {label: '亲子会员', prop: '1testDataLevelID.price'},
-        {label: '黄金会员', prop: '2testDataLevelID.price'},
-        {label: '铂金会员', prop: '3testDataLevelID.price'},
-        {label: '钻石会员', prop: '4testDataLevelID.price'}
+        {label: '优惠方式', prop: 'type', formatter: this.discountFormatter}
       ],
       tableData: [],
       total: 0,
@@ -97,13 +93,32 @@ export default {
       dialogShow: false,
       dialogTitle: '',
       componentName: '',
-      rowData: {}
+      rowData: {},
+      memberLevels: []
     }
   },
   created() {
-    this.getTableData(1)
+    // this.getTableData(1)
+    this.getMemberLevels()
   },
   methods: {
+    getMemberLevels() {
+      getMemberLevels().then(res => {
+        const { data = [] } = res.data
+        if (res.code === 200) {
+          this.memberLevels.push(...data)
+          console.log('memberLevels', this.memberLevels)
+          const temp = data.map(item => {
+            return {
+              label: item.name,
+              prop: `${item.level_id}.price`
+            }
+          })
+          this.columnCfg.push(...temp)
+          this.getTableData(1)
+        }
+      })
+    },
     handleSearch() {
       this.getTableData(1)
     },

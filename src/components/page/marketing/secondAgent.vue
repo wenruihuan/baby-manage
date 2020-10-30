@@ -6,8 +6,13 @@
         <el-form ref="form" :inline="true" :model="form" label-width="80">
           <el-row class="form-row">
             <el-form-item class="form-row-left" label="一级推广员：">
-              <el-select v-model="form.first_agent">
-                <el-option value="1"></el-option>
+              <el-select v-model="form.publicist_id">
+                <el-option 
+                  v-for="item in firstAgentOptions"
+                  :value="item.id"
+                  :label="item.name"
+                  :key="item.id"
+                ></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -49,8 +54,7 @@
           <template slot-scope="scope">
             <el-button type="text" @click="downloadCode(scope.row.name)">下载邀请码</el-button>
             <span>&nbsp;|&nbsp;</span>
-            <!-- <el-button type="text" v-if="scope.row.member_count === 0" @click="handleRemove(scope.row.id)"> | 清退</el-button> -->
-            <el-button type="text" @click="handleRemove(scope.row.id)"> 清退</el-button>
+            <el-button type="text" v-if="scope.row.member_count === 0" @click="handleRemove(scope.row.id)"> | 清退</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -80,7 +84,7 @@
 import breadcrumb from '@/components/common/address'
 import QrcodeDialog from './components/qrcodeDialog'
 import dayjs from 'dayjs'
-import { getFirstAgentList, getSecondAgentList, removeAgent } from '@/api/marketing'
+import { getFirstAgentOptions, getSecondAgentList, removeAgent } from '@/api/marketing'
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
   name: 'OrderList',
@@ -97,8 +101,7 @@ export default {
       form: {
         start_date: '',
         end_date: '',
-        // todo: 待定
-        first_agent: '',
+        publicist_id: '',
         keyword: '',
         page_size: 20,
         page_no: 1
@@ -108,8 +111,7 @@ export default {
         {label: '别名', prop: 'alias'},
         {label: '归属地', prop: 'city', width: 220},
         {label: '手机号码', prop: 'phone'},
-        // todo: 接口未返回
-        {label: '所属一级推广员', prop: '5'},
+        {label: '所属一级推广员', prop: 'parent_name'},
         {label: '推荐用户', prop: 'member_count'},
         {label: '加入时间', prop: 'create_time', formatter: this.dateFormatter}
       ],
@@ -117,15 +119,25 @@ export default {
       total: 0,
       dateArr: [],
       dialogShow: false,
-      codeText: ''
+      codeText: '',
+      firstAgentOptions: []
     }
   },
   created() {
+    this.getFirstAgentOptions()
     this.getTableData(1)
   },
   methods: {
     handleSearch() {
       this.getTableData(1)
+    },
+    getFirstAgentOptions() {
+      getFirstAgentOptions().then(res => {
+        const {data} = res
+        this.firstAgentOptions = data
+      }).catch(err => {
+        console.log(err)
+      })
     },
     getTableData(page) {
       // todo: 入参待补全

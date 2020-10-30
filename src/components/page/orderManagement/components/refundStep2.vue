@@ -75,7 +75,7 @@
     </div>
     <div class="footer-bar flex">
       <p>合计退款金额：<span>￥100.00</span></p>
-      <el-button type="primary">确定退款</el-button>
+      <el-button type="primary" @click="handleRefund">确定退款</el-button>
     </div>
   </div>
 </template>
@@ -94,6 +94,15 @@ export default {
         bonus: 0
       }
     }
+  },
+  props: {
+    params: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  methods: {
+    handleRefund() {}
   }
   
 }

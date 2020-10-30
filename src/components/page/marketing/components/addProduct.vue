@@ -8,12 +8,17 @@
         class="form-row"
       >
         <el-form-item>
-          <el-select v-model="form.kind_name" @change="getBoxList(1)">
-            <el-option value="1"></el-option>
+          <el-select v-model="form.kind_id" @change="getGoodsList(1)">
+            <el-option
+              v-for="item in goodsOptions"
+              :label="item.name"
+              :value="item.id"
+              :key="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-input v-model="form.keyword" @change="getBoxList(1)" prefix-icon="el-icon-search"></el-input>
+          <el-input v-model="form.keyword" @change="getGoodsList(1)" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
       </el-form>
       <div class="main-body">
@@ -57,31 +62,42 @@
 
 <script>
 import { getBoxList } from '@/components/page/goodsmanage/goods/api'
-import { addMemberProducts } from '@/api/marketing'
+import { addMemberProducts, getGoodsCateOptions, getGoodsList } from '@/api/marketing'
 export default {
   data() {
     return {
       form: {
         page_no: 1,
-        kind_name: '',
+        kind_id: '',
         page_size: 10,
         keyword: ''
       },
       data: [],
       total: 0,
-      goods_id: []
+      goods_id: [],
+      goodsOptions: []
     }
   },
   created() {
     this.getTableData(1)
   },
   methods: {
+    getGoodsCateOptions() {
+      getGoodsCateOptions().then(res => {
+        const { data } = res.data
+        this.goodsOptions = data
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     getTableData(page) {
       this.form.page_no = page
-      getBoxList(this.form).then(res => {
+      getGoodsList(this.form).then(res => {
         const { all_count, data } = res.data
         this.total = all_count
         this.data = data
+      }).catch(err => {
+        console.log(err)
       })
     },
     handleCurChange(page) {

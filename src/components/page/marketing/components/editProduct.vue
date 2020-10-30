@@ -10,45 +10,25 @@
     <div class="options">
       <p class="label">优惠方式：</p>
       <!-- todo: label名待定 -->
-      <el-radio v-model="productInfo.type" label="target_discount">优惠折扣</el-radio>
-      <el-radio v-model="productInfo.type" label="target_price">指定价格</el-radio>
+      <el-radio v-model="rowData.type" label="target_discount">优惠折扣</el-radio>
+      <el-radio v-model="rowData.type" label="target_price">指定价格</el-radio>
     </div>
     <div class="main-body">
       <div class="main-header body-row">
         <p>参与会员价</p>
         <p>优惠规则</p>
       </div>
-      <div class="body-row">
-        <p><el-checkbox>多多会员</el-checkbox></p>
-        <p class="input-cter input-price" v-show="productInfo.type==='target_price'"><el-input disabled></el-input></p>
-        <p class="input-cter input-discount" v-show="productInfo.type==='target_discount'"><el-input disabled></el-input></p>
-      </div>
-      <div class="body-row">
-        <p>
-          <el-checkbox v-model="productInfo.testDataLevelID1">亲子会员</el-checkbox>
-        </p>
-        <p class="input-cter input-price" v-show="productInfo.type==='target_price'">
-          <el-input v-model.number="productInfo.testDataLevelID1.price" ></el-input>
-        </p>
-        <p class="input-cter input-discount" v-show="productInfo.type==='target_discount'">
-          <el-input v-model.number="productInfo.testDataLevelID1.price"></el-input>
-        </p>
-      </div>
-      <div class="body-row">
-        <p><el-checkbox v-model="productInfo.testDataLevelID2">黄金会员</el-checkbox></p>
-        <p class="input-cter input-price" v-show="productInfo.type==='target_price'"><el-input v-model.number="productInfo.testDataLevelID2.price"></el-input></p>
-        <p class="input-cter input-discount" v-show="productInfo.type==='target_discount'"><el-input v-model.number="productInfo.testDataLevelID2.discount"></el-input></p>
-      </div>
-      <div class="body-row">
-        <p><el-checkbox v-model="productInfo.testDataLevelID3">铂金会员</el-checkbox></p>
-        <p class="input-cter input-price" v-show="productInfo.type==='target_price'"><el-input v-model.number="productInfo.testDataLevelID3.price"></el-input></p>
-        <p class="input-cter input-discount" v-show="productInfo.type==='target_discount'"><el-input v-model.number="productInfo.testDataLevelID3.discount"></el-input></p>
-      </div>
-      <div class="body-row">
-        <p><el-checkbox v-model="productInfo.testDataLevelID4">钻石会员</el-checkbox></p>
-        <p class="input-cter input-price" v-show="productInfo.type==='target_price'"><el-input v-model.number="productInfo.testDataLevelID4.price"></el-input></p>
-        <p class="input-cter input-discount" v-show="productInfo.type==='target_discount'"><el-input v-model.number="productInfo.testDataLevelID4.discount"></el-input></p>
-      </div>
+      <el-checkbox-group v-model="checkList">
+        <div class="body-row" v-for="item in memberLevels" :key="item.level_id">
+          <p><el-checkbox :label="item.level_id">{{item.name}}</el-checkbox></p>
+          <p class="input-cter input-price" v-show="rowData.type==='target_price'">
+            <el-input v-model.number="rowData[item.level_id].price" ></el-input>
+          </p>
+          <p class="input-cter input-discount" v-show="rowData.type==='target_discount'">
+            <el-input v-model.number="rowData[item.level_id].discount"></el-input>
+          </p>
+        </div>
+      </el-checkbox-group>
     </div>
     <div class="footer-bar">
       <el-button @click="handleCancel">取消</el-button>
@@ -59,17 +39,10 @@
 
 <script>
 import { setMemberProduct } from '@/api/marketing'
+import _ from 'lodash'
 export default {
   data() {
     return {
-      productInfo: {
-        type: '', // target_price、target_discount
-        member_price_id: '',
-        testDataLevelID1: {price: 0, discount: 0},
-        testDataLevelID2: {price: 0, discount: 0},
-        testDataLevelID3: {price: 0, discount: 0},
-        testDataLevelID4: {price: 0, discount: 0}
-      },
       checkList: []
     }
   },
@@ -77,31 +50,20 @@ export default {
     rowData: {
       type: Object,
       default: () => {}
+    },
+    memberLevels: {
+      type: Array,
+      default: () => []
     }
   },
-  created() {
-    this.init()
-  },
   methods: {
-    init() {
-      this.productInfo.member_price_id = this.rowData.member_price_id
-      this.productInfo.type = this.rowData.type
-      this.productInfo.testDataLevelID1.price = this.rowData['1testDataLevelID'] && this.rowData['1testDataLevelID'].price || ''
-      this.productInfo.testDataLevelID1.discount = this.rowData['1testDataLevelID'] && this.rowData['1testDataLevelID'].discount || ''
-      this.productInfo.testDataLevelID2.price = this.rowData['2testDataLevelID'] && this.rowData['2testDataLevelID'].price || ''
-      this.productInfo.testDataLevelID2.discount = this.rowData['2testDataLevelID'] && this.rowData['2testDataLevelID'].discount || ''
-      this.productInfo.testDataLevelID3.price = this.rowData['3testDataLevelID'] && this.rowData['3testDataLevelID'].price || ''
-      this.productInfo.testDataLevelID3.discount = this.rowData['3testDataLevelID'] && this.rowData['3testDataLevelID'].discount || ''
-      this.productInfo.testDataLevelID4.price = this.rowData['4testDataLevelID'] && this.rowData['4testDataLevelID'].price || ''
-      this.productInfo.testDataLevelID4.discount = this.rowData['4testDataLevelID'] && this.rowData['4testDataLevelID'].discount || ''      
-    },
     handleSave() {
-      const params = Object.assign({}, this,this.productInfo)
-      params['1testDataLevelID'] = this.productInfo.testDataLevelID1
-      params['2testDataLevelID'] = this.productInfo.testDataLevelID2
-      params['3testDataLevelID'] = this.productInfo.testDataLevelID3
-      params['4testDataLevelID'] = this.productInfo.testDataLevelID4
-      console.log('params: ', params)
+      const params = Object.assign({}, this.rowData)
+      const memberLevelIds = this.memberLevels.map(item => item.level_id)
+      const diffIds = _.difference(memberLevelIds, this.checkList)
+      diffIds.forEach(ele => {
+        delete params[ele]
+      });
       setMemberProduct(this.productInfo).then(res => {
         this.$message.success('设置成功')
         this.$emit('success')
