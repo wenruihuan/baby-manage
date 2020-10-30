@@ -143,11 +143,12 @@ export default {
         handleSave () {
             this.dialogVisible = false;
             const list = this.selection.map(item => ({
-                ...item,
+                rel_id: item.card_id,
                 right_name: item.name,
                 rel_type: item.type
             }));
             this.list = this.list.concat(list);
+            this.$emit('save', this.list);
         }
     }
 }

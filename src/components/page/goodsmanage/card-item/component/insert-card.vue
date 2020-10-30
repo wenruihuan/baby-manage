@@ -11,7 +11,7 @@
             <div class="content">
                 <el-form class="edit-form" ref="boxForm" :model="form" label-width="100px" :rules="isEdit ? rules : {}">
                     <el-form-item label="名称:" prop="name">
-                        <el-input class="card-input" v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
+                        <el-input class="card-input" v-if="isEdit" placeholder="长度为1-100个字" maxlength="100" v-model="form.name"></el-input>
                         <span v-else>{{ form.name }}</span>
                     </el-form-item>
                     <el-form-item label="充值金额:" prop="price">
@@ -21,18 +21,18 @@
                         <p v-if="isEdit" class="tip">可支持原价购买所有服务和产品，及次卡</p>
                         <span v-else>￥{{ form.price }}</span>
                     </el-form-item>
-                    <el-form-item label="赠送金额:" prop="gifts_amount">
-                        <el-input class="card-input" v-if="isEdit" v-model="form.gifts_amount">
+                    <el-form-item label="赠送金额:" prop="gift_price">
+                        <el-input class="card-input" v-if="isEdit" v-model="form.gift_price">
                             <template slot="prepend">￥</template>
                         </el-input>
                         <p class="tip" v-if="isEdit">保存后赠送金额不可修改，请谨慎填写</p>
                         <span v-else>￥{{ form.gifts_amount }}</span>
                     </el-form-item>
                     <el-form-item label="权益:" prop="access">
-                        <edit-quanlity v-if="rightsList" :rights-list="rightsList" ref="editQuanlity" />
+                        <edit-quanlity v-if="rightsList" :rights-list="rightsList" ref="editQuanlity" @save="saveRights" />
                     </el-form-item>
                     <el-form-item label="购卡赠送:" prop="send">
-                        <send-card v-if="buyList" :buy-list="buyList" ref="buyCard" />
+                        <send-card v-if="buyList" :buy-list="buyList" ref="buyCard" @save="saveBuyCard" />
                     </el-form-item>
                     <el-form-item label="有效时间:" prop="isInfinity">
                         <el-radio-group v-if="isEdit" v-model="isInfinity">
@@ -201,10 +201,10 @@ export default {
                    const data = await getInsertDetail({ card_id });
                    if (data.code === ERR_OK) {
                        this.form.intr = '';
-                       this.form = data.data;
-                       this.rightsList = data.data.right || [];
-                       this.buyList = data.data.gifts || [];
-                       this.isInfinity = data.data.validity ? 0 : 1;
+                       this.form = data.data.data;
+                       this.rightsList = this.form.right || [];
+                       this.buyList = this.form.gifts || [];
+                       this.isInfinity = this.form.validity ? 0 : 1;
                    }
                } catch (e) {
                    console.log(`src/components/page/goodsmanage/card-item/component/insert-card.vue getInsertDetail error: ${e}`);
@@ -290,6 +290,15 @@ export default {
                 }
             }
         },
+        /* 暂时保存权益 */
+        saveRights (list) {
+            this.form.right = list;
+            this.rightsList = list;
+        },
+        /* 暂时保存赠送权益 */
+        saveBuyCard (list) {
+            this.form.gifts = [...this.form.gifts, ...list];
+        }
     }
 };
 </script>

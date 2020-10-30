@@ -19,13 +19,13 @@
                         <div>
                             <p class="category-text">{{ scope.row.name }}</p>
                             <p class="category-text">￥{{ scope.row.price }}</p>
-                            <p class="category-tip">￥{{ scope.row.tip }}</p>
+                            <p class="category-tip">赠送￥{{ scope.row.tip }}</p>
                         </div>
                     </div>
                 </template>
             </el-table-column>
             <el-table-column
-                    prop="expire_day"
+                    prop="validity"
                     label="有效期">
             </el-table-column>
             <el-table-column
@@ -145,10 +145,10 @@ export default {
             this.$emit('handleCurrentChange', value);
         },
         handleEdit (index, row) {
-            this.$emit('handleEdit', { index, row });
+            this.$emit('handleEdit', { row, index });
         },
-        handleView (row) {
-            this.$emit('handleView', row);
+        handleView (index, row) {
+            this.$emit('handleView', { row, index });
         },
         handlePublish (id, isPublish) {
             if (id) {
@@ -186,7 +186,7 @@ export default {
     align-items: center;
 }
 .img-wrapper {
-    max-width: 100px;
+    max-width: 60px;
     height: auto;
 }
 .category-tip {

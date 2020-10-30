@@ -25,7 +25,7 @@
         <el-tabs type="border-card">
             <el-tab-pane label="全部卡类">
                 <card-table
-                    :table-data="tableData1"
+                    :table-data="tableData"
                     @handleEdit="handleEdit"
                     @handleView="handleView"
                     @handleCorrectSort="handleCorrectSort"
@@ -77,12 +77,14 @@ export default {
     data () {
         return {
             tableData: [],
-            tableData1: tableData1,
             searchVal: '',
             isCikaShow: false,
             isDiscountShow: false,
             isInsertShow: false
         };
+    },
+    created () {
+        this.getList();
     },
     methods: {
         /* 添加卡项 */
@@ -104,12 +106,12 @@ export default {
                 console.log(`card-item getList error: ${e}`);
             }
         },
-        handleEdit ({ index, row }) {
-            this.$router.push(`/insert-card?id=${row.id}`);
+        handleEdit ({ row, index }) {
+            this.$router.push(`/insert-card?id=${row.card_id}`);
         },
         /* 去到详情页 */
-        handleView (row) {
-            this.$router.push(`/insert-card-view?id=${ row.id }`);
+        handleView ({ row, index }) {
+            this.$router.push(`/insert-card-view?id=${ row.card_id }`);
         },
         /* 排序 */
         async handleCorrectSort (row) {

@@ -37,11 +37,14 @@
                     <el-tree
                         class="filter-tree"
                         :data="treeData"
+                        node-key="right_id"
+                        :default-checked-keys="rightsList.map(item => item.right_id)"
                         show-checkbox
                         default-expand-all
                         :props="defaultProps"
                         :filter-node-method="filterNode"
                         ref="tree"
+                        @check="checkTree"
                     >
                     </el-tree>
                 </div>
@@ -49,10 +52,10 @@
                     <el-table
                         :data="ruleData"
                     >
-                        <el-table-column prop="hasSelected" label="已选"></el-table-column>
-                        <el-table-column prop="rule" label="优惠规则">
+                        <el-table-column prop="right_name" :label="`已选(${ ruleData.length })`"></el-table-column>
+                        <el-table-column prop="discount" label="优惠规则">
                             <template slot-scope="scope">
-                                <el-input style="width: 150px" v-model="scope.row.rule">
+                                <el-input style="width: 150px" v-model="scope.row.discount">
                                     <template slot="append">折</template>
                                 </el-input>
                             </template>
@@ -74,7 +77,6 @@
 </template>
 
 <script>
-import { treeData, ruleData } from '@/components/page/goodsmanage/card-item/mock';
 import { getRechargeRight, getServiceList } from '@/components/page/goodsmanage/card-item/api';
 import { ERR_OK } from '@/components/page/goodsmanage/box/api';
 
@@ -94,10 +96,10 @@ export default {
             treeData: [],
             defaultProps: {
                 children: 'children',
-                label: 'card_name',
-                id: 'card_id'
+                label: 'right_name',
+                id: 'right_id'
             },
-            ruleData: ruleData
+            ruleData: []
         };
     },
     watch: {
@@ -129,63 +131,19 @@ export default {
             this.dialogVisible = true;
             this.getRechargeRight();
         },
-        changeTreeData (treeData = [], { prevId, prevLabel }, { nextId, nextLabel }) {
-            const arr = [];
-            treeData.forEach(item => {
-               if (Array.isArray(item.children) && item.children.length > 0) {
-                   this.changeTreeData(item.children, { prevId, prevLabel }, { nextId, nextLabel });
-               } else {
-                   let obj = {};
-                   obj[nextId] = item[prevId];
-                   obj[nextLabel] = item[prevLabel];
-                   arr.push(obj);
-               }
-            });
-            return arr;
-        },
         /* 获取权益列表 */
         async getRechargeRight () {
             try {
                 const data = await getRechargeRight();
                 if (data.code === ERR_OK) {
-                    const serviceTree = this.changeTreeData(data.data.service,
-                        { prevId: 'service_id', prevLabel: 'service_name' },
-                        { nextId: 'card_id', nextLabel: 'card_name' });
-                    const goodsTree = this.changeTreeData(data.data.service,
-                        { prevId: 'kind_id', prevLabel: 'kind_name' },
-                        { nextId: 'card_id', nextLabel: 'card_name' });
-                    const treeData = [
-                        {
-                            card_id: 'goods',
-                            card_name: '商品',
-                            children: goodsTree
-                        },
-                        {
-                            card_id: 'time_card',
-                            card_name: '次卡',
-                            children: data.data.time_card
-                        },
-                        {
-                            card_id: 'discount_card',
-                            card_name: '折扣卡',
-                            children: data.data.discount_card
-                        },
-                        {
-                            card_id: 'recharge_card',
-                            card_name: '充值卡',
-                            children: data.data.recharge_card
-                        },
-                        {
-                            card_id: 'service',
-                            card_name: '服务',
-                            children: serviceTree
-                        },
-                    ];
-                    this.treeData = treeData;
+                    this.treeData = data.data;
                 }
             } catch (e) {
                 console.log(`goodsmanage/card-item/component/edit-quanlity/index.vue getRechargeRight error: ${ e }`);
             }
+        },
+        checkTree (data, { checkedNodes, checkedKeys }) {
+            this.ruleData = checkedNodes.filter(item => !Array.isArray(item.children));
         },
         /* 模态框中删除权益 */
         removeItem (row, index) {
@@ -198,6 +156,7 @@ export default {
         /* 保存 */
         handleSave () {
             this.dialogVisible = false;
+            this.$emit('save', this.ruleData);
         }
     }
 }

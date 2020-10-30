@@ -19,12 +19,16 @@
                                 <span class="val">{{ insertDetail.is_publish === '1' ? '上架' : '下架' }}</span>
                             </li>
                             <li>
-                                <span class="key">售价:</span>
+                                <span class="key">充值金额:</span>
                                 <span class="val">￥{{ insertDetail.price }}</span>
                             </li>
                             <li>
+                                <span class="key">赠送金额:</span>
+                                <span class="val">￥{{ insertDetail.gift_price }}</span>
+                            </li>
+                            <li>
                                 <span class="key">网店展示:</span>
-                                <span class="val">{{ insertDetail.is_show === '1' ? '展示' : '不展示' }}</span>
+                                <span class="val">{{ insertDetail.is_show === 1 ? '展示' : '不展示' }}</span>
                             </li>
                             <li>
                                 <span class="key">卡包名称:</span>
@@ -74,6 +78,7 @@
                         </div>
                         <el-table
                                 :data="hasSellList"
+                                @selection-change="handleSelectionChange"
                         >
                             <el-table-column type="selection" width="55"></el-table-column>
                             <el-table-column prop="name" label="卡项名称"></el-table-column>
@@ -118,8 +123,8 @@
                         </el-table>
                         <div class="pagination-cont">
                             <div class="tool-btn">
-                                <el-button :disabled="hasSellList.length <= 0" @click="shixiao">使失效</el-button>
-                                <el-button :disabled="hasSellList.length <= 0" @click="updateExpire">修改有效期</el-button>
+                                <el-button :disabled="selection.length <= 0" @click="shixiao">使失效</el-button>
+                                <el-button :disabled="selection.length <= 0" @click="updateExpire">修改有效期</el-button>
                             </div>
                             <el-pagination
                                     :current-page="curPage2"
@@ -144,10 +149,11 @@
                         </div>
                         <el-table
                                 :data="historyList"
+                                @selection-change="handleSelectionChange"
                         >
                             <el-table-column type="selection" width="55"></el-table-column>
-                            <el-table-column prop="update_time" label="修改时间"></el-table-column>
-                            <el-table-column prop="update_person" label="修改人"></el-table-column>
+                            <el-table-column prop="createTime" label="修改时间"></el-table-column>
+                            <el-table-column prop="editer_name" label="修改人"></el-table-column>
                             <el-table-column prop="name" label="卡项名称"></el-table-column>
                             <el-table-column prop="validity" label="有效期">
                                 <template slot-scope="scope">
@@ -164,8 +170,8 @@
                         </el-table>
                         <div class="pagination-cont">
                             <div class="tool-btn">
-                                <el-button :disabled="historyList.length <= 0" @click="shixiao">使失效</el-button>
-                                <el-button :disabled="historyList.length <= 0" @click="updateExpire">修改有效期</el-button>
+                                <el-button :disabled="selection.length <= 0" @click="shixiao">使失效</el-button>
+                                <el-button :disabled="selection.length <= 0" @click="updateExpire">修改有效期</el-button>
                             </div>
                             <el-pagination
                                     :current-page="curPage2"
@@ -256,6 +262,7 @@ import {
 import { getRechargeHistoryDetail, getSoldDetail, getSoldList } from '../api';
 import moment from 'moment';
 import { CARD__KIND_GRP, CARD_STATUS_MAP } from '@/components/page/goodsmanage/utils';
+import { gettime } from '../../utils';
 
 export default {
     data () {
@@ -291,9 +298,9 @@ export default {
                 try {
                     const data = await getInsertDetail({ card_id });
                     if (data.code === ERR_OK) {
-                        this.insertDetail = data.data;
+                        this.insertDetail = data.data.data;
                         this.isPublish = this.insertDetail.is_publish;
-                        this.quanlityList = (data.data.right || []).map(item => ({
+                        this.quanlityList = (this.insertDetail.right || []).map(item => ({
                             ...item,
                             typeName: CARD__KIND_GRP[item.rel_type]
                         }));
@@ -308,7 +315,7 @@ export default {
             try {
                 const data = await getDefaultPic();
                 if (data.code === ERR_OK) {
-                    this.defaultPic = data.data.time;
+                    this.defaultPic = data.data.recharge;
                 }
             } catch (e) {
                 console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue error: ${e}`);
@@ -397,7 +404,7 @@ export default {
                             ...item,
                             rights_count: item.rights.rights_count,
                             gifts_count: item.rights.gifts_count,
-                            create_time: moment(item.create_time).format("yyyy-MM-DD hh:mm:ss"),
+                            create_time: moment(gettime(item.order.create_time)).format('yyyy-MM-DD HH:mm:ss'),
                             invalidName: CARD_STATUS_MAP[item.is_invalid]
                         };
                     });
@@ -412,9 +419,12 @@ export default {
         async getRechargeHistoryList () {
             try {
                 const card_id = this.$route.query.id;
-                const data = await getRechargeHistoryList({ card_id, page_no: this.curPage1 });
+                const data = await getRechargeHistoryList({ card_id, page_no: this.curPage1, keyword: this.searchVal });
                 if (data.code === ERR_OK) {
-                    this.historyList = data.data.data;
+                    this.historyList = data.data.data.map(item => ({
+                        ...item,
+                        createTime: moment(gettime(item.create_time)).format('yyyy-MM-DD HH:mm:ss')
+                    }));
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
@@ -451,6 +461,9 @@ export default {
         background: white;
         box-sizing: border-box;
         padding: 10px;
+    }
+    .cika-view .content-container /deep/ .el-card {
+        height: 100%;
     }
     .content-container .card-img {
         max-width: 100%;
