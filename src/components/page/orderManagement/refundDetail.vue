@@ -53,12 +53,11 @@
     <div class="info">
       <p class="info-title">退款进度</p>
       <div class="info-body">
-        <p class="info-body-name"><img :src="memberInfo.member_url" alt="">{{memberInfo.member_name}}</p>
         <div class="info-body-main">
           <div class="row">
             <div>
               <span class="label">现金退款：</span>
-              <span class="text">{{refundInfo.refund_price}}</span>
+              <span class="text">￥{{refundInfo.refund_price}}</span>
             </div>
           </div>
           <div class="row">
@@ -109,8 +108,8 @@
       </div>
     </div>
     <div class="info">
-      <p class="info-title">退款信息</p>
-      <div class="">
+      <p class="info-title">退款明细</p>
+      <div>
         <div class="info-body-main">
           <el-table :data="consume" style="width:100%">
             <el-table-column label="商品" prop="name" width="260" align="center">
@@ -125,7 +124,7 @@
             <el-table-column label="订单来源" prop="order_source" align="center"></el-table-column>
             <el-table-column label="单价（元）" prop="price" align="center"></el-table-column>
             <el-table-column label="数量" prop="count" align="center"></el-table-column>
-            <el-table-column label="商品优惠" prop="2" align="center">
+            <el-table-column label="商品优惠" align="center">
               <template slot-scope="scope">
                 <span>{{scope.row.price*scope.row.count-scope.row.total_price}}</span>
               </template>
@@ -136,15 +135,15 @@
             <div class="summary-item">
               <div class="space"></div>
               <span class="summary-label">订单退款：现金</span>
-              <span class="summary-amount">￥{{checkoutPrice}}</span>
+              <span class="summary-amount">￥{{refundInfo.checkout_price}}</span>
             </div>
             <div class="summary-item">
               <div class="space"></div>
               <span class="summary-label">合计退款：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <span class="summary-amount">￥{{balancePrice}}</span>
+              <span class="summary-amount">￥{{refundInfo.total_price}}</span>
             </div>
           </div>
-          <div class="footer-bar" v-if="!isProductOrderInfo">
+          <div class="footer-bar">
             <el-button @click="handlePrint">打印退款小票</el-button>
           </div>
         </div>
@@ -161,8 +160,7 @@
       <component 
         :is="componentName" 
         :params="dialogParams"
-        @nextStep="handleNextStep"
-        @cancel="handleCancle"
+        @cancel="handleCancel"
         @success="handlePrintSuccess"
       ></component>
     </el-dialog>
@@ -174,6 +172,7 @@
 <script>
 import Breadcrumb from '@/components/common/address'
 import {getRefundDetail} from '@/api/orderManagement'
+import PrintTicket from './components/printTicket'
 import dayjs from 'dayjs'
 export default {
   name: 'refundDetail',
@@ -182,16 +181,18 @@ export default {
       orderId: this.$route.params.id,
       breadcrumbList: [
         { name: '首页', router: 'dashboard' },
-        { name: '订单列表', router: 'OrderList' },
+        { name: '退单列表', router: 'RefundList' },
         { name: '退单详情', router: 'RefundDetail' },
       ],
       memberInfo: {},
-      consume: {},
-      refundInfo: {}
+      consume: [],
+      refundInfo: {},
+      dialogShow: false
     }
   },
   components: {
-    Breadcrumb
+    Breadcrumb,
+    PrintTicket
   },
   created() {
     this.init()
@@ -210,7 +211,24 @@ export default {
       }).catch(err => {
         console.log(err)
       })
-    } 
+    },
+    handlePrint() {
+      this.setDilogProp('printTicket', '', '300px', 'print-dialog', {})
+    },
+    setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName, dialogParams) {
+      this.dialogTitle = dialogTitle
+      this.componentName = componentName
+      this.dialogWidth = dialogWidth
+      this.dialogClassName = dialogClassName
+      this.dialogShow = true
+      this.dialogParams = dialogParams
+    },
+    handleCancel() {
+      this.dialogShow = false
+    },
+    handlePrintSuccess() {
+      this.dialogShow = false
+    }
   },
   filters: {
     timeFormatter(val) {
@@ -219,7 +237,14 @@ export default {
   }
 }
 </script>
-
+<style lang="css">
+  .print-dialog .el-dialog__body {
+    padding: 0
+  }
+  .print-dialog .el-dialog__header {
+    padding: 0
+  }
+</style>
 <style lang="css" scoped>
   .order-detail {
     background-color: #ffffff;

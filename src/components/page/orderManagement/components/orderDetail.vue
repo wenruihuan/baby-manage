@@ -63,7 +63,7 @@
           <div class="row">
             <div>
               <span class="label">订购时间：</span>
-              <span class="text">{{orderInfo.create_time | timeFormatter}}</span>
+              <span class="text">{{orderInfo.create_time}}</span>
             </div>
             <div>
               <!-- 未返回信息 -->
@@ -170,7 +170,7 @@
               <span class="summary-amount">￥{{balancePrice}}</span>
             </div>
           </div>
-          <div class="footer-bar" v-if="!isProductOrderInfo">
+          <div class="footer-bar" v-if="isOrder">
             <el-button @click="handlePrint">打印小票</el-button>
             <!-- 判断可退款状态 -->
             <el-button type="primary" @click="handleRefund">主动退款</el-button>
@@ -189,7 +189,7 @@
             <el-table-column label="退款金额（元）" prop="operator" align="center"></el-table-column>
             <el-table-column label="操作" prop="5" align="center">
               <template slot-scope="scoped">
-                <el-button type="text">详情</el-button>
+                <el-button type="text" @click="handleJumpToDetail(scoped.row.refund_id)">详情</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -243,7 +243,7 @@
         :is="componentName" 
         :params="dialogParams"
         @nextStep="handleNextStep"
-        @cancel="handleCancle"
+        @cancel="handleCancel"
         @success="handlePrintSuccess"
       ></component>
     </el-dialog>
@@ -315,17 +315,18 @@ export default {
     const params = {order_id: this.orderId}
     this.reqFn(params).then(res => {
       const {order_info, member_info, type, consume,
-        booking_info, consume_info, refund_detail, oplog_detail } = res.data
+        booking_info, consume_info, refund_detail, oplog_detail, total_price=0, checkout_price=0 } = res.data
       this.orderDetailObj = res.data
       this.orderInfo = order_info || {}
       this.memberInfo = member_info || {}
       this.type = type || ''
       this.consume = consume || []
       this.bookingInfo = booking_info || null
-      this.totalPrice = consume_info.total_price || 0
+      this.totalPrice = consume_info ? consume_info.total_price : total_price
+      console.log(this.totalPrice, total_price)
       this.balancePrice = consume_info.balance_price || 0
-      this.checkoutPrice = consume_info.checkout_price || 0
-      this.payTypeName = consume_info.consume_info || ''
+      this.checkoutPrice = consume_info ? consume_info.checkout_price : checkout_price
+      this.payTypeName = consume_info.pay_type_name || ''
       this.refundData.push(refund_detail)
       this.logData.push(oplog_detail)
     })
@@ -335,9 +336,6 @@ export default {
       this.dialogShow = true
       this.setDilogProp('refundStep1', '退款商品', '700px', '' )
     },
-    getRefundInfo() {
-
-    },
     handleNextStep() {
       this.dialogShow = false
       this.setDilogProp('refundStep2', '主动退款', '700px', '' )
@@ -345,11 +343,12 @@ export default {
     handlePrint() {
       this.setDilogProp('printTicket', '', '300px', 'print-dialog')
     },
-    setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName) {
+    setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName, dialogParams) {
       this.dialogTitle = dialogTitle
       this.componentName = componentName
       this.dialogWidth = dialogWidth
       this.dialogClassName = dialogClassName
+      this.dialogParams = dialogParams
       this.dialogShow = true
     },
     handleCancel() {
@@ -364,6 +363,9 @@ export default {
       } else {
         return ''
       }
+    },
+    handleJumpToDetail(refundId) {
+      this.$router.push(`/RefundDetail/${refundId}`)
     }
   },
   filters: {
@@ -452,12 +454,12 @@ export default {
     color: #909399;
   }
   .summary-item span.summary-label {
-    width: 9%;
+    width: 120px;
     text-align: left;
   }
   .summary-item span.summary-amount {
-    width: 13%;
-    text-align: center;
+    width: 140px;
+    text-align: left;
   }
   .space {
     flex: 1

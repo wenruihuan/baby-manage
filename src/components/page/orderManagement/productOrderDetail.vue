@@ -2,8 +2,8 @@
   <div class="refund-detail">
     <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
     <order-detail
-      orderType="refund"
-      :reqFn="getRefundDetail"
+      orderType="productOrder"
+      :reqFn="getProductOrderDetail"
       :orderId="orderId"
     ></order-detail>
   </div>

@@ -6,7 +6,7 @@
         <el-form ref="form" :inline="true" :model="form" label-width="80">
           <el-row class="form-row">
             <el-form-item class="form-row-left">
-              <el-button type="primary">开单收银</el-button>
+              <el-button type="primary" @click="handleBilling">开单收银</el-button>
             </el-form-item>
             <el-form-item>
               <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号"></el-input>
@@ -40,22 +40,22 @@
           </el-row>
           <el-row>
             <el-form-item label="退款方式：" class="form-item">
-              <el-select v-model="form.refund_way">
-                <el-option label="全部" :value="0"></el-option>
-                <el-option label="原路返回" :value="1"></el-option>
-                <el-option label="现金退款" :value="2"></el-option>
-                <el-option label="其他" :value="3"></el-option>
+              <el-select v-model="form.refund_way" clearable>
+                <!-- <el-option label="全部" :value="0"></el-option> -->
+                <el-option label="原路返回" value="原路返回"></el-option>
+                <el-option label="现金退款" value="现金退款"></el-option>
+                <el-option label="其他" value="其他"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="退款门店：" class="form-item">
               <span>多多亲子岁月一店</span>
             </el-form-item>
             <el-form-item label="订单来源：" class="form-item">
-              <el-select v-model="form.source">
-                <el-option label="全部" :value="0"></el-option>
-                <el-option label="第三方支付" :value="1"></el-option>
-                <el-option label="店内消费" :value="2"></el-option>
-                <el-option label="线上支付" :value="3"></el-option>
+              <el-select v-model="form.source" clearable>
+                <!-- <el-option label="全部" value="0"></el-option> -->
+                <el-option label="第三方支付" value="第三方支付"></el-option>
+                <el-option label="店内消费" value="店内消费"></el-option>
+                <el-option label="线上支付" value="线上支付"></el-option>
               </el-select>
             </el-form-item>
           </el-row>
@@ -74,7 +74,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
+            <el-button type="text" @click="jumpToDetail(scope.row.order_id)">查看订单</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -168,7 +168,7 @@ export default {
         this.total = all_count
       })
     },
-    jumpToOrderDetail(orderId) {
+    jumpToDetail(orderId) {
       this.$router.push(`/RefundDetail/${orderId}`)
     },
     handleCurChange(page) {
@@ -177,6 +177,9 @@ export default {
     handleDateChange(val) {
       this.form.start_time = val[0]
       this.form.end_time = val[1]
+    },
+    handleBilling() {
+      this.$router.push('/billing')
     }
   }
 }

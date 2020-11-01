@@ -52,7 +52,7 @@
             </el-form-item>
             <el-form-item label="订单来源：" class="form-item">
               <el-select v-model="form.order_source">
-                <el-option label="全部" :value="0"></el-option>
+                <!-- <el-option label="全部" :value="0"></el-option> -->
                 <el-option label="第三方支付" value="第三方支付"></el-option>
                 <el-option label="店内消费" value="店内消费"></el-option>
                 <el-option label="线上支付" value="线上支付"></el-option>
@@ -148,7 +148,8 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
+                <!-- todo: 2:已发货，待确认 -->
+                <el-button  type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -269,12 +270,12 @@ export default {
       })
     },
     handleSearch() {
-      this.getTableData(0)
+      this.getTableData(1)
     },
     handleTabClick() {
       this.form.order_status = tabDataCfg[this.activeTab].orderStatus
       if (this[tabDataCfg[this.activeTab].data].length === 0) {
-        this.getTableData(0)
+        this.getTableData(1)
       }
     },
     getTableData(page) {

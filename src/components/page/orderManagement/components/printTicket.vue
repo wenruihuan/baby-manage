@@ -113,7 +113,7 @@ export default {
     }
   },
   props: {
-    ticketInfo: {
+    dialogParams: {
       type: Object,
       default: () => {}
     }

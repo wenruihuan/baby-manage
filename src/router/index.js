@@ -145,7 +145,7 @@ export default new Router({
                     meta: { title: '商品订单列表' }
                 },
                 {
-                    path: '/ProductOrderDetail',
+                    path: '/ProductOrderDetail/:id',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/orderManagement/productOrderDetail.vue'),
                     meta: { title: '商品订单详情' }
                 },

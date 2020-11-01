@@ -63,12 +63,33 @@
               :label="item.label"
               :prop="item.prop"
               :width="item.width"
+              :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="jumpToOrderDetail">查看订单</el-button>
+                <el-button v-if="scope.row.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
+                <p v-if="scope.row.order_status === '1'">
+                  <el-popover
+                    placement="top-start"
+                    width="400"
+                    trigger="click">
+                    <div class="pop-content">
+                      <div class="popRow">
+                        <p class="popRow-label">收件人：</p>
+                        <p class="popRow-text">王太太/+86 12312312321</p>
+                      </div>
+                      <div class="popRow">
+                        <p class="popRow-label">收件人地址：</p>
+                        <p class="popRow-text">江苏省 南京市 建邺区 奥体名座A座 1309室</p>
+                      </div>
+                    </div>
+                    <el-button slot="reference" type="text">查看地址</el-button> 
+                  </el-popover>
+                  <span>|</span>
+                  <el-button type="text" @click="showSendDialog">发货</el-button>
+                </p>
               </template>
             </el-table-column>
           </el-table>
@@ -89,12 +110,33 @@
               :label="item.label"
               :prop="item.prop"
               :width="item.width"
+              :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="jumpToOrderDetail">查看订单</el-button>
+                <el-button v-if="scope.row.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
+                <p v-if="scope.row.order_status === '1'">
+                  <el-popover
+                    placement="top-start"
+                    width="400"
+                    trigger="click">
+                    <div class="pop-content">
+                      <div class="popRow">
+                        <p class="popRow-label">收件人：</p>
+                        <p class="popRow-text">王太太/+86 12312312321</p>
+                      </div>
+                      <div class="popRow">
+                        <p class="popRow-label">收件人地址：</p>
+                        <p class="popRow-text">江苏省 南京市 建邺区 奥体名座A座 1309室</p>
+                      </div>
+                    </div>
+                    <el-button slot="reference" type="text">查看地址</el-button> 
+                  </el-popover>
+                  <span>|</span>
+                  <el-button type="text" @click="showSendDialog">发货</el-button>
+                </p>
               </template>
             </el-table-column>
           </el-table>
@@ -115,14 +157,33 @@
               :label="item.label"
               :prop="item.prop"
               :width="item.width"
+              :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="checkAdress">查看地址</el-button>|
-                <el-button type="text" @click="handleSend">发货</el-button>
-                <el-button type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看详情</el-button>
+                <el-button v-if="scope.row.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
+                <p v-if="scope.row.order_status === '1'">
+                  <el-popover
+                    placement="top-start"
+                    width="400"
+                    trigger="click">
+                    <div class="pop-content">
+                      <div class="popRow">
+                        <p class="popRow-label">收件人：</p>
+                        <p class="popRow-text">王太太/+86 12312312321</p>
+                      </div>
+                      <div class="popRow">
+                        <p class="popRow-label">收件人地址：</p>
+                        <p class="popRow-text">江苏省 南京市 建邺区 奥体名座A座 1309室</p>
+                      </div>
+                    </div>
+                    <el-button slot="reference" type="text">查看地址</el-button> 
+                  </el-popover>
+                  <span>|</span>
+                  <el-button type="text" @click="showSendDialog">发货</el-button>
+                </p>
               </template>
             </el-table-column>
           </el-table>
@@ -138,17 +199,44 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    <el-dialog
+      title="发货"
+      :close-on-click-modal="false"
+      :visible.sync="dialogShow"
+      @closed="handleDialogClose"
+    >
+      <el-form ref="sendForm" :model="sendForm" :rules="formRules" label-width="100px">
+        <el-form-item label="快递公司：" prop="deliveryName">
+          <el-select 
+            v-model="sendForm.deliveryName"
+            filterable
+            allow-create
+            default-first-option
+          ></el-select>
+        </el-form-item>
+        <el-form-item label="快递单号：" prop="deliveryNo">
+          <div style="width: 300px;">
+            <el-input v-model="sendForm.deliveryNo"></el-input>
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <div class="footer-bar">
+            <el-button type="primary" @click="handleDelivery">保存</el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
-import { getProductOrderList } from '@/api/orderManagement'
+import { getProductOrderList, deliveryGoods } from '@/api/orderManagement'
 const tabDataCfg = {
-  all: { data: 'dataAll', total: 'totalAll' },
-  toSend: { data: 'dataToSend', total: 'totalToSend' },
-  done: { data: 'dataDone', total: 'totalDone' },
+  all: { data: 'dataAll', total: 'totalAll', orderStatus: '' },
+  toSend: { data: 'dataToSend', total: 'totalToSend', orderStatus: 1 },
+  done: { data: 'dataDone', total: 'totalDone', orderStatus: 2 },
 }
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
@@ -169,13 +257,14 @@ export default {
         page_size: 20,
         page_no: 0,
         start_time: '',
-        end_time: ''
+        end_time: '',
+        order_status: ''
       },
       columnCfg: [
         {label: '商品订单编号', prop: 'order_no', width: 220},
         {label: '订购时间', prop: 'create_time'},
         {label: '订购门店', prop: 'shop_name'},
-        {label: '商品', prop: 'goods_name'},
+        {label: '商品', prop: 'goods_name', showOverflowTooltip: true},
         {label: '数量', prop: 'count'},
         {label: '订购人', prop: 'member_name'},
         {label: '配送方式', prop: 'express_name'},
@@ -188,7 +277,21 @@ export default {
       totalAll: 0,
       totalToSend: 0,
       totalDone: 0,
-      dateArr: []
+      dateArr: [],
+      dialogShow: false,
+      sendForm: {
+        // todo: 字段名待定
+        deliveryName: '',
+        deliveryNo: ''
+      },
+      formRules: {
+        deliveryName: [
+          { required: true, message: '请输入快递公司名称', trigger: 'change'}
+        ],
+        deliveryNo: [
+          { required: true, message: '请输入快递单号', trigger: 'blur'}
+        ]
+      }
     }
   },
   created() {
@@ -238,12 +341,35 @@ export default {
       }
     },
     jumpToOrderDetail(id) {
-      this.$router.push(`/RefundDetail/${id}`)
+      this.$router.push(`/ProductOrderDetail/${id}`)
     },
-    handleSend() {},
-    checkAdress() {},
     handleCurChange(page) {
       this.getTableData(page)
+    },
+    showSendDialog() {
+      this.dialogShow = true
+    },
+    handleDelivery() {
+      this.$refs.sendForm.validate((valid) => {
+        if (valid) {
+          deliveryGoods(this.sendForm).then(res => {
+            if (res.code === 200) {
+              this.$message.success('发货成功')
+              this.dialogShow = false
+              this.$refs.sendForm.resetFields()
+              this.getTableData(1)
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    handleDialogClose() {
+      this.$refs.sendForm.resetFields()
+      done()
     }
   }
 }
@@ -276,5 +402,26 @@ export default {
   }
   .form-item {
     margin-right: 120px;
+  }
+  .popRow {
+    display: flex;
+    align-items: center;
+  }
+  .popRow-label {
+    width: 90px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .popRow-text {
+    flex: 1
+  }
+  .pop-content {
+    padding: 10px 0;
+  }
+  .footer-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-right: 20px;
   }
 </style>
