@@ -56,9 +56,10 @@
             <div class="title">
                 <span class="text">卡样式</span>
             </div>
+            <div>卡片封面:</div>
             <div class="content">
                 <div class="left">
-                    <el-radio-group v-model="form.is_custom_cover">
+                    <el-radio-group v-model="form.is_custom_cover" @change="changePic">
                         <el-radio :label="0">默认背景图</el-radio>
                         <el-radio :label="1">
                             <span>自定义图片</span>
@@ -212,6 +213,12 @@ export default {
             } else {
                 this.rightsList = [];
                 this.form.intr = '';
+            }
+        },
+        /* 选择默认封面 */
+        changePic (value) {
+            if (value === 0) {
+                this.form.img = this.defaultPic;
             }
         },
         /* 上传之前 */
@@ -395,6 +402,6 @@ export default {
     align-items: start;
 }
 .content .img-container img {
-    max-width: 100%;
+    max-width: 400px;
 }
 </style>

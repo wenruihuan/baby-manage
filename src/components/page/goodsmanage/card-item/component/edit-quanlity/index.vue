@@ -1,14 +1,14 @@
 <template>
     <div class="edit-service">
         <div class="btn-container">
-            <el-button type="text" @click="addService">{{ rightsList.length <= 0 ? '添加权益' : '编辑权益' }}</el-button>
+            <el-button type="text" @click="addService">{{ list.length <= 0 ? '添加权益' : '编辑权益' }}</el-button>
             <p class="tip">设置卡可用优惠权益</p>
         </div>
         <div class="out-table">
             <el-table
-                :data="rightsList"
+                :data="list"
             >
-                <el-table-column prop="right_name" :label="`已选(${ rightsList.length })`"></el-table-column>
+                <el-table-column prop="right_name" :label="`已选(${ list.length })`"></el-table-column>
                 <el-table-column prop="discount" label="优惠规则">
                     <template slot-scope="scope">
                         {{ scope.row.discount }}折
@@ -38,7 +38,7 @@
                         class="filter-tree"
                         :data="treeData"
                         node-key="right_id"
-                        :default-checked-keys="rightsList.map(item => item.right_id)"
+                        :default-checked-keys="ruleData.map(item => item.right_id)"
                         show-checkbox
                         default-expand-all
                         :props="defaultProps"
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { getRechargeRight, getServiceList } from '@/components/page/goodsmanage/card-item/api';
+import { getRechargeRight } from '@/components/page/goodsmanage/card-item/api';
 import { ERR_OK } from '@/components/page/goodsmanage/box/api';
 
 export default {
@@ -107,24 +107,14 @@ export default {
             this.$refs.tree.filter(val);
         }
     },
+    created () {
+        this.list = this.rightsList;
+    },
     methods: {
         /* 筛选树节点 */
         filterNode (value, data) {
             if (!value) return true;
             return data.label.indexOf(value) !== -1;
-        },
-        async getServiceList () {
-            try {
-                const data = await getServiceList({
-                    keyword: '',
-                    page_no: 1,
-                    kind_id: '',
-                    tag_id: ''
-                });
-                this.list = data.data;
-            } catch (e) {
-                console.log(`src/components/page/goodsmanage/card-item/component/edit-service/index.vue getList error: ${ e }`);
-            }
         },
         /* 添加权益 */
         addService () {
@@ -143,7 +133,13 @@ export default {
             }
         },
         checkTree (data, { checkedNodes, checkedKeys }) {
-            this.ruleData = checkedNodes.filter(item => !Array.isArray(item.children));
+            const newIds = checkedNodes.map(item => item.right_id);
+            const oldArr = this.ruleData.filter(item => newIds.includes(item.right_id));
+            let newArr = checkedNodes.filter(item => !item.children && !this.ruleData
+                                                        .map(oldItem => oldItem.right_id)
+                                                        .includes(item.right_id));
+            newArr = newArr.map(item => ({ ...item, discount: '' }));
+            this.ruleData =  [...newArr, ...oldArr];
         },
         /* 模态框中删除权益 */
         removeItem (row, index) {
@@ -156,6 +152,7 @@ export default {
         /* 保存 */
         handleSave () {
             this.dialogVisible = false;
+            this.list = this.ruleData;
             this.$emit('save', this.ruleData);
         }
     }
