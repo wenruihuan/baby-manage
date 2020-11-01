@@ -50,22 +50,22 @@ export default new Router({
                     meta: { title: '卡项列表' },
                 },
                 {
-                    path: '/cika',
+                    path: '/cika-card',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/cika-edit.vue'),
                     meta: { title: '次卡' },
                 },
                 {
-                    path: '/cika-view',
+                    path: '/cika-card-view',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/cika-view.vue'),
                     meta: { title: '次卡详情' },
                 },
                 {
-                    path: '/discount',
+                    path: '/discount-card',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/discount-card.vue'),
                     meta: { title: '折扣卡' },
                 },
                 {
-                    path: '/discount-view',
+                    path: '/discount-card-view',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/goodsmanage/card-item/component/discount-view.vue'),
                     meta: { title: '折扣卡详情' },
                 },

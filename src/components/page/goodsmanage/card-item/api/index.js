@@ -185,6 +185,16 @@ export const getCikaDetial = query => {
     });
 };
 
+/* 折扣卡 */
+// 获取折扣卡详情
+export const getDiscountDetail = query => {
+    return request({
+        url: `${IP}/admin/card/discount/detail`,
+        method: 'get',
+        params: query
+    });
+};
+
 /* 充值卡 */
 /* 充值卡详情 */
 export const getInsertDetail = query => {
