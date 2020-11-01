@@ -214,6 +214,42 @@ export const saveDiscount = query => {
     });
 };
 
+// 获取折扣卡已售列表
+export const getDiscountSoldList = query => {
+    return request({
+        url: `${IP}/admin/card/discount/sell`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 获取折扣卡已售列表
+export const getDiscountSoldDetail = query => {
+    return request({
+        url: `${IP}/admin/card/discount/sellDetail`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 获取折扣历史表
+export const getDiscountHisList = query => {
+    return request({
+        url: `${IP}/admin/card/discount/history`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 获取折扣历史详情
+export const getDiscountHisDetail = query => {
+    return request({
+        url: `${IP}/admin/card/discount/historyDetail`,
+        method: 'get',
+        params: query
+    });
+};
+
 /* 充值卡 */
 /* 充值卡详情 */
 export const getInsertDetail = query => {
