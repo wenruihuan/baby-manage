@@ -44,6 +44,7 @@
                 </div>
                 <el-table
                     :data="serviceList"
+                    ref="sendCardTable"
                     @selection-change="handleSelectionChange"
                 >
                     <el-table-column
@@ -142,12 +143,13 @@ export default {
         },
         handleSave () {
             this.dialogVisible = false;
-            const list = this.selection.map(item => ({
+            let list = this.selection.map(item => ({
                 rel_id: item.card_id,
                 right_name: item.name,
                 rel_type: item.type
             }));
-            this.list = this.list.concat(list);
+            list = list.filter(item => !this.buyList.map(i => i.rel_id).includes(item.rel_id));
+            this.list = list.concat(this.buyList);
             this.$emit('save', this.list);
         }
     }

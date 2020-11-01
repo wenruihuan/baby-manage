@@ -304,7 +304,8 @@ export default {
         },
         /* 暂时保存赠送权益 */
         saveBuyCard (list) {
-            this.form.gifts = [...this.form.gifts, ...list];
+            this.form.gifts = list;
+            this.buyList = list;
         }
     }
 };
