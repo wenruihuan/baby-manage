@@ -218,6 +218,7 @@ export default {
         /* 保存 */
         handleSave () {
             this.form.intr = this.$refs.editWechat.content;
+            this.form.validity = this.form.isInfinity === 1 ? -1 : this.form.validity;
             saveDiscount(this.form).then(data => {
                 if (data.code === ERR_OK) {
                     this.$message({

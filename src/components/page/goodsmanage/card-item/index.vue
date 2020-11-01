@@ -107,7 +107,7 @@ export default {
             }
         },
         handleEdit ({ row, index }) {
-            this.$router.push(`/discount-card?id=${row.card_id}`);
+            this.$router.push(`/insert-card?id=${row.card_id}`);
         },
         /* 去到详情页 */
         handleView ({ row, index }) {

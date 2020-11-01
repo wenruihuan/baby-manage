@@ -35,21 +35,19 @@
                         <send-card v-if="buyList" :buy-list="buyList" ref="buyCard" @save="saveBuyCard" />
                     </el-form-item>
                     <el-form-item label="有效时间:" prop="isInfinity">
-                        <el-radio-group v-if="isEdit" v-model="isInfinity">
+                        <el-radio-group v-model="form.isInfinity" @change="changeValidity">
                             <el-radio :label="1">永久有效</el-radio>
                             <el-radio :label="0">
-                                <el-input style="width: 90px" :disabled="!form.validity" v-model="form.validity" placeholder="自定义"></el-input>
+                                <el-input style="width: 90px" :disabled="form.isInfinity === 1" v-model="form.validity" placeholder="自定义"></el-input>
                                 <span style="margin-left: 5px;">天</span>
                             </el-radio>
                         </el-radio-group>
-                        <span v-else>{{ form.validity }}</span>
                     </el-form-item>
                     <el-form-item label="网店展示:" prop="is_show">
-                        <el-radio-group v-if="isEdit" v-model="form.is_show">
+                        <el-radio-group v-model="form.is_show">
                             <el-radio :label="0">不展示</el-radio>
                             <el-radio :label="1">展示</el-radio>
                         </el-radio-group>
-                        <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
                     </el-form-item>
                 </el-form>
             </div>
@@ -108,7 +106,6 @@
 <script>
 import editQuanlity from './edit-quanlity';
 import sendCard from './send-card';
-import { serviceList } from '@/components/page/goodsmanage/card-item/mock';
 import {
     ERR_OK,
     getDefaultPic,
@@ -133,15 +130,15 @@ export default {
             form: {
                 name: '',
                 price: '',
-                gifts_amount: '',
+                gifts_price: '',
                 expire_day: '',
                 is_show: '',
+                isInfinity: 1,
                 is_custom_cover: 0,
                 validity: '',
                 intr: null,
                 img: ''
             },
-            isInfinity: 1,
             rules: {
                 name: [
                     { required: true, message: '请输入名称', trigger: 'blur' }
@@ -202,10 +199,10 @@ export default {
                    const data = await getInsertDetail({ card_id });
                    if (data.code === ERR_OK) {
                        this.form.intr = '';
+                       data.data.data.isInfinity = this.form.validity ? 0 : 1;
                        this.form = data.data.data;
                        this.rightsList = this.form.right || [];
                        this.buyList = this.form.gifts || [];
-                       this.isInfinity = this.form.validity ? 0 : 1;
                    }
                } catch (e) {
                    console.log(`src/components/page/goodsmanage/card-item/component/insert-card.vue getInsertDetail error: ${e}`);
@@ -233,6 +230,7 @@ export default {
         /* 保存 */
         handleSave () {
             this.form.intr = this.$refs.editWechat.content;
+            this.form.validity = this.form.isInfinity === 1 ? -1 : this.form.validity;
             saveRechargeCard(this.form).then(data => {
                 if (data.code === ERR_OK) {
                     this.$message({
@@ -296,6 +294,11 @@ export default {
                     console.log(`src/components/page/goodsmanage/card-item/component/insert-card-view.vue handleRemove error: ${e}`);
                 }
             }
+        },
+        /* 修改有效日期 */
+        changeValidity (value) {
+            this.form.isInfinity = value;
+            this.form.validity = value === 1 ? '' : this.form.validity;
         },
         /* 暂时保存权益 */
         saveRights (list) {

@@ -67,6 +67,16 @@ export const setPublish = query => {
     });
 };
 
+//
+/* 折扣卡二维码预览 */
+export const getQrCode = query => {
+    return request({
+        url: `${IP}/admin/card/discount/previewQr`,
+        method: 'post',
+        data: query
+    });
+};
+
 /* 获取服务分类列表 */
 export const getCategoryList = query => {
     return request({
@@ -192,6 +202,15 @@ export const getDiscountDetail = query => {
         url: `${IP}/admin/card/discount/detail`,
         method: 'get',
         params: query
+    });
+};
+
+// 保存折扣卡
+export const saveDiscount = query => {
+    return request({
+        url: `${IP}/admin/card/discount/save`,
+        method: 'post',
+        data: query
     });
 };
 
