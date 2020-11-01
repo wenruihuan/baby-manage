@@ -187,7 +187,7 @@ export const getDefaultPic = query => {
 
 /* 次卡 */
 /* 次卡详情 */
-export const getCikaDetial = query => {
+export const getTimeDetial = query => {
     return request({
         url: `${IP}/admin/card/time/detail`,
         method: 'get',

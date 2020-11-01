@@ -107,11 +107,11 @@ export default {
             }
         },
         handleEdit ({ row, index }) {
-            this.$router.push(`/insert-card?id=${row.card_id}`);
+            this.$router.push(`/cika-card?id=${row.card_id}`);
         },
         /* 去到详情页 */
         handleView ({ row, index }) {
-            this.$router.push(`/discount-card-view?id=${ row.card_id }`);
+            this.$router.push(`/cika-card-view?id=${ row.card_id }`);
         },
         /* 排序 */
         async handleCorrectSort (row) {

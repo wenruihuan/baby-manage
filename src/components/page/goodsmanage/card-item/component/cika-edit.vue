@@ -38,7 +38,7 @@
                         <edit-service v-if="rightsList" :rights-list="rightsList" ref="editService" />
                     </el-form-item>
                     <el-form-item label="购卡赠送:" prop="send">
-                        <buy-card v-if="buyList" :buy-list="buyList" ref="buyCard" />
+                        <edit-service v-if="buyList" :rights-list="buyList" ref="sendService" />
                     </el-form-item>
                     <el-form-item label="有效时间:" prop="isInfinity">
                         <el-radio-group v-if="isEdit" v-model="form.isInfinity">
@@ -88,6 +88,12 @@
 import editService from './edit-service';
 import buyCard from './buy-card';
 import { serviceList } from '@/components/page/goodsmanage/card-item/mock';
+import {
+    ERR_OK,
+    getTimeDetial,
+    getDefaultPic,
+} from '../api';
+
 export default {
     components: {
         editService,
@@ -100,10 +106,16 @@ export default {
             form: {
                 name: '',
                 price: '',
-                expire_day: '',
+                validity: '',
+                unlimit: '',
+                is_publish: '',
                 is_show: '',
                 isInfinity: 1,
-                isDefaultPic: '1'
+                is_custom_cover: '1',
+                img: '',
+                intr: '',
+                right: [],
+                gifts: []
             },
             rules: {
                 name: [
@@ -119,15 +131,47 @@ export default {
             /* 权益list */
             rightsList: null,
             /* 赠送list */
-            buyList: null
+            buyList: null,
+            defaultPic: '',
         };
     },
     created() {
-        setTimeout(() => {
-            // this.rightsList = serviceList;
-            this.rightsList = [];
-            this.buyList = serviceList;
-        }, 200);
+        const id = this.$route.query.id;
+        this.getTimeDetail(id);
+        this.getDefaultImg();
+    },
+    methods: {
+        /* 获取默认图片 */
+        async getDefaultImg () {
+            try {
+                const data = await getDefaultPic();
+                if (data.code === ERR_OK) {
+                    this.defaultPic = data.data.time;
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/card-item/component/cika-edit.vue error: ${e}`);
+            }
+        },
+        /* 详情 */
+        async getTimeDetail (id = '') {
+           if (id) {
+               try {
+                   const data = await getTimeDetial({ id });
+                   if (data.code === ERR_OK) {
+                       this.form.intr = '';
+                       data.data.isInfinity = this.form.validity ? 0 : 1;
+                       this.form = data.data;
+                       this.rightsList = this.form.right || [];
+                       this.buyList = this.form.gifts || [];
+                   }
+               } catch (e) {
+                   console.log(`/page/goodsmanage/card-item/component/cika-edit.vue getTimeDetail error: ${e}`);
+               }
+           } else {
+               this.rightsList = [];
+               this.buyList = [];
+           }
+        }
     }
 };
 </script>
