@@ -26,7 +26,7 @@
                             <template slot="prepend">￥</template>
                         </el-input>
                         <p class="tip" v-if="isEdit">保存后赠送金额不可修改，请谨慎填写</p>
-                        <span v-else>￥{{ form.gifts_amount }}</span>
+                        <span v-else>￥{{ form.gift_price }}</span>
                     </el-form-item>
                     <el-form-item label="权益:" prop="access">
                         <edit-quanlity v-if="rightsList" :rights-list="rightsList" ref="editQuanlity" @save="saveRights" />
