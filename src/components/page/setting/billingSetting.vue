@@ -5,23 +5,15 @@
             <div class="info-title">记账方式</div>
             <p class="tip">默认记账方式</p>
             <div class="default_list">
-                <div class="default_item">
-                    <img class="icon" src="../../../assets/img/wechat_pay.png" alt="" />
-                    <span>微信支付</span>
-                </div>
-                <div class="default_item">
-                    <img class="icon" src="../../../assets/img/alipay.png" alt="" />
-                    <span>支付宝支付</span>
-                </div>
-                <div class="default_item">
-                    <img class="icon pos_icon" src="../../../assets/img/pos_3.png" alt="" />
-                    <span>POS支付</span>
+                <div class="default_item" v-for="(item, index) in defaultList" :key="index">
+                    <img class="icon" :src="item.img" alt="" />
+                    <span>{{ item.name }}</span>
                 </div>
             </div>
             <p class="tip">自定义记账</p>
             <el-button class="add_btn" type="primary" @click="handleDetail()">添加</el-button>
             <div class="custom_list">
-                <div class="custom_item" v-for="(item, index) in customList" :key="item.index">
+                <div class="custom_item" v-for="(item, index) in customList" :key="index">
                     <div class="custom_icon">{{ item.name }}</div>
                     <el-button class="edit_btn" type="text" @click="handleDetail(index)">编辑</el-button>
                 </div>
@@ -47,6 +39,7 @@
     </div>
 </template>
 <script>
+    import { getPayment, savePayment } from '@/api/setting';
     import breadcrumb from '@/components/common/address';
     export default {
         name: 'BillingSetting',
@@ -69,6 +62,7 @@
                         router: 'BillingSetting'
                     }
                 ],
+                defaultList: [],
                 customList: [],
                 index: '',
                 dialogType: '',
@@ -79,28 +73,39 @@
                 }
             };
         },
+        created() {
+            this.getPaymentData();
+        },
         methods: {
+            async getPaymentData() {
+                const res = await getPayment();
+                if (res.code === 200) {
+                    const list = res.data || [];
+                    this.defaultList = list.filter((m) => m.is_default === 1);
+                    this.customList = list.filter((m) => m.is_default !== 1);
+                }
+            },
             handleDetail(index) {
-                this.index = index || '';
-                this.dialogType = index ? 'edit' : 'add';
-                this.dialogTitle = index ? '修改' : '新增' + '记账方式';
-                this.formData.name = index ? this.customList[index].name : '';
+                this.index = index;
+                this.dialogType = index > -1 ? 'edit' : 'add';
+                this.dialogTitle = index > -1 ? '修改' : '新增' + '记账方式';
+                this.formData = index > -1 ? this.customList[index] : { name: '' };
                 this.dialogVisible = true;
             },
-            handleSave() {
+            async handleSave() {
                 if (!this.formData.name) {
                     this.$message.error('请填写记账方式名称！');
                     return;
                 }
-                if (this.customList.findIndex((m) => m.name === this.formData.name) > -1) {
-                    this.$message.error('记账方式名称不能重复！');
-                    return;
+                const params = { name: this.formData.name };
+                if (this.formData.id) {
+                    params.id = this.formData.id;
                 }
-                this.dialogVisible = false;
-                if (this.dialogType === 'add') {
-                    this.customList.push({ name: this.formData.name });
-                } else {
-                    this.customList.splice(this.index, 1, { name: this.formData.name });
+                const res = await savePayment(params);
+                if (res.code === 200) {
+                    this.$message.success(res.msg);
+                    this.getPaymentData();
+                    this.dialogVisible = false;
                 }
             }
         }

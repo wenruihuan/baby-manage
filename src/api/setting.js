@@ -125,3 +125,39 @@ export const saveTag = params => {
     data: params
   })
 }
+
+// 获取开单设置列表
+export const getPayment = query => {
+  return request({
+    url: `/admin/payment/list`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 添加（编辑）自定义记账
+export const savePayment = params => {
+  return request({
+    url: `/admin/payment/save`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 获取配送设置
+export const getExpress = query => {
+  return request({
+    url: `/admin/express/getConfig`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 保存配送设置
+export const saveExpress = params => {
+  return request({
+    url: `/admin/express/save`,
+    method: 'post',
+    data: params
+  })
+}
