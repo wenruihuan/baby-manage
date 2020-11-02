@@ -52,7 +52,7 @@
             </el-form-item>
             <el-form-item label="订单来源：" class="form-item">
               <el-select v-model="form.order_source">
-                <!-- <el-option label="全部" :value="0"></el-option> -->
+                <el-option label="全部" value=""></el-option>
                 <el-option label="第三方支付" value="第三方支付"></el-option>
                 <el-option label="店内消费" value="店内消费"></el-option>
                 <el-option label="线上支付" value="线上支付"></el-option>
@@ -60,9 +60,11 @@
             </el-form-item>
             <el-form-item label="订单类型：" class="form-item">
               <el-select v-model="form.type">
-                <el-option label="全部" :value="0"></el-option>
+                <el-option label="全部" value=""></el-option>
                 <el-option label="服务订单" value="service"></el-option>
-                <el-option label="卡项订单" :value="2"></el-option>
+                <el-option label="折扣卡订单" value="discount_card"></el-option>
+                <el-option label="次卡订单" value="time_card"></el-option>
+                <el-option label="充值卡订单" value="recharge_card"></el-option>
                 <el-option label="充值订单" value="recharge"></el-option>
               </el-select>
             </el-form-item>
@@ -93,6 +95,13 @@
               :width="item.width"
               align="center"
             >
+              <template slot-scope="scoped">
+                <div v-if="item.prop === 'price'">
+                  <span v-if="scoped.row.type === 'service'">{{scoped.row.price}}</span>
+                  <span v-else>{{scoped.row.total_price}}</span>
+                </div>
+                <span v-else>{{scoped.row[item.prop]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -119,6 +128,13 @@
               :width="item.width"
               align="center"
             >
+              <template slot-scope="scoped">
+                <div v-if="item.prop === 'price'">
+                  <span v-if="scoped.row.type === 'service'">{{scoped.row.price}}</span>
+                  <span v-else>{{scoped.row.total_price}}</span>
+                </div>
+                <span v-else>{{scoped.row[item.prop]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -145,6 +161,13 @@
               :width="item.width"
               align="center"
             >
+              <template slot-scope="scoped">
+                <div v-if="item.prop === 'price'">
+                  <span v-if="scoped.row.type === 'service'">{{scoped.row.price}}</span>
+                  <span v-else>{{scoped.row.total_price}}</span>
+                </div>
+                <span v-else>{{scoped.row[item.prop]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -172,6 +195,13 @@
               :width="item.width"
               align="center"
             >
+              <template slot-scope="scoped">
+                <div v-if="item.prop === 'price'">
+                  <span v-if="scoped.row.type === 'service'">{{scoped.row.price}}</span>
+                  <span v-else>{{scoped.row.total_price}}</span>
+                </div>
+                <span v-else>{{scoped.row[item.prop]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -199,10 +229,10 @@ import dayjs from 'dayjs'
 import breadcrumb from '@/components/common/address'
 import { getOrderList, getPaymentList } from '@/api/orderManagement'
 const tabDataCfg = {
-  all: { data: 'dataAll', total: 'totalAll', orderStatus: '0' },
-  unPay: { data: 'dataUnPay', total: 'totalUnPay', orderStatus: '1' },
-  done: { data: 'dataDone', total: 'totalDone', orderStatus: '2' },
-  cancel: { data: 'dataCancel', total: 'totalCancel', orderStatus: '3' }
+  all: { data: 'dataAll', total: 'totalAll', orderStatus: '' },
+  unPay: { data: 'dataUnPay', total: 'totalUnPay', orderStatus: 0 },
+  done: { data: 'dataDone', total: 'totalDone', orderStatus: 3 },
+  cancel: { data: 'dataCancel', total: 'totalCancel', orderStatus: 5 }
 }
 const dateFormatStr = 'YYYY-MM-DD HH:mm:ss'
 export default {
@@ -236,7 +266,7 @@ export default {
         {label: '下单时间', prop: 'create_time'},
         {label: '购买项目', prop: 'order_name'},
         {label: '技师', prop: 'technician_name'},
-        {label: '单价（元）', prop: ''},
+        {label: '单价（元）', prop: 'price'},
         {label: '数量', prop: 'count'},
         {label: '订单来源', prop: 'order_source'},
         {label: '下单门店', prop: 'shop_name'},

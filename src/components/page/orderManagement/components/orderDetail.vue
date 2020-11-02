@@ -3,7 +3,7 @@
     <div class="info" v-if="isOrder">
       <p class="info-title">订单信息</p>
       <div class="info-body">
-        <p class="status">{{orderInfo.order_status}}</p>
+        <p class="status">{{orderInfo.order_status | orderStatusText}}</p>
         <div class="info-body-main">
           <div class="row">
             <div>
@@ -47,7 +47,7 @@
     <div class="info" v-if="isProductOrderInfo">
       <p class="info-title">订单信息</p>
       <div class="info-body">
-        <p class="status">{{orderInfo.order_status}}</p>
+        <p class="status">{{orderInfo.order_status | orderStatusText}}</p>
         <div class="info-body-main">
           <div class="row">
             <div>
@@ -55,9 +55,9 @@
               <span class="text">{{orderInfo.order_no}}</span>
             </div>
             <div>
-              <!-- 未返回信息 -->
+              <!-- 未返回收件人电话 -->
               <span class="label">收件人：</span>
-              <span class="text">王太太/+86 12312312321</span>
+              <span class="text">{{orderInfo.receiver}}/+86 12312312321</span>
             </div>
           </div>
           <div class="row">
@@ -68,7 +68,7 @@
             <div>
               <!-- 未返回信息 -->
               <span class="label">收件人地址：</span>
-              <span class="text">江苏省 南京市 建邺区 奥体名座A座 1309室</span>
+              <span class="text">{{orderInfo.region}} {{orderInfo.detail_address}}</span>
             </div>
           </div>
           <div class="row">
@@ -113,8 +113,7 @@
           <div class="row">
             <div class="row-item">
               <span class="label">预约单号：</span>
-              <!-- 服务端未返回预约单号 -->
-              <span class="text">8797797799789799</span>
+              <span class="text">{{bookingInfo.booking_no}}</span>
             </div>
             <div class="row-item">
               <span class="label">预约时间：</span>
@@ -154,20 +153,22 @@
             <el-table-column label="小计（元）" prop="total_price" align="center"></el-table-column>
           </el-table>
           <div class="summary">
-            <div class="summary-item" v-if="!isRefund">
+            <div class="summary-item">
               <div class="space"></div>
               <span class="summary-label">合计：</span>
               <span class="summary-amount">￥{{totalPrice}}</span>
             </div>
             <div class="summary-item">
               <div class="space"></div>
-              <span class="summary-label">{{payText}}{{payTypeName}}</span>
-              <span class="summary-amount">￥{{checkoutPrice}}</span>
+              <span class="summary-label" v-if="isOrder">{{orderInfo.order_status | payText}}：{{payTypeName}}</span>
+              <span class="summary-label" v-else>付款{{payTypeName}}</span>
+              <!-- 付款金额未返回 -->
+              <span class="summary-amount">￥0</span>
             </div>
             <div class="summary-item">
               <div class="space"></div>
-              <span class="summary-label">合计收款：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <span class="summary-amount">￥{{balancePrice}}</span>
+              <span class="summary-label">合计收款：</span>
+              <span class="summary-amount">￥{{checkoutPrice}}</span>
             </div>
           </div>
           <div class="footer-bar" v-if="isOrder">
@@ -209,7 +210,6 @@
         </div>
       </div>
     </div>
-    <!-- 快递信息未返回 -->
     <div class="info" v-if="isProductOrderInfo">
       <p class="info-title">快递信息</p>
       <div class="info-body">
@@ -217,15 +217,15 @@
           <div class="row">
             <div class="row-item">
               <span class="label">物流公司：</span>
-              <span class="text">顺丰快递</span>
+              <span class="text">{{expressInfo.express_name}}</span>
             </div>
             <div class="row-item">
               <span class="label">快递单号：</span>
-              <span class="text">SF1193562691911</span>
+              <span class="text">{{expressInfo.express_no}}</span>
             </div>
             <div class="row-item">
               <span class="label">操作人：</span>
-              <span class="text">小花</span>
+              <span class="text">{{expressInfo.operator}}</span>
             </div>
           </div>
         </div>
@@ -280,7 +280,8 @@ export default {
       componentName: '',
       dialogWidth: '700px',
       logData: [],
-      refundData: []
+      refundData: [],
+      expressInfo: {}
     }
   },
   props: {
@@ -292,20 +293,8 @@ export default {
     orderId: ''
   },
   computed: {
-    payText(){
-      switch(this.orderType) {
-        case 'order', 'productOrder': 
-          return '付款：'
-          break
-        case 'refund':
-          return '订单退款：'
-      }
-    },
     isProductOrderInfo() {
       return this.orderType === 'productOrder'
-    },
-    isRefund() {
-      return this.orderType === 'refund'
     },
     isOrder() {
       return this.orderType === 'order'
@@ -315,7 +304,10 @@ export default {
     const params = {order_id: this.orderId}
     this.reqFn(params).then(res => {
       const {order_info, member_info, type, consume,
-        booking_info, consume_info, refund_detail, oplog_detail, total_price=0, checkout_price=0 } = res.data
+        booking_info, consume_info, refund_detail, 
+        oplog_detail, total_price=0, checkout_price=0,
+        express_info = {}, pay_type_name
+     } = res.data
       this.orderDetailObj = res.data
       this.orderInfo = order_info || {}
       this.memberInfo = member_info || {}
@@ -323,12 +315,11 @@ export default {
       this.consume = consume || []
       this.bookingInfo = booking_info || null
       this.totalPrice = consume_info ? consume_info.total_price : total_price
-      console.log(this.totalPrice, total_price)
-      this.balancePrice = consume_info.balance_price || 0
       this.checkoutPrice = consume_info ? consume_info.checkout_price : checkout_price
-      this.payTypeName = consume_info.pay_type_name || ''
-      this.refundData.push(refund_detail)
-      this.logData.push(oplog_detail)
+      this.payTypeName = consume_info ? consume_info.pay_type_name : (pay_type_name || '')
+      refund_detail && this.refundData.push(refund_detail)
+      oplog_detail && this.logData.push(oplog_detail)
+      this.expressInfo = express_info
     })
   },
   methods: {
@@ -371,6 +362,18 @@ export default {
   filters: {
     timeFormatter(val) {
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+    },
+    orderStatusText(val) {
+      // 0待付款 1待发货 2已发货 3已完成 4已退款 5已取消
+      const textObj = {0: '待付款', 1: '待发货', 2: '已发货', 3: '已完成', 4: '已退款', 5: '已取消'}
+      return textObj[val]
+    },
+    payText(val) {
+      if (['0', '5'].includes(val)) {
+        return '待支付'
+      } else if (['3', '4'].includes(val)) {
+        return '付款'
+      }
     }
   }
 }
@@ -454,7 +457,7 @@ export default {
     color: #909399;
   }
   .summary-item span.summary-label {
-    width: 120px;
+    width: 160px;
     text-align: left;
   }
   .summary-item span.summary-amount {

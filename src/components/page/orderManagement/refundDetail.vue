@@ -5,36 +5,36 @@
     <div class="info">
       <p class="info-title">订单信息</p>
       <div class="info-body">
-        <p class="status">{{refundInfo.refund_status}}</p>
+        <p class="status">{{(orderInfo.refund_status || 1) | refundStatusText}}</p>
         <div class="info-body-main">
           <div class="row">
             <div>
               <span class="label">退款编号：</span>
-              <span class="text">{{refundInfo.refund_status}}</span>
+              <span class="text">{{orderInfo.refund_no}}</span>
             </div>
             <div>
               <span class="label">订单编号：</span>
-              <span class="text">{{refundInfo.order_no}}</span>
+              <span class="text">{{orderInfo.order_no}}</span>
             </div>
           </div>
           <div class="row">
             <div>
               <span class="label">操作时间：</span>
-              <span class="text">{{refundInfo.refund_create_time | timeFormatter}}</span>
+              <span class="text">{{orderInfo.refund_create_time | timeFormatter}}</span>
             </div>
             <div>
               <span class="label">下单时间：</span>
-              <span class="text">{{refundInfo.order_create_time | timeFormatter}}</span>
+              <span class="text">{{orderInfo.order_create_time | timeFormatter}}</span>
             </div>
           </div>
           <div class="row">
             <div>
               <span class="label">操作人员：</span>
-              <span class="text">{{refundInfo.operator}}</span>
+              <span class="text">{{orderInfo.operator}}</span>
             </div>
             <div>
               <span class="label">收银员：&nbsp;&nbsp;&nbsp;</span>
-              <span class="text">{{refundInfo.cashier}}</span>
+              <span class="text">{{orderInfo.checkout_staff}}</span>
             </div>
           </div>
           <div class="row">
@@ -44,7 +44,7 @@
             </div>
             <div>
               <span class="label">下单门店：&nbsp;&nbsp;&nbsp;</span>
-              <span class="text">{{refundInfo.shop_name}}</span>
+              <span class="text">{{orderInfo.shop_name}}</span>
             </div>
           </div>
         </div>
@@ -134,13 +134,13 @@
           <div class="summary">
             <div class="summary-item">
               <div class="space"></div>
-              <span class="summary-label">订单退款：现金</span>
-              <span class="summary-amount">￥{{refundInfo.checkout_price}}</span>
+              <span class="summary-label">订单退款：{{refundInfo.refund_type}}</span>
+              <span class="summary-amount">￥{{refundInfo.refund_price}}</span>
             </div>
             <div class="summary-item">
               <div class="space"></div>
-              <span class="summary-label">合计退款：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <span class="summary-amount">￥{{refundInfo.total_price}}</span>
+              <span class="summary-label">合计退款：</span>
+              <span class="summary-amount">￥{{refundInfo.refund_price}}</span>
             </div>
           </div>
           <div class="footer-bar">
@@ -184,9 +184,11 @@ export default {
         { name: '退单列表', router: 'RefundList' },
         { name: '退单详情', router: 'RefundDetail' },
       ],
+      consume: [],
+      orderInfo: {},
+      refundInfo: {},
       memberInfo: {},
       consume: [],
-      refundInfo: {},
       dialogShow: false
     }
   },
@@ -205,8 +207,10 @@ export default {
       getRefundDetail(prm).then(res => {
         const { data } = res
         this.refundInfo = data
-        const { member_info, consume } = data
+        const { order_info, refund_info, member_info, consume } = data
         this.memberInfo = member_info || {}
+        this.orderInfo = order_info || {}
+        this.refundInfo = refund_info || {}
         this.consume = consume || []
       }).catch(err => {
         console.log(err)
@@ -233,6 +237,10 @@ export default {
   filters: {
     timeFormatter(val) {
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+    },
+    refundStatusText(val) {
+      const textObj = { 1: '退款成功' }
+      return textObj[val]
     }
   }
 }
@@ -316,7 +324,7 @@ export default {
     color: #909399;
   }
   .summary-item span.summary-label {
-    width: 9%;
+    width: 160px;
     text-align: left;
   }
   .summary-item span.summary-amount {

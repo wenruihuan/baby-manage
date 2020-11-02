@@ -48,7 +48,7 @@
           </el-row>
           <el-row>
             <el-form-item>
-              <el-button>导出报表</el-button>
+              <el-button @click="handleExport">导出报表</el-button>
             </el-form-item>
           </el-row>
         </el-form>
@@ -232,7 +232,7 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
-import { getProductOrderList, deliveryGoods } from '@/api/orderManagement'
+import { getProductOrderList, deliveryGoods, exportGoodsOrder } from '@/api/orderManagement'
 const tabDataCfg = {
   all: { data: 'dataAll', total: 'totalAll', orderStatus: '' },
   toSend: { data: 'dataToSend', total: 'totalToSend', orderStatus: 1 },
@@ -370,6 +370,34 @@ export default {
     handleDialogClose() {
       this.$refs.sendForm.resetFields()
       done()
+    },
+    handleExport() {
+      this.inputName && (this.form[this.inputName] = this.inputValue)
+      const params = Object.assign({}, this.form)
+      delete params.page_no
+      delete params.page_size
+      exportGoodsOrder(params).then(res => {
+        const {code, msg, data} = res
+        if (code === 200) {
+          const {download} = data
+          let blocked = false
+          try {
+            var wroxWin = window.open(download, '_blank')
+            if (wroxWin == null) {
+              blocked = true
+            }
+          } catch (ex) {
+            blocked = true
+          }
+          if (blocked) {
+            this.$alert('下载弹窗被您的浏览器阻止，请点击网址右侧，选择允许弹窗', '温馨提示')
+          }
+        } else {
+          this.$message.error(msg)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
     }
   }
 }

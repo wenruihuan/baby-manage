@@ -161,11 +161,23 @@ export default {
         publicist_id: this.form.publicist
       }
       exportData(params).then(res => {
-        const { code, data } = res
+        const { code, msg, data } = res
         if (code === 200) {
-          this.$message.success('导出成功')
-          // todo: 下载过程
-          console.log(data)
+          const { download } =data
+          let blocked = false
+          try {
+            var wroxWin = window.open(download, '_blank')
+            if (wroxWin == null) {
+              blocked = true
+            }
+          } catch (ex) {
+            blocked = true
+          }
+          if (blocked) {
+            this.$alert('下载弹窗被您的浏览器阻止，请点击网址右侧，选择允许弹窗', '温馨提示')
+          }
+        } else {
+          this.$message.error(msg)
         }
       })
     }

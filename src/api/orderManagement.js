@@ -127,3 +127,13 @@ export const deliveryGoods = query => {
     data: query
   })
 }
+// 导出商品信息
+export const exportGoodsOrder = query => {
+  return request({
+    url: `/admin/order/goods/export`,
+    method: 'get',
+    params: query
+  })
+}
+
+
