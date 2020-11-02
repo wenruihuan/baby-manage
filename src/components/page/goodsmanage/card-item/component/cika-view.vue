@@ -280,11 +280,19 @@
         >
             <el-form :model="expireForm">
                 <el-form-item label="有效期至:" prop="validity">
-                    <el-date-picker
-                        v-model="expireForm.validity"
-                        type="date"
-                        placeholder="选择日期">
-                    </el-date-picker>
+                    <el-radio-group v-model="isInifinate">
+                        <el-radio :label="-1">无限次</el-radio>
+                        <el-radio :label="0">
+                            <el-input
+                                    v-model="expireForm.validity"
+                                    :disabled="isInifinate === -1"
+                                    placeholder="请填写有效期">
+                                <template slot="append">
+                                    天
+                                </template>
+                            </el-input>
+                        </el-radio>
+                    </el-radio-group>
                 </el-form-item>
             </el-form>
             <span slot="footer">
@@ -342,7 +350,8 @@ export default {
             isExpireShow: false,
             expireForm: {},
             isValidShow: false,
-            validForm: {}
+            validForm: {},
+            isInifinate: -1
         };
     },
     created() {
@@ -413,8 +422,9 @@ export default {
         async saveExpire () {
             this.isExpireShow = false;
             try {
-                const card_id = this.$route.query.id;
-                const data = await setExpires({ card_id, validity: this.expireForm.validity });
+                const card_id = this.selection.map(item => item.member_card_id || item.card_time_id).join(',');
+                const validity = this.isInifinate === -1 ? -1 : this.expireForm.validity;
+                const data = await setExpires({ card_id, validity });
                 if (data.code === ERR_OK) {
                     this.$message({
                         type: 'success',
