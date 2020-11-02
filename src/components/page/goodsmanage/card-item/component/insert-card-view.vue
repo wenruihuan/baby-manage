@@ -66,7 +66,7 @@
             </div>
             <div class="bottom">
                 <el-tabs type="border-card" @tab-click="handleTabClick">
-                    <el-tab-pane :label="`已售(${ hasSellList.length })`">
+                    <el-tab-pane :label="`已售(${ hasSellTotal })`">
                         <div class="search-container">
                             <el-input
                                     class="search-input"
@@ -178,7 +178,7 @@
                                     :page-sizes="[10, 20, 100, 200]"
                                     :page-size="100"
                                     layout="total, sizes, prev, pager, next, jumper"
-                                    :total="historyList.length"
+                                    :total="historyListTotal"
                                     @current-change="handleCurrentChange2"
                             >
                             </el-pagination>
@@ -274,6 +274,7 @@ export default {
             sendList: [],
             hasSellPage: 1,
             hasSellTotal: 0,
+            historyListTotal: 0,
             hasSellList: [],
             historyList: [],
             cardDetail: {},
@@ -384,7 +385,7 @@ export default {
             this.getSoldList();
         },
         handleSearch2 () {
-            this.getHi();
+            this.getRechargeHistoryList();
         },
         /* 使得卡失效 */
         shixiao () {},
@@ -408,8 +409,7 @@ export default {
                             invalidName: CARD_STATUS_MAP[item.is_invalid]
                         };
                     });
-
-                    this.hasSellTotal = data.data.all_count;
+                    this.hasSellTotal = Number(data.data.all_count);
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
@@ -425,6 +425,7 @@ export default {
                         ...item,
                         createTime: moment(gettime(item.create_time)).format('yyyy-MM-DD HH:mm:ss')
                     }));
+                    this.historyListTotal = Number(data.data.all_count);
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);

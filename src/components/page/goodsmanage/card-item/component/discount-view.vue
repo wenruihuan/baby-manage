@@ -62,7 +62,7 @@
             </div>
             <div class="bottom">
                 <el-tabs type="border-card" @tab-click="handleTabClick">
-                    <el-tab-pane :label="`已售(${ hasSellList.length })`">
+                    <el-tab-pane :label="`已售(${ hasSellTotal })`">
                         <div class="search-container">
                             <el-input
                                     class="search-input"

@@ -213,12 +213,47 @@ export const saveTimeCard = query => {
     });
 };
 
+/* 获取次卡的已售列表 */
+export const getTimeSoldList = query => {
+    return request({
+        url: `${IP}/admin/card/time/sell`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 获取次卡的已售详情 */
+export const getTimeSoldDetail = query => {
+    return request({
+        url: `${IP}/admin/card/time/sellDetail`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 获取次卡的历史列表 */
+export const getTimeHisList = query => {
+    return request({
+        url: `${IP}/admin/card/time/history`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 获取次卡的历史详情 */
+export const getTimeHisDetail = query => {
+    return request({
+        url: `${IP}/admin/card/time/historyDetail`,
+        method: 'get',
+        params: query
+    });
+};
 /* 次卡预览 */
 export const getTimeQrcode = query => {
     return request({
         url: `${IP}/admin/card/time/previewQr`,
-        method: 'post',
-        data: query
+        method: 'get',
+        params: query
     });
 };
 
