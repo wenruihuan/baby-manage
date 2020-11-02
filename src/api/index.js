@@ -148,3 +148,64 @@ export const roleSelectList = query => {
         params: query
     });
 };
+
+// .11.4.服务列表（开单页面）
+export const serviceSelectList = query => {
+    return request({
+        url: IP + `/admin/service/selectList`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 7.10.开单页面用户列表搜索
+export const worktableMemberInfo = query => {
+    return request({
+        url: IP + `/admin/worktable/memberInfo`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 3.1.4.获取服务分类列表
+export const serviceKind = query => {
+    return request({
+        url: IP + `/admin/service/kind`,
+        method: 'get',
+        params: query
+    });
+};
+// 7.4.常用服务列表
+export const worktableCommonService = query => {
+    return request({
+        url: IP + `/admin/worktable/commonService`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 7.3.取单列表
+export const worktableOrderList = query => {
+    return request({
+        url: IP + `/admin/worktable/orderList`,
+        method: 'get',
+        params: query
+    });
+};
+// 7.6.获取用户的所有充值卡
+export const worktableMemberAllRechargeCard = query => {
+    return request({
+        url: IP + `/admin/worktable/memberAllRechargeCard`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 11.21.获取技师下拉列表
+export const staffTechnicianSelect = query => {
+    return request({
+        url: IP + `/admin/staff/technicianSelect`,
+        method: 'get',
+        params: query
+    });
+};
