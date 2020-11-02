@@ -130,11 +130,21 @@ export default {
             }
         },
         handleEdit ({ row, index }) {
-            this.$router.push(`/cika-card?id=${row.card_id}`);
+            const type = row.type;
+            switch (type) {
+                case 'time_card': { this.$router.push(`/cika-card?id=${row.card_id}`); break; }
+                case 'discount_card': { this.$router.push(`/discount-card?id=${row.card_id}`); break; }
+                case 'recharge_card': { this.$router.push(`/insert-card?id=${row.card_id}`); break; }
+            }
         },
         /* 去到详情页 */
         handleView ({ row, index }) {
-            this.$router.push(`/discount-card-view?id=${ row.card_id }`);
+            const type = row.type;
+            switch (type) {
+                case 'time_card': { this.$router.push(`/cika-card-view?id=${row.card_id}`); break; }
+                case 'discount_card': { this.$router.push(`/discount-card-view?id=${row.card_id}`); break; }
+                case 'recharge_card': { this.$router.push(`/insert-card-view?id=${row.card_id}`); break; }
+            }
         },
         /* 排序 */
         async handleCorrectSort (row) {
