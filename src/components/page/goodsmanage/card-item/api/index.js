@@ -195,6 +195,24 @@ export const getTimeDetial = query => {
     });
 };
 
+/* 保存次卡 */
+export const saveTimeCard = query => {
+    return request({
+        url: `${IP}/admin/card/time/save`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 次卡预览 */
+export const getTimeQrcode = query => {
+    return request({
+        url: `${IP}/admin/card/time/previewQr`,
+        method: 'post',
+        data: query
+    });
+};
+
 /* 折扣卡 */
 // 获取折扣卡详情
 export const getDiscountDetail = query => {

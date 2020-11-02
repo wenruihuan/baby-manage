@@ -9,7 +9,11 @@
                 :data="list"
             >
                 <el-table-column prop="right_name" label="服务名称"></el-table-column>
-                <el-table-column prop="time" label="次数"></el-table-column>
+                <el-table-column prop="time" label="次数">
+                    <template slot-scope="scope">
+                        {{ unlimit ? '无限' : scope.row.time }}
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button type="text" @click="removeItem(scope.row, scope.$index)">删除</el-button>
@@ -83,6 +87,9 @@ export default {
         rightsList: {
             type: Array,
             default: () => []
+        },
+        unlimit: {
+            props: Boolean
         }
     },
     data () {
