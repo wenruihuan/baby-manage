@@ -449,7 +449,6 @@ export default {
             if (card_time_id) {
                 try {
                     const data = await getTimeHisDetail({ card_time_id });
-                    console.log(data.data);
                     if (data.code === ERR_OK) {
                         this.cardItem = data.data;
                     }
