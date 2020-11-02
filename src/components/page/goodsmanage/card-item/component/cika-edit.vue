@@ -35,10 +35,10 @@
                         <span v-else>{{ form.price }}</span>
                     </el-form-item>
                     <el-form-item label="权益:" prop="access">
-                        <edit-service v-if="rightsList" :rights-list="rightsList" :unlimit="form.unlimit" ref="editService" />
+                        <edit-service v-if="rightsList" :rights-list="rightsList" :unlimit="form.unlimit" ref="editService" @save="saveRights" />
                     </el-form-item>
                     <el-form-item label="购卡赠送:" prop="send">
-                        <edit-service v-if="buyList" :rights-list="buyList" ref="sendService" />
+                        <edit-service v-if="buyList" :rights-list="buyList" type="send" ref="sendService" @save="saveSends" />
                     </el-form-item>
                     <el-form-item label="有效时间:" prop="isInfinity">
                         <el-radio-group v-model="form.isInfinity">
@@ -140,7 +140,7 @@ export default {
                 isInfinity: 1,
                 is_custom_cover: 1,
                 img: '',
-                intr: '',
+                intr: null,
                 right: [],
                 gifts: []
             },
@@ -236,8 +236,9 @@ export default {
         /* 保存 */
         handleSave () {
             this.form.intr = this.$refs.editWechat.content;
+            const right = this.form.right.map(item => ( this.form.unlimit === 1 ? { ...item, time: -1 } : item ));
             this.form.validity = this.form.isInfinity === 1 ? -1 : this.form.validity;
-            saveTimeCard(this.form).then(data => {
+            saveTimeCard({ ...this.form, right }).then(data => {
                 if (data.code === ERR_OK) {
                     this.$message({
                         type: 'success',
@@ -301,6 +302,15 @@ export default {
                 }
             }
         },
+        saveRights (list) {
+            console.log(list);
+            this.rightsList = list;
+            this.form.right = list;
+        },
+        saveSends (list) {
+            this.buyList = list;
+            this.form.gifts = list;
+        }
     }
 };
 </script>

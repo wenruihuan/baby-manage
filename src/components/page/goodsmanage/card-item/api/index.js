@@ -176,6 +176,15 @@ export const getServiceList = query => {
     });
 };
 
+// 获取服务分类列表
+export const getServiceKind = query => {
+    return request({
+        url: `${IP}/admin/service/kind`,
+        method: 'get',
+        params: query
+    });
+};
+
 /* 获取每种卡项默认图片 */
 export const getDefaultPic = query => {
     return request({
