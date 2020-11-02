@@ -383,7 +383,7 @@ export default {
             this.getSoldList();
         },
         handleSearch2 () {
-            this.getHi();
+            this.getRechargeHistoryList();
         },
         /* 使得卡失效 */
         shixiao () {},
