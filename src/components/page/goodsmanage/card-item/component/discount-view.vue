@@ -123,7 +123,7 @@
                                 <el-button :disabled="selection.length <= 0" @click="updateExpire">修改有效期</el-button>
                             </div>
                             <el-pagination
-                                    :current-page="curPage2"
+                                    :current-page="curPage1"
                                     :page-sizes="[10, 20, 100, 200]"
                                     :page-size="100"
                                     layout="total, sizes, prev, pager, next, jumper"
@@ -174,7 +174,7 @@
                                     :page-sizes="[10, 20, 100, 200]"
                                     :page-size="100"
                                     layout="total, sizes, prev, pager, next, jumper"
-                                    :total="historyList.length"
+                                    :total="historyListTotal"
                                     @current-change="handleCurrentChange2"
                             >
                             </el-pagination>
@@ -272,6 +272,7 @@ export default {
             sendList: [],
             hasSellPage: 1,
             hasSellTotal: 0,
+            historyListTotal: 0,
             hasSellList: [],
             historyList: [],
             cardDetail: {},
@@ -372,7 +373,8 @@ export default {
         },
         /* 已售 */
         handleCurrentChange1 (value) {
-
+            this.curPage1 = value;
+            this.getSoldList(value);
         },
         /* 历史卡项 */
         handleCurrentChange2 (value) {
@@ -393,10 +395,10 @@ export default {
             this.selection = value;
         },
         /* 获取已售列表 */
-        async getSoldList (curPage = 1) {
+        async getSoldList () {
             try {
                 const card_id = this.$route.query.id;
-                const data = await getDiscountSoldList({ card_id, page_no: curPage, keyword: this.searchVal });
+                const data = await getDiscountSoldList({ card_id, page_no: this.curPage1, keyword: this.searchVal });
                 if (data.code === ERR_OK) {
                     this.hasSellList = data.data.data.map(item => {
                         return {
@@ -408,7 +410,7 @@ export default {
                         };
                     });
 
-                    this.hasSellTotal = data.data.all_count;
+                    this.hasSellTotal = Number(data.data.all_count);
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
@@ -418,12 +420,13 @@ export default {
         async getRechargeHistoryList () {
             try {
                 const card_id = this.$route.query.id;
-                const data = await getDiscountHisList({ card_id, page_no: this.curPage1, keyword: this.searchVal });
+                const data = await getDiscountHisList({ card_id, page_no: this.curPage2, keyword: this.searchVal });
                 if (data.code === ERR_OK) {
                     this.historyList = data.data.data.map(item => ({
                         ...item,
                         createTime: moment(gettime(item.create_time)).format('yyyy-MM-DD HH:mm:ss')
                     }));
+                    this.historyListTotal = Number(data.data.all_count);
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
