@@ -78,7 +78,7 @@
                             width="80"
                             trigger="click"
                     >
-                        <el-button @click="handlePublish(scope.row.id, scope.row.is_publish === '1' ? '0' : '1')">{{ scope.row.is_publish === '1' ? '下架' : '上架' }}</el-button>
+                        <el-button @click="handlePublish(scope.row.card_id, scope.row.is_publish === '1' ? '0' : '1')">{{ scope.row.is_publish === '1' ? '下架' : '上架' }}</el-button>
                         <el-button
                                 style="margin-left: 8px;"
                                 slot="reference"
@@ -112,7 +112,7 @@
                     :page-sizes="[10, 20, 100, 200]"
                     :page-size="100"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="tableData.length"
+                    :total="total"
                     @current-change="handleCurrentChange"
             >
             </el-pagination>
@@ -126,6 +126,10 @@ export default {
         tableData: {
             type: Array,
             default: () => []
+        },
+        total: {
+            type: Number,
+            default: 0
         }
     },
     data () {
@@ -154,7 +158,7 @@ export default {
             if (id) {
                 this.$emit('handlePublish', { id, isPublish });
             } else {
-                const selectedIds = this.selection.map(item => item.id).join(',');
+                const selectedIds = this.selection.map(item => item.card_id).join(',');
                 this.$emit('handlePublish', { id: selectedIds, isPublish });
             }
         },
@@ -166,7 +170,7 @@ export default {
             this.$emit('remove', this.selection);
         },
         setShow (isShow) {
-            const id = this.selection.map(item => item.id).join(',');
+            const id = this.selection.map(item => item.card_id).join(',');
             this.$emit('setShow', { id, isShow });
         },
         canclePopover (row, index) {

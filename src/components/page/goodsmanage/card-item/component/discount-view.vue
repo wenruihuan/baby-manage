@@ -62,7 +62,7 @@
             </div>
             <div class="bottom">
                 <el-tabs type="border-card" @tab-click="handleTabClick">
-                    <el-tab-pane :label="`已售(${ hasSellList.length })`">
+                    <el-tab-pane :label="`已售(${ hasSellTotal })`">
                         <div class="search-container">
                             <el-input
                                     class="search-input"
@@ -123,7 +123,7 @@
                                 <el-button :disabled="selection.length <= 0" @click="updateExpire">修改有效期</el-button>
                             </div>
                             <el-pagination
-                                    :current-page="curPage2"
+                                    :current-page="curPage1"
                                     :page-sizes="[10, 20, 100, 200]"
                                     :page-size="100"
                                     layout="total, sizes, prev, pager, next, jumper"
@@ -174,7 +174,7 @@
                                     :page-sizes="[10, 20, 100, 200]"
                                     :page-size="100"
                                     layout="total, sizes, prev, pager, next, jumper"
-                                    :total="historyList.length"
+                                    :total="historyListTotal"
                                     @current-change="handleCurrentChange2"
                             >
                             </el-pagination>
@@ -244,6 +244,47 @@
                 </el-tabs>
             </div>
         </el-dialog>
+        <el-dialog
+                title="修改有效期"
+                :visible.sync="isExpireShow"
+                width="40%"
+        >
+            <el-form :model="expireForm">
+                <el-form-item label="有效期至:" prop="validity">
+                    <el-radio-group v-model="isInifinate">
+                        <el-radio :label="-1">无限次</el-radio>
+                        <el-radio :label="0">
+                            <el-input
+                                    v-model="expireForm.validity"
+                                    :disabled="isInifinate === -1"
+                                    placeholder="请填写有效期">
+                                <template slot="append">
+                                    天
+                                </template>
+                            </el-input>
+                        </el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <span slot="footer">
+                <el-button @click="isExpireShow = false">取 消</el-button>
+                <el-button type="primary" @click="saveExpire">确 定</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog
+                title="使失效"
+                :visible.sync="isValidShow"
+                width="40%"
+        >
+            <div>
+                <p>确认使选中的卡失效？</p>
+                <p style="color: #dddddd;">*仅可对状态对“使用中”的卡有效</p>
+            </div>
+            <span slot="footer">
+                <el-button @click="isValidShow = false">取 消</el-button>
+                <el-button type="primary" @click="saveValid">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -261,6 +302,7 @@ import {
 import moment from 'moment';
 import { CARD__KIND_GRP, CARD_STATUS_MAP } from '@/components/page/goodsmanage/utils';
 import { gettime } from '../../utils';
+import { setExpires, setInvalid } from '../api';
 
 export default {
     data () {
@@ -272,6 +314,7 @@ export default {
             sendList: [],
             hasSellPage: 1,
             hasSellTotal: 0,
+            historyListTotal: 0,
             hasSellList: [],
             historyList: [],
             cardDetail: {},
@@ -280,7 +323,12 @@ export default {
             searchVal: '',
             selection: [],
             defaultPic: '',
-            isPublish: '1'
+            isPublish: '1',
+            isExpireShow: false,
+            expireForm: {},
+            isValidShow: false,
+            validForm: {},
+            isInifinate: -1
         };
     },
     created() {
@@ -372,7 +420,8 @@ export default {
         },
         /* 已售 */
         handleCurrentChange1 (value) {
-
+            this.curPage1 = value;
+            this.getSoldList(value);
         },
         /* 历史卡项 */
         handleCurrentChange2 (value) {
@@ -383,20 +432,57 @@ export default {
             this.getSoldList();
         },
         handleSearch2 () {
-            this.getHi();
+            this.getRechargeHistoryList();
         },
         /* 使得卡失效 */
-        shixiao () {},
+        shixiao () {
+            this.isValidShow = true;
+        },
         /* 更新时间 */
-        updateExpire () {},
+        updateExpire () {
+            this.isExpireShow = true;
+        },
         handleSelectionChange (value) {
             this.selection = value;
         },
+        /* 保存有效期 */
+        async saveExpire () {
+            this.isExpireShow = false;
+            try {
+                const card_id = this.selection.map(item => item.member_card_id || item.card_discount_id).join(',');
+                const validity = this.isInifinate === -1 ? -1 : this.expireForm.validity;
+                const data = await setExpires({ card_id, validity });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: data.msg
+                    });
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/card-item/component/discount-view.vue saveExpire error: ${ e }`);
+            }
+        },
+        /* 使失效 */
+        async saveValid () {
+            this.isValidShow = false;
+            const card_id = this.selection.map(item => item.member_card_id || item.card_discount_id).join(',');
+            try {
+                const data = await setInvalid({ card_id });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: data.msg
+                    });
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/card-item/component/discount-view.vue saveValid error: ${ e }`);
+            }
+        },
         /* 获取已售列表 */
-        async getSoldList (curPage = 1) {
+        async getSoldList () {
             try {
                 const card_id = this.$route.query.id;
-                const data = await getDiscountSoldList({ card_id, page_no: curPage, keyword: this.searchVal });
+                const data = await getDiscountSoldList({ card_id, page_no: this.curPage1, keyword: this.searchVal });
                 if (data.code === ERR_OK) {
                     this.hasSellList = data.data.data.map(item => {
                         return {
@@ -408,7 +494,7 @@ export default {
                         };
                     });
 
-                    this.hasSellTotal = data.data.all_count;
+                    this.hasSellTotal = Number(data.data.all_count);
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
@@ -418,12 +504,13 @@ export default {
         async getRechargeHistoryList () {
             try {
                 const card_id = this.$route.query.id;
-                const data = await getDiscountHisList({ card_id, page_no: this.curPage1, keyword: this.searchVal });
+                const data = await getDiscountHisList({ card_id, page_no: this.curPage2, keyword: this.searchVal });
                 if (data.code === ERR_OK) {
                     this.historyList = data.data.data.map(item => ({
                         ...item,
                         createTime: moment(gettime(item.create_time)).format('yyyy-MM-DD HH:mm:ss')
                     }));
+                    this.historyListTotal = Number(data.data.all_count);
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);

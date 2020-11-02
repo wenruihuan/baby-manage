@@ -22,10 +22,11 @@
                 <el-button class="search-btn" @click="handleSearch">搜索</el-button>
             </div>
         </div>
-        <el-tabs type="border-card">
+        <el-tabs type="border-card" @tab-click="handleTabClick">
             <el-tab-pane label="全部卡类">
                 <card-table
                     :table-data="tableData"
+                    :total="total"
                     @handleEdit="handleEdit"
                     @handleView="handleView"
                     @handleCorrectSort="handleCorrectSort"
@@ -35,22 +36,40 @@
                 />
             </el-tab-pane>
             <el-tab-pane label="次卡">
-<!--                <card-table-->
-<!--                        :table-data="tableData1"-->
-<!--                        @handleEdit="handleEdit"-->
-<!--                />-->
+                <card-table
+                    :table-data="tableData"
+                    :total="total"
+                    @handleEdit="handleEdit"
+                    @handleView="handleView"
+                    @handleCorrectSort="handleCorrectSort"
+                    @remove="removeCard"
+                    @handlePublish="handlePublish"
+                    @setShow="setShow"
+                />
             </el-tab-pane>
             <el-tab-pane label="折扣卡">
-<!--                <card-table-->
-<!--                        :table-data="tableData1"-->
-<!--                        @handleEdit="handleEdit"-->
-<!--                />-->
+                <card-table
+                    :table-data="tableData"
+                    :total="total"
+                    @handleEdit="handleEdit"
+                    @handleView="handleView"
+                    @handleCorrectSort="handleCorrectSort"
+                    @remove="removeCard"
+                    @handlePublish="handlePublish"
+                    @setShow="setShow"
+                />
             </el-tab-pane>
             <el-tab-pane label="充值卡">
-<!--                <card-table-->
-<!--                        :table-data="tableData1"-->
-<!--                        @handleEdit="handleEdit"-->
-<!--                />-->
+                <card-table
+                    :table-data="tableData"
+                    :total="total"
+                    @handleEdit="handleEdit"
+                    @handleView="handleView"
+                    @handleCorrectSort="handleCorrectSort"
+                    @remove="removeCard"
+                    @handlePublish="handlePublish"
+                    @setShow="setShow"
+                />
             </el-tab-pane>
         </el-tabs>
         <cika-edit v-if="isCikaShow" ref="cika" />
@@ -80,7 +99,9 @@ export default {
             searchVal: '',
             isCikaShow: false,
             isDiscountShow: false,
-            isInsertShow: false
+            isInsertShow: false,
+            total: 0,
+            activeTab: ''
         };
     },
     created () {
@@ -95,23 +116,35 @@ export default {
             this.getList();
         },
         /* 获取卡项列表 */
-        async getList () {
+        async getList (type = '') {
             try {
                 const data = await getBoxList({
                     keyword: this.searchVal,
                     page_no: this.curPage,
+                    type: this.activeTab
                 });
-                this.tableData = data.data;
+                this.tableData = data.data.data;
+                this.total = data.data.all_count;
             } catch (e) {
                 console.log(`card-item getList error: ${e}`);
             }
         },
         handleEdit ({ row, index }) {
-            this.$router.push(`/cika-card?id=${row.card_id}`);
+            const type = row.type;
+            switch (type) {
+                case 'time_card': { this.$router.push(`/cika-card?id=${row.card_id}`); break; }
+                case 'discount_card': { this.$router.push(`/discount-card?id=${row.card_id}`); break; }
+                case 'recharge_card': { this.$router.push(`/insert-card?id=${row.card_id}`); break; }
+            }
         },
         /* 去到详情页 */
         handleView ({ row, index }) {
-            this.$router.push(`/cika-card-view?id=${ row.card_id }`);
+            const type = row.type;
+            switch (type) {
+                case 'time_card': { this.$router.push(`/cika-card-view?id=${row.card_id}`); break; }
+                case 'discount_card': { this.$router.push(`/discount-card-view?id=${row.card_id}`); break; }
+                case 'recharge_card': { this.$router.push(`/insert-card-view?id=${row.card_id}`); break; }
+            }
         },
         /* 排序 */
         async handleCorrectSort (row) {
@@ -129,7 +162,7 @@ export default {
         },
         /* 删除卡包 */
         async removeCard (selection) {
-            const id = selection.map(item => item.id).join(',');
+            const id = selection.map(item => item.card_id).join(',');
             try {
                 const data = await removeCard({ id });
                 if (data.code === ERR_OK) {
@@ -159,6 +192,15 @@ export default {
                 }
             } catch (e) {
                 console.log(`card-item setShow error: ${e}`);
+            }
+        },
+        /* 点击tab的时候触发 */
+        handleTabClick (tab) {
+            switch (tab.label) {
+                case '全部卡类': { this.activeTab = ''; this.getList(); break; }
+                case '次卡': { this.activeTab = 'time_card'; this.getList(); break; }
+                case '折扣卡': { this.activeTab = 'discount_card'; this.getList(); break; }
+                case '充值卡': { this.activeTab = 'recharge_card'; this.getList(); break; }
             }
         }
     }

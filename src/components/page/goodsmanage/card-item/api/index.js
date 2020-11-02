@@ -176,6 +176,15 @@ export const getServiceList = query => {
     });
 };
 
+// 获取服务分类列表
+export const getServiceKind = query => {
+    return request({
+        url: `${IP}/admin/service/kind`,
+        method: 'get',
+        params: query
+    });
+};
+
 /* 获取每种卡项默认图片 */
 export const getDefaultPic = query => {
     return request({
@@ -190,6 +199,59 @@ export const getDefaultPic = query => {
 export const getTimeDetial = query => {
     return request({
         url: `${IP}/admin/card/time/detail`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 保存次卡 */
+export const saveTimeCard = query => {
+    return request({
+        url: `${IP}/admin/card/time/save`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 获取次卡的已售列表 */
+export const getTimeSoldList = query => {
+    return request({
+        url: `${IP}/admin/card/time/sell`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 获取次卡的已售详情 */
+export const getTimeSoldDetail = query => {
+    return request({
+        url: `${IP}/admin/card/time/sellDetail`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 获取次卡的历史列表 */
+export const getTimeHisList = query => {
+    return request({
+        url: `${IP}/admin/card/time/history`,
+        method: 'get',
+        params: query
+    });
+};
+
+/* 获取次卡的历史详情 */
+export const getTimeHisDetail = query => {
+    return request({
+        url: `${IP}/admin/card/time/historyDetail`,
+        method: 'get',
+        params: query
+    });
+};
+/* 次卡预览 */
+export const getTimeQrcode = query => {
+    return request({
+        url: `${IP}/admin/card/time/previewQr`,
         method: 'get',
         params: query
     });
@@ -329,5 +391,23 @@ export const getCardQuanlityList = query => {
         url: `${IP}/admin/card/listNoPage`,
         method: 'get',
         params: query
+    });
+};
+
+/* 使卡失效 */
+export const setInvalid = query => {
+    return request({
+        url: `${IP}/admin/card/setInvalid`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 修改有效期 */
+export const setExpires = query => {
+    return request({
+        url: `${IP}/admin/card/setExpires`,
+        method: 'post',
+        data: query
     });
 };
