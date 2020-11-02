@@ -393,3 +393,21 @@ export const getCardQuanlityList = query => {
         params: query
     });
 };
+
+/* 使卡失效 */
+export const setInvalid = query => {
+    return request({
+        url: `${IP}/admin/card/setInvalid`,
+        method: 'post',
+        data: query
+    });
+};
+
+/* 修改有效期 */
+export const setExpires = query => {
+    return request({
+        url: `${IP}/admin/card/setExpires`,
+        method: 'post',
+        data: query
+    });
+};

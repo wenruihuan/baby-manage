@@ -162,6 +162,7 @@
                         </div>
                         <el-table
                             :data="historyList"
+                            @selection-change="handleSelectionChange"
                         >
                             <el-table-column type="selection" width="55"></el-table-column>
                             <el-table-column prop="create_time" label="修改时间"></el-table-column>
@@ -272,6 +273,39 @@
                 </el-tabs>
             </div>
         </el-dialog>
+        <el-dialog
+            title="修改有效期"
+            :visible.sync="isExpireShow"
+            width="40%"
+        >
+            <el-form :model="expireForm">
+                <el-form-item label="有效期至:" prop="validity">
+                    <el-date-picker
+                        v-model="expireForm.validity"
+                        type="date"
+                        placeholder="选择日期">
+                    </el-date-picker>
+                </el-form-item>
+            </el-form>
+            <span slot="footer">
+                <el-button @click="isExpireShow = false">取 消</el-button>
+                <el-button type="primary" @click="saveExpire">确 定</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog
+            title="使失效"
+            :visible.sync="isValidShow"
+            width="40%"
+        >
+            <div>
+                <p>确认使选中的卡失效？</p>
+                <p style="color: #dddddd;">*仅可对状态对“使用中”的卡有效</p>
+            </div>
+            <span slot="footer">
+                <el-button @click="isValidShow = false">取 消</el-button>
+                <el-button type="primary" @click="saveValid">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -283,7 +317,7 @@ import {
     getTimeSoldList,
     getTimeSoldDetail,
     getTimeHisList,
-    getTimeHisDetail
+    getTimeHisDetail, setExpires, setInvalid
 } from '@/components/page/goodsmanage/card-item/api';
 import { CARD__KIND_GRP, CARD_STATUS_MAP, gettime } from '@/components/page/goodsmanage/utils';
 import moment from 'moment';
@@ -304,7 +338,11 @@ export default {
             hasSellTotal: 0,
             historyListTotal: 0,
             activeTab: '',
-            cardItem: {}
+            cardItem: {},
+            isExpireShow: false,
+            expireForm: {},
+            isValidShow: false,
+            validForm: {}
         };
     },
     created() {
@@ -364,9 +402,45 @@ export default {
 
         },
         /* 使得卡失效 */
-        shixiao () {},
+        shixiao () {
+            this.isValidShow = true;
+        },
         /* 更新时间 */
-        updateExpire () {},
+        updateExpire () {
+            this.isExpireShow = true;
+        },
+        /* 保存有效期 */
+        async saveExpire () {
+            this.isExpireShow = false;
+            try {
+                const card_id = this.$route.query.id;
+                const data = await setExpires({ card_id, validity: this.expireForm.validity });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: data.msg
+                    });
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue saveExpire error: ${ e }`);
+            }
+        },
+        /* 使失效 */
+        async saveValid () {
+            this.isValidShow = false;
+            const card_id = this.selection.map(item => item.member_card_id || item.card_time_id).join(',');
+            try {
+                const data = await setInvalid({ card_id });
+                if (data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: data.msg
+                    });
+                }
+            } catch (e) {
+                console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue saveValid error: ${ e }`);
+            }
+        },
         handleSelectionChange (value) {
             this.selection = value;
         },
