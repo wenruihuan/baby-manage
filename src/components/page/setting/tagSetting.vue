@@ -248,4 +248,14 @@
         width: 80px;
         margin: 0 5px;
     }
+    .el-table >>> .cell {
+        color: #333333;
+    }
+    .el-checkbox {
+        margin-bottom: 17px;
+    }
+    .tip {
+        font-size: 12px;
+        color: #d9d9d9;
+    }
 </style>

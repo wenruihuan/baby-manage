@@ -54,6 +54,15 @@ export const getBanner = query => {
   })
 }
 
+// 保存banner
+export const saveBanner = params => {
+  return request({
+    url: `/admin/mp/saveBanner`,
+    method: 'post',
+    data: params
+  })
+}
+
 // 获取推荐服务
 export const getRecommendService = query => {
   return request({
@@ -63,10 +72,64 @@ export const getRecommendService = query => {
   })
 }
 
+// 保存推荐服务
+export const saveService = params => {
+  return request({
+    url: `/admin/mp/saveRecommendService`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 获取服务分类列表
+export const getServiceClassification = query => {
+  return request({
+    url: `/admin/service/selectKind`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取服务列表
+export const getServiceList = query => {
+  return request({
+    url: `/admin/service/selectList`,
+    method: 'get',
+    params: query
+  })
+}
+
 // 获取推荐商品
 export const getRecommendGoods = query => {
   return request({
     url: `/admin/mp/getRecommendGoods`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 保存推荐商品
+export const saveGoods = params => {
+  return request({
+    url: `/admin/mp/saveRecommendGoods`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 获取商品分类列表
+export const getGoodsClassification = query => {
+  return request({
+    url: `/admin/goods/selectKind`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取商品列表
+export const getGoodsList = query => {
+  return request({
+    url: `/admin/goods/selectList`,
     method: 'get',
     params: query
   })
