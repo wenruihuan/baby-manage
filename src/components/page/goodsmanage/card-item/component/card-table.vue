@@ -65,10 +65,12 @@
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button
+                            class="operate-btn"
                             size="mini"
                             type="text"
                             @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button
+                            class="operate-btn"
                             size="mini"
                             type="text"
                             @click="handleView(scope.$index, scope.row)">详情</el-button>
@@ -181,6 +183,18 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.operate-btn {
+    position: relative;
+}
+.operate-btn:after {
+    content: " ";
+    width: 1px;
+    height: 98%;
+    position: absolute;
+    top: 0;
+    right: -6px;
+    background: #dddddd;
+}
 .card-table-container {
 
 }

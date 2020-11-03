@@ -410,7 +410,7 @@ export default {
 .edit-view {
     background: white;
     box-sizing: border-box;
-    padding: 10px;
+    padding: 30px 10px;
 }
 .edit-form {
     margin: 0 auto;

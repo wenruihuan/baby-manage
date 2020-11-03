@@ -208,8 +208,13 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.card-item {
+    height: 100%;
+    overflow: auto;
+}
 .card-item .top-container {
     width: 100%;
+    height: 52px;
     margin: 5px auto;
     padding: 10px;
     box-sizing: border-box;
@@ -225,6 +230,10 @@ export default {
 }
 .top-container .search-btn {
     margin-left: 5px;
+}
+.card-item /deep/ .el-tabs {
+    height: calc(100% - 67px);
+    overflow: auto;
 }
 </style>
 

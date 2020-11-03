@@ -173,8 +173,9 @@
           </div>
           <div class="footer-bar" v-if="isOrder">
             <el-button @click="handlePrint">打印小票</el-button>
-            <!-- 判断可退款状态 -->
+            <!-- <el-button type="primary" v-if="showRefundBtn" @click="handleRefund">主动退款</el-button> -->
             <el-button type="primary" @click="handleRefund">主动退款</el-button>
+            <el-button v-if="showCancelBtn" @click="handleCancelOrder">取消订单</el-button>
           </div>
         </div>
       </div>
@@ -255,6 +256,13 @@ import RefundStep1 from './refundStep1'
 import RefundStep2 from './refundStep2'
 import PrintTicket from './printTicket'
 import dayjs from 'dayjs'
+import { getServiceDetail, getTimeCardDetail, getDiscountCardDetail, getRechargeetail } from '@/api/orderManagement'
+const typeObj = {
+  service: getServiceDetail,
+  time_card: getTimeCardDetail,
+  discount_card: getDiscountCardDetail,
+  recharge_card: getRechargeetail
+}
 export default {
   name: 'orderDetail',
   components: {
@@ -281,7 +289,9 @@ export default {
       dialogWidth: '700px',
       logData: [],
       refundData: [],
-      expressInfo: {}
+      expressInfo: {},
+      refundInfo: null,
+      refundList: []
     }
   },
   props: {
@@ -298,6 +308,13 @@ export default {
     },
     isOrder() {
       return this.orderType === 'order'
+    },
+    showRefundBtn() {
+      // 0待付款 1待发货 2已发货 3已完成 4已退款 5已取消
+      return this.orderInfo.order_status === 3 && this.isOrder
+    },
+    showCancelBtn() {
+      return this.orderInfo.order_status === 0 && this.isOrder
     }
   },
   created() {
@@ -324,12 +341,21 @@ export default {
   },
   methods: {
     handleRefund() {
-      this.dialogShow = true
-      this.setDilogProp('refundStep1', '退款商品', '700px', '' )
+      typeObj[this.type]({order_id: this.orderId}).then(res => {
+        const {data} = res
+        this.refundInfo = data
+        this.refundList = data.consume
+        this.dialogShow = true
+        this.setDilogProp('refundStep1', '退款商品', '700px', '', this.refundList )
+      })
     },
     handleNextStep() {
       this.dialogShow = false
-      this.setDilogProp('refundStep2', '主动退款', '700px', '' )
+      const prm = Object.assign({}, this.refundInfo)
+      prm.type = this.type
+      prm.orderId = this.orderId
+      console.log('prm', prm)
+      this.setDilogProp('refundStep2', '主动退款', '700px', '', prm )
     },
     handlePrint() {
       this.setDilogProp('printTicket', '', '300px', 'print-dialog')
@@ -357,6 +383,9 @@ export default {
     },
     handleJumpToDetail(refundId) {
       this.$router.push(`/RefundDetail/${refundId}`)
+    },
+    handleCancelOrder() {
+
     }
   },
   filters: {
@@ -400,7 +429,7 @@ export default {
     font-size: 16px;
     align-items: center;
     position: relative;
-    background-color: #EBEEF5;
+    background-color: rgba(242, 242, 242, 1);
     padding-left: 25px;
   }
   .info-title::before {
@@ -416,17 +445,16 @@ export default {
     padding: 30px;
   }
   .status {
-    font-size: 28px;
+    font-size: 22px;
     margin-bottom: 15px;
   }
   .info-body-name {
-    color: #606266;
-    font-size: 26px;
+    color: #333;
+    font-size: 18px;
   }
   .info-body-name img {
-    width: 50px;
-    height: 50px;
-    border: 1px solid gray;
+    width: 45px;
+    height: 45px;
     vertical-align: middle;
     margin: 0 15px 15px 0;
   }
