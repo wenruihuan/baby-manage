@@ -310,7 +310,6 @@ export default {
         /* 保存 */
         handleSave () {
             this.$refs.boxForm.validate(async valid => {
-                console.log(435345);
                 if (valid) {
                     try {
                         let { kind_name, ...obj } = this.form;
@@ -425,9 +424,11 @@ export default {
 
 <style lang='css' scoped>
 .edit-view {
+    height: 100%;
+    overflow: auto;
     background: white;
     box-sizing: border-box;
-    padding: 10px;
+    padding: 30px 10px;
 }
 .edit-form {
     margin: 0 auto;

@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="select-container">
-                <span>选择分类:</span>
+                <span class="key">选择分类：</span>
                 <el-select class="category-select" v-model="selected" placeholder="选择包厢分类" @change="selectCategory">
                     <el-option
                         v-for="item in categoryList"
@@ -26,7 +26,7 @@
                         :value="item.id">
                     </el-option>
                 </el-select>
-                <span>选择标签:</span>
+                <span class="key">选择标签：</span>
                 <el-select class="category-select" v-model="tagSelected" @change="selectTag">
                     <el-option
                         v-for="item in tagList"
@@ -114,10 +114,12 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button
+                                class="operate-btn"
                                 size="mini"
                                 type="text"
                                 @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button
+                                class="operate-btn"
                                 size="mini"
                                 type="text"
                                 @click="handleView(scope.$index, scope.row)">详情</el-button>
@@ -186,7 +188,7 @@ export default {
     data () {
         return {
             searchVal: '',
-            selected: '',
+            selected: 'all',
             options: [
                 { value: '1', label: '全部分类' },
                 { value: '2', label: '按摩' },
@@ -377,7 +379,21 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.operate-btn {
+    position: relative;
+}
+.operate-btn:after {
+    content: " ";
+    width: 1px;
+    height: 98%;
+    position: absolute;
+    top: 0;
+    right: -6px;
+    background: #dddddd;
+}
 .box-container {
+    height: 100%;
+    overflow: auto;
     padding: 10px;
     background: white;
     box-sizing: border-box;
@@ -396,6 +412,15 @@ export default {
     position: absolute;
     bottom: 15px;
     left: 5px;
+}
+
+.top-container .select-container .key {
+    margin: 0 10px 0 20px;
+    font-size: 12px;
+}
+
+.top-container .select-container .category-select {
+    margin-right: 15px;
 }
 
 .search-container {

@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="select-container">
-                <span>选择分类:</span>
+                <span class="key">选择分类：</span>
                 <el-select class="category-select" v-model="selected" placeholder="选择包厢分类" @change="selectCategory">
                     <el-option
                         v-for="item in categoryList"
@@ -61,10 +61,12 @@
                         <el-button
                                 size="mini"
                                 type="text"
+                                class="operate-btn"
                                 @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button
                                 size="mini"
                                 type="text"
+                                class="operate-btn"
                                 @click="handleView(scope.$index, scope.row)">详情</el-button>
                         <el-popover
                                 popper-class="POPOVER1"
@@ -103,7 +105,7 @@
                         :current-page="curPage"
                         :page-sizes="[10, 20, 100, 200]"
                         :page-size="100"
-                        layout="total, sizes, prev, pager, next, jumper"
+                        layout="total, prev, pager, next, jumper"
                         :total="tableData.length"
                         @current-change="handleCurrentChange"
                 >
@@ -126,7 +128,7 @@ export default {
     data () {
         return {
             searchVal: '',
-            selected: '',
+            selected: 'all',
             options: [
                 { value: '1', label: '全部分类' },
                 { value: '2', label: '按摩' },
@@ -252,6 +254,8 @@ export default {
 
 <style lang="css" scoped>
 .box-container {
+    height: 100%;
+    overflow: auto;
     padding: 10px;
     background: white;
     box-sizing: border-box;
@@ -272,6 +276,11 @@ export default {
     left: 5px;
 }
 
+.top-container .select-container .key {
+    margin-right: 10px;
+    font-size: 12px;
+}
+
 .search-container {
     display: flex;
     justify-content: center;
@@ -289,6 +298,18 @@ export default {
 .box-column .img-wrapper {
     max-width: 100px;
     display: inline-block;
+}
+.operate-btn {
+    position: relative;
+}
+.operate-btn:after {
+    content: " ";
+    width: 1px;
+    height: 98%;
+    position: absolute;
+    top: 0;
+    right: -6px;
+    background: #dddddd;
 }
 </style>
 

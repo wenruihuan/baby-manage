@@ -241,9 +241,11 @@ export default {
 
 <style lang='css' scoped>
 .edit-view {
+    height: 100%;
+    overflow: auto;
     background: white;
     box-sizing: border-box;
-    padding: 10px;
+    padding: 50px 10px;
 }
 .edit-form {
     width: 30%;
