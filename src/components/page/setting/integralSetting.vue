@@ -17,8 +17,8 @@
                 <el-table-column label="支付方式" align="center">
                     <template slot-scope="scope">
                         <div class="pay-type" v-if="!['booking'].includes(scope.row.key)">
-                            <p>余额支付</p>
-                            <p>其他方式支付</p>
+                            <p class="pay-type-p">余额支付</p>
+                            <p class="pay-type-p">其他方式支付</p>
                         </div>
                     </template>
                 </el-table-column>
@@ -224,20 +224,20 @@
                 this.tableData.forEach((m) => {
                     if (m.key === 'booking') {
                         if (m.isLimit[0]) {
-                            tableFormData[m.key].limit = String(tableFormData[m.key].limit)
+                            tableFormData[m.key].limit = String(tableFormData[m.key].limit);
                         } else {
-                            tableFormData[m.key].limit = '-1'
+                            tableFormData[m.key].limit = '-1';
                         }
                     } else {
                         if (m.isLimit[0]) {
-                            tableFormData[m.key].balance.limit = String(tableFormData[m.key].balance.limit)
+                            tableFormData[m.key].balance.limit = String(tableFormData[m.key].balance.limit);
                         } else {
-                            tableFormData[m.key].balance.limit = '-1'
+                            tableFormData[m.key].balance.limit = '-1';
                         }
                         if (m.isLimit[1]) {
-                            tableFormData[m.key].other.limit = String(tableFormData[m.key].other.limit)
+                            tableFormData[m.key].other.limit = String(tableFormData[m.key].other.limit);
                         } else {
-                            tableFormData[m.key].other.limit = '-1'
+                            tableFormData[m.key].other.limit = '-1';
                         }
                     }
                 });
@@ -256,6 +256,16 @@
         padding: 20px;
         border-radius: 5px;
         border: 0;
+    }
+    .el-form-item >>> .el-form-item__label,
+    .el-textarea >>> .el-textarea__inner,
+    .el-table >>> .cell,
+    .el-table >>> .limit-input-span {
+        color: #333333;
+    }
+    .el-table >>> .pay-type-p {
+        line-height: 42px;
+        height: 42px;
     }
     .info-title {
         margin-bottom: 20px;
