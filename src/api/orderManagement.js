@@ -47,7 +47,7 @@ export const getDiscountCardDetail = query => {
   })
 }
 // 获取储值卡退款详情
-export const getValueCardDetail = query => {
+export const getRechargeetail = query => {
   return request({
     url: `/admin/refund/card/rechargeDetail`,
     method: 'get',
@@ -55,7 +55,7 @@ export const getValueCardDetail = query => {
   })
 }
 // 提交储值卡退款
-export const refundValueCard = query => {
+export const refundRechargeCard = query => {
   return request({
     url: `/admin/refund/card/doRechargeRefund`,
     method: 'post',

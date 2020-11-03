@@ -1,26 +1,38 @@
 <template>
   <div class="refund-step">
+    <!-- <div class="row" v-if="params.type !== 'service'"> -->
     <div class="row">
       <p class="row-label">开卡情况：</p>
       <div class="row-right flex row-right-bg">
         <div class="car-info flex">
           <div class="car-img">
-            <img src="" alt="" width="100%" height="100%">
-            <span class="car-name">卡名称</span>
+            <img :src="params.consume[0].img" alt="" width="100%" height="100%">
+            <span class="car-name">{{params.consume[0].name}}</span>
+            <!-- 有效期未返回 -->
             <span class="car-endline">有效期：365天</span>
           </div>
-          <div class="car-text">
+          <div class="car-text" v-if="params.type==='time_card'">
             <p>购卡金额</p>
-            <p class="car-text-money">￥800</p>
+            <p class="car-text-money">￥{{params.consume[0].price}}</p>
+          </div>
+          <div class="car-text" v-else>
+            <p>本次充值</p>
+            <p class="car-text-money-mini">本金：￥{{params.consume[0].price}}</p>
+            <p class="car-text-money-mini">赠金：￥{{params.consume[0].gift_price}}</p>
           </div>
         </div>
-        <div class="use-info flex">
-          <p>总次数：12</p>
-          <p>已使用：5</p>
+        <div class="use-info flex flex-center" v-if="params.type === 'time_card'">
+          <p>总次数：{{params.consume[0].total_time}}</p>
+          <p>已使用：{{params.consume[0].used_time}}</p>
+        </div>
+        <div class="car-text use-info flex" v-else>
+          <p class="grey-text">当前余额</p>
+          <p class="car-text-money-mini">本金：￥{{params.consume[0].balance}}</p>
+          <p class="car-text-money-mini">赠金：￥{{params.consume[0].gift_balance}}</p>
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="params.type === 'discount_card'">
       <p class="row-label">退卡方案：</p>
       <div class="row-right">
         <div class="schame">
@@ -33,37 +45,37 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="params.type === 'recharge_card'">
       <p class="row-label">扣除金额：</p>
       <div class="row-right">
         <div class="charge-info flex">
           <p class="charge-label">本金扣除：</p>
-          <p><el-input v-model="form.principal" class="charge-money"></el-input></p>
+          <p><el-input v-model="form.refund_balance" class="charge-money"></el-input></p>
           <p class="charge-desc">本次退卡后卡内本金余额：￥500.00</p>
         </div>
         <div class="charge-info flex">
           <p class="charge-label">赠金扣除：</p>
-          <p><el-input v-model="form.bonus" class="charge-money"></el-input></p>
+          <p><el-input v-model="form.refund_gift_balance" class="charge-money"></el-input></p>
           <p class="charge-desc">本次退卡后卡内赠金余额：￥0.00</p>
         </div>
       </div>
     </div>
     <div class="row">
       <p class="row-label">退款金额：</p>
-      <el-table class="row-right" style="width:100%">
-        <el-table-column label="支付方式"></el-table-column>
-        <el-table-column label="支付金额（元）"></el-table-column>
-        <el-table-column label="退款金额（元）">
-          <template>
-            <el-input v-model="form.amount"></el-input>
+      <el-table class="row-right" :data="refundAmount" style="width:100%">
+        <el-table-column label="支付方式" prop="pay_type_name" align="center"></el-table-column>
+        <el-table-column label="支付金额（元）" prop="total_price" align="center"></el-table-column>
+        <el-table-column label="退款金额（元）" align="center">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.refund_price"></el-input>
           </template>
         </el-table-column>
-        <el-table-column label="退款方式">
-          <template>
-            <el-select v-model="form.refundWay">
-              <el-option label="原路返回" value="1"></el-option>
-              <el-option label="现金退款" value="2"></el-option>
-              <el-option label="其他" value="3"></el-option>
+        <el-table-column label="退款方式" align="center">
+          <template slot-scope="scope">
+            <el-select v-model="scope.row.refund_type">
+              <el-option label="原路返回" value="原路返回"></el-option>
+              <el-option label="现金退款" value="现金退款"></el-option>
+              <el-option label="其他" value="其他"></el-option>
             </el-select>
           </template>
         </el-table-column>
@@ -71,28 +83,38 @@
     </div>
     <div class="row">
       <p class="row-label">退款说明：</p>
-      <el-input type="textarea" placeholder="选填，备注退款原因，150字以内"></el-input>
+      <el-input type="textarea" v-model="form.refund_explain" placeholder="选填，备注退款原因，150字以内"></el-input>
     </div>
     <div class="footer-bar flex">
-      <p>合计退款金额：<span>￥100.00</span></p>
+      <p>合计退款金额：<span>￥{{refundAmount[0].refund_price}}</span></p>
       <el-button type="primary" @click="handleRefund">确定退款</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import {refundRechargeCard, refundDiscountCard, refundService, refundTimeCard} from '@/api/orderManagement'
+const typeObj = {
+  service: refundService,
+  discount_card: refundDiscountCard,
+  time_card: refundTimeCard,
+  recharge_card: refundRechargeCard
+}
 export default {
   name: 'refundStep2',
   data() {
     return {
       form: {
-        amount: 0,
-        refundWay: '',
-        remark: '',
-        schame: '',
-        principal: 0,
-        bonus: 0
-      }
+        order_id: '',
+        pay_type_id: '',
+        is_integral: '',
+        refund_balance: '',
+        refund_gift_balance: '',
+        // refund_price: '',
+        // refund_type: '原路返回',
+        refund_explain: ''
+      },
+      refundAmount: []
     }
   },
   props: {
@@ -100,6 +122,25 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  computed: {
+    carText() {
+      if (this.params.type !== 'time_card') {
+        return '购卡金额'
+      } else {
+        return '本次充值'
+      }
+    }
+  },
+  created() {
+    const item = {
+      total_price: this.params.total_price,
+      pay_type_name: this.params.pay_type_name,
+      pay_type_id: this.params.pay_type_id,
+      refund_type: '',
+      refund_price: ''
+    }
+    this.refundAmount.push(item)
   },
   methods: {
     handleRefund() {}
@@ -129,6 +170,9 @@ export default {
   .flex {
     display: flex;
   }
+  .flex-center {
+    justify-content: center;
+  }
   .car-info {
     width: 67%;
     flex-shrink: 0;
@@ -155,11 +199,14 @@ export default {
     font-size: 18px;
     margin-top: 10px;
   }
+  .car-text-money-mini {
+    font-size: 12px;
+    margin-top: 10px;
+  }
   .use-info {
     flex: 1;
     flex-direction: column;
-    justify-content: center;
-    padding-left: 20px;
+    padding-left: 50px;
     position: relative;
   }
   .use-info::before {
@@ -170,6 +217,9 @@ export default {
     background-color: #E4E7ED;
     top: 10%;
     left: 0;
+  }
+  .grey-text {
+    color: #999999;
   }
   .footer-bar {
     margin-top: 20px;

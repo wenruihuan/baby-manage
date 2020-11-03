@@ -267,7 +267,7 @@ export default {
     font-size: 16px;
     align-items: center;
     position: relative;
-    background-color: #EBEEF5;
+    background-color: rgba(242, 242, 242, 1);
     padding-left: 25px;
   }
   .info-title::before {
@@ -283,7 +283,7 @@ export default {
     padding: 30px;
   }
   .status {
-    font-size: 28px;
+    font-size: 22px;
     margin-bottom: 15px;
   }
   .info-body-name {
@@ -291,9 +291,8 @@ export default {
     font-size: 26px;
   }
   .info-body-name img {
-    width: 50px;
-    height: 50px;
-    border: 1px solid gray;
+    width: 45px;
+    height: 45px;
     vertical-align: middle;
     margin: 0 15px 15px 0;
   }

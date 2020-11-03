@@ -208,7 +208,7 @@ a {
     font-size: 16px;
     align-items: center;
     position: relative;
-    background-color: #ebeef5;
+    background-color: rgba(242, 242, 242, 1);
     padding-left: 25px;
 }
 
