@@ -80,10 +80,12 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button
+                                class="operate-btn"
                                 size="mini"
                                 type="text"
                                 @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button
+                                class="operate-btn"
                                 size="mini"
                                 type="text"
                                 @click="handleView(scope.$index, scope.row)">详情</el-button>
@@ -173,16 +175,6 @@ export default {
         // this.getCategory();
     },
     methods: {
-        /* 选择包厢分类 */
-        selectCategory (value) {
-            if (value === 'all') {
-                this.selected = '';
-                this.getList();
-            } else {
-                this.selected = value;
-                this.getList();
-            }
-        },
         /* 添加商品分类 */
         handleAddCategory () {
             this.boxCategoryVisible = true;
@@ -305,13 +297,27 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.operate-btn {
+    position: relative;
+}
+.operate-btn:after {
+    content: " ";
+    width: 1px;
+    height: 98%;
+    position: absolute;
+    top: 0;
+    right: -6px;
+    background: #dddddd;
+}
 .box-container {
+    height: 100%;
+    overflow: auto;
     padding: 10px;
     background: white;
     box-sizing: border-box;
 }
 .top-container {
-    height: 120px;
+    height: 60px;
     position: relative;
 }
 

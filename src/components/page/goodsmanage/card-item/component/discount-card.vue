@@ -294,7 +294,7 @@ export default {
 
 <style lang="css" scoped>
 .cika-container {
-    padding: 10px 15px;
+    padding: 30px 15px;
     background: white;
 }
 .cika-container .content-container {
