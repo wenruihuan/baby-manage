@@ -4,13 +4,13 @@
         <div class="container">
             <el-button class="add_btn" type="primary" @click="handleDetail()">新增等级</el-button>
             <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="shop_name" label="等级名称" align="center"> </el-table-column>
-                <el-table-column prop="service_name" label="会员数" align="center"> </el-table-column>
-                <el-table-column prop="source" label="条件" align="center"></el-table-column>
+                <el-table-column prop="name" label="等级名称" align="center"> </el-table-column>
+                <el-table-column prop="count" label="会员数" align="center"> </el-table-column>
+                <el-table-column prop="condition" label="条件" align="center"></el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="handleDetail(scope.row.id)">编辑</el-button>
-                        <el-button type="text" @click="handleRemove(scope.row.id)">删除</el-button>
+                        <el-button type="text" @click="handleDetail(scope.row.level_id, scope.row.is_initial)">编辑</el-button>
+                        <el-button type="text" v-if="scope.row.is_initial !== '1'" @click="handleRemove(scope.row.level_id)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -29,7 +29,8 @@
 </template>
 <script>
     import breadcrumb from '@/components/common/address';
-    import memberSettingDetail from './component/memberSettingDetail'
+    import memberSettingDetail from './component/memberSettingDetail';
+    import { getMemberLevel, deleteMemberLevel } from '@/api/setting';
     export default {
         name: 'MemberSetting',
         components: {
@@ -52,7 +53,7 @@
                         router: 'CustomerSetting'
                     },
                     {
-                        name: '会员设置',
+                        name: '会员等级',
                         router: 'MemberSetting'
                     }
                 ],
@@ -64,12 +65,29 @@
                 tableData: []
             };
         },
+        created() {
+            this.getMemberLevel();
+        },
         methods: {
-            handleDetail(id) {
+            async getMemberLevel() {
+                const params = {
+                    page_no: this.page.number,
+                    page_size: this.page.size
+                };
+                const res = await getMemberLevel(params);
+                if (res.code === 200) {
+                    this.page.total = res.data.all_count || 0;
+                    this.tableData = res.data.data || [];
+                }
+            },
+            handleDetail(id, is_initial) {
                 this.$refs.detail.paramsId = id;
                 this.$refs.detail.dialogType = id ? 'edit' : 'add';
                 this.$refs.detail.dialogTitle = id ? '修改' : '新增' + '会员等级';
                 this.$refs.detail.dialogVisible = true;
+                this.$refs.detail.is_initial = is_initial === '1';
+                this.$refs.detail.init();
+                id && this.$refs.detail.getMemberDetail();
             },
             handleRemove(id) {
                 this.$confirm('是否确定删除此会员等级?', '提示', {
@@ -77,12 +95,18 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 })
-                    .then(() => {
-                        this.$message.success('删除成功!');
+                    .then(async () => {
+                        const res = await deleteMemberLevel({ level_id: id });
+                        if (res.code === 200) {
+                            this.$message.success('删除成功!');
+                        }
                     })
                     .catch(() => {});
             },
-            handleCurrentChange() {}
+            handleCurrentChange(page) {
+                this.page.number = page;
+                this.getMemberLevel()
+            }
         }
     };
 </script>

@@ -224,3 +224,48 @@ export const saveExpress = params => {
     data: params
   })
 }
+
+// 获取等级列表
+export const getMemberLevel = query => {
+  return request({
+    url: `/admin/memberLevel/list`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 删除等级
+export const deleteMemberLevel = params => {
+  return request({
+    url: `/admin/memberLevel/delete`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 获取等级信息
+export const getMemberDetail = query => {
+  return request({
+    url: `/admin/memberLevel/detail`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 新增（编辑）等级
+export const saveMemberLevel = params => {
+  return request({
+    url: `/admin/memberLevel/save`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 获取卡列表（不分页版）
+export const getCardList = query => {
+  return request({
+    url: `/admin/card/listNoPage`,
+    method: 'get',
+    params: query
+  })
+}

@@ -158,7 +158,7 @@
                                 subs: [
                                     {
                                         index: 'MemberSetting',
-                                        title: '会员设置'
+                                        title: '会员等级'
                                     },
                                     {
                                         index: 'IntegralSetting',
