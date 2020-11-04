@@ -87,7 +87,11 @@
     <div class="main-body">
       <el-tabs type="card" v-model="activeTab" @tab-click="handleTabClick">
         <el-tab-pane label="全部" name="all">
-          <el-table :data="dataAll" border style="width: 100%">
+          <el-table 
+            :data="dataAll" 
+            border style="width: 100%"
+            :span-method="handleSpanMethod"
+          >
             <el-table-column 
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
@@ -100,6 +104,7 @@
                   <span v-if="scoped.row.type === 'service'">{{scoped.row.price}}</span>
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
+                <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -120,7 +125,7 @@
           ></el-pagination>
         </el-tab-pane>
         <el-tab-pane label="待付款" name="unPay">
-          <el-table :data="dataUnPay" border style="width: 100%">
+          <el-table :data="dataUnPay" border style="width: 100%" :span-method="handleSpanMethod">
             <el-table-column 
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
@@ -133,6 +138,7 @@
                   <span v-if="scoped.row.type === 'service'">{{scoped.row.price}}</span>
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
+                <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -153,7 +159,7 @@
           ></el-pagination>
         </el-tab-pane>
         <el-tab-pane label="已完成" name="done">
-          <el-table :data="dataDone" border style="width: 100%">
+          <el-table :data="dataDone" border style="width: 100%" :span-method="handleSpanMethod">
             <el-table-column 
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
@@ -166,6 +172,7 @@
                   <span v-if="scoped.row.type === 'service'">{{scoped.row.price}}</span>
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
+                <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -187,7 +194,7 @@
           ></el-pagination>
         </el-tab-pane>
         <el-tab-pane label="已取消" name="cancel">
-          <el-table :data="dataCancel" border style="width: 100%">
+          <el-table :data="dataCancel" border style="width: 100%" :span-method="handleSpanMethod">
             <el-table-column 
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
@@ -200,6 +207,7 @@
                   <span v-if="scoped.row.type === 'service'">{{scoped.row.price}}</span>
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
+                <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -314,7 +322,9 @@ export default {
       getOrderList(this.form).then(res => {
         const { data, all_count } = res.data
         this[tabDataCfg[this.activeTab].total] = all_count
-        this[tabDataCfg[this.activeTab].data] = data
+        const tableData = this.loadData(data)
+        this[tabDataCfg[this.activeTab].data] = this.loadData(data)
+        console.log('tableData', tableData)
       }).catch(err => {
         console.log(err)
       })
@@ -349,6 +359,48 @@ export default {
     handleDateChange(val) {
       this.form.start_time = val[0]
       this.form.end_time = val[1]
+    },
+    loadData(tableData) {
+      const tableRowData = tableData.reduce((prev, cur) => {
+        if (cur.service) {
+          cur.service.forEach((item, index) => {
+            const itemData = {
+              order_name: item.service_name,
+              technician_name: item.technician_name,
+              price: item.price,
+              count: 1
+            }
+            const tempItem = Object.assign({}, cur, itemData)
+            if (index === 0) {
+              tempItem.rowSpan = cur.service.length
+            } else {
+              tempItem.colspan = 0
+            }
+            prev.push(tempItem)
+          })
+        } else {
+          prev.push(cur)
+        }
+        return prev
+      }, [])
+      return tableRowData
+    },
+    handleSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex < 2 || columnIndex > 5 ) {
+        if (row.rowSpan) {
+          return [row.rowSpan, 1]
+        } else {
+          const colspan = row.colspan === undefined ? 1 : row.colspan
+          return [1, colspan]
+        }
+      }
+    }
+  },
+  filters: {
+    statusFormatter(val) {
+      // 0待付款 1待发货 2已发货 3已完成 4已退款 5已取消
+      const statusObj = {'0': '待付款', '1': '待发货', '2': '已发货', '3': '已完成', '4': '已退款', '5': '已取消'}
+      return statusObj[val]
     }
   }
 }

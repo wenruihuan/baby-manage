@@ -32,7 +32,7 @@
         </div>
       </div>
     </div>
-    <div class="row" v-if="params.type === 'discount_card'">
+    <div class="row" v-if="params.type === 'recharge_card'">
       <p class="row-label">退卡方案：</p>
       <div class="row-right">
         <div class="schame">
@@ -45,7 +45,7 @@
         </div>
       </div>
     </div>
-    <div class="row" v-if="params.type === 'recharge_card'">
+    <div class="row" v-if="params.type === 'recharge'">
       <p class="row-label">扣除金额：</p>
       <div class="row-right">
         <div class="charge-info flex">

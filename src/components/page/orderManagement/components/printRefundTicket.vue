@@ -10,26 +10,26 @@
           <p :style="lineStyle"></p>
         </div>
         <div :style="rowStyle">
-          <p :style="rowLeft">订单编号</p>
+          <p :style="rowLeft">退款编号</p>
           <p>FW20200820131423001</p>
         </div>
         <div :style="rowStyle">
-          <p :style="rowLeft">下单时间</p>
+          <p :style="rowLeft">退款时间</p>
           <p>2020-08-20 13:14:23</p>
         </div>
         <div :style="rowStyle">
-          <p :style="rowLeft">下单人</p>
+          <p :style="rowLeft">会员姓名</p>
           <p>会*名</p>
         </div>
         <div :style="rowStyle">
-          <p :style="rowLeft">收银员</p>
+          <p :style="rowLeft">联系电话</p>
           <p>丁丁</p>
         </div>
       </div>
       <div>
         <div :style="titleStyle">
           <p :style="lineStyle"></p>
-          <p>消费信息</p>
+          <p>退款信息</p>
           <p :style="lineStyle"></p>
         </div>
         
@@ -42,17 +42,21 @@
           <p>2020-08-20 13:14:23</p>
         </div>
         <div :style="rowStyle">
-          <p :style="rowLeft">小计</p>
+          <p :style="rowLeft">可退金额</p>
+          <p>￥100</p>
+        </div>
+        <div :style="rowStyle">
+          <p :style="rowLeft">退款金额</p>
           <p>￥100</p>
         </div>
       </div>
       <div :style="summaryStyle">
         <div :style="rowStyle">
-          <p :style="rowLeft">合计</p>
+          <p :style="rowLeft">门店退款 原路返回</p>
           <p>￥100.00</p>
         </div>
         <div :style="rowStyle">
-          <p :style="rowLeft">收款</p>
+          <p :style="rowLeft">合计退款</p>
           <p>￥100.00</p>
         </div>
       </div>

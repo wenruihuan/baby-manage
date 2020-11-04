@@ -140,7 +140,11 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column v-if="!isProductOrderInfo" label="技师" align="center">--</el-table-column>
+            <el-table-column v-if="!isProductOrderInfo" label="技师" 
+              prop="technician" 
+              align="center"
+              :formatter="technicianFormatter"
+            ></el-table-column>
             <el-table-column v-if="!isProductOrderInfo" label="订单来源" prop="order_source" align="center"></el-table-column>
             <el-table-column v-if="isProductOrderInfo" label="规格" prop="sku" align="center"></el-table-column>
             <el-table-column label="单价（元）" prop="price" align="center"></el-table-column>
@@ -232,6 +236,7 @@
         </div>
       </div>
     </div>
+    <print-ticket v-show="false" ref="print"></print-ticket>
     <el-dialog 
       v-if="dialogShow"
       :title="dialogTitle"
@@ -257,6 +262,7 @@ import RefundStep2 from './refundStep2'
 import PrintTicket from './printTicket'
 import dayjs from 'dayjs'
 import { getServiceDetail, getTimeCardDetail, getDiscountCardDetail, getRechargeetail } from '@/api/orderManagement'
+import { printPartial } from '@/components/common/utils'
 const typeObj = {
   service: getServiceDetail,
   time_card: getTimeCardDetail,
@@ -358,8 +364,9 @@ export default {
       this.setDilogProp('refundStep2', '主动退款', '700px', '', prm )
     },
     handlePrint() {
-      this.setDilogProp('printTicket', '', '300px', 'print-dialog')
+      this.setDilogProp('printTicket', '', '300px', 'print-dialog', this.orderDetailObj)
     },
+
     setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName, dialogParams) {
       this.dialogTitle = dialogTitle
       this.componentName = componentName
@@ -373,6 +380,8 @@ export default {
     },
     handlePrintSuccess() {
       this.dialogShow = false
+      const printString = this.$refs.print.$el.innerHTML
+      printPartial(printString)
     },
     dateFormate(row, column, cellValue, index) {
       if (cellValue) {
@@ -386,6 +395,14 @@ export default {
     },
     handleCancelOrder() {
 
+    },
+    technicianFormatter(row, column, cellValue, index) {
+      if (Array.isArray(cellValue)) {
+        const nameList = cellValue.map(item => item.technician_name)
+        return nameList.join(';')
+      } else {
+        return '--'
+      }
     }
   },
   filters: {
@@ -408,10 +425,11 @@ export default {
 }
 </script>
 <style lang="css">
-  .print-dialog .el-dialog__body {
-    padding: 0
+  .print-dialog .el-dialog .el-dialog__body {
+    padding: 0;
+    margin: 0;
   }
-  .print-dialog .el-dialog__header {
+  .print-dialog .el-dialog .el-dialog__header {
     padding: 0
   }
 </style>

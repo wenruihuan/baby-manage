@@ -149,6 +149,7 @@
         </div>
       </div>
     </div>
+    <print-ticket v-show="false" ref="print"></print-ticket>
     <el-dialog 
       v-if="dialogShow"
       :title="dialogTitle"
@@ -172,7 +173,8 @@
 <script>
 import Breadcrumb from '@/components/common/address'
 import {getRefundDetail} from '@/api/orderManagement'
-import PrintTicket from './components/printTicket'
+import PrintTicket from './components/printRefundTicket'
+import { printPartial } from '@/components/common/utils'
 import dayjs from 'dayjs'
 export default {
   name: 'refundDetail',
@@ -217,7 +219,7 @@ export default {
       })
     },
     handlePrint() {
-      this.setDilogProp('printTicket', '', '300px', 'print-dialog', {})
+      this.setDilogProp('printTicket', '', '300px', 'print-dialog', this.refundInfo)
     },
     setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName, dialogParams) {
       this.dialogTitle = dialogTitle
@@ -232,6 +234,9 @@ export default {
     },
     handlePrintSuccess() {
       this.dialogShow = false
+      const printString = this.$refs.print.$el.innerHTML
+      printPartial(printString)
+
     }
   },
   filters: {
@@ -246,10 +251,11 @@ export default {
 }
 </script>
 <style lang="css">
-  .print-dialog .el-dialog__body {
-    padding: 0
+  .print-dialog .el-dialog .el-dialog__body {
+    padding: 0;
+    margin: 0;
   }
-  .print-dialog .el-dialog__header {
+  .print-dialog .el-dialog .el-dialog__header {
     padding: 0
   }
 </style>
