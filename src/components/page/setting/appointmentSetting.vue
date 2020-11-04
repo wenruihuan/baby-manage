@@ -63,6 +63,7 @@
                             :default-time="['12:00:00']"
                         >
                         </el-date-picker>
+                        <p class="tips">门店不能提供服务的时间段</p>
                     </el-form-item>
                 </el-form>
             </div>
@@ -267,20 +268,33 @@
 </script>
 
 <style scoped>
+    .el-form-item {
+        margin-bottom: 35px;
+    }
     .info-title {
         margin-bottom: 30px;
     }
-    .week_btns {
-        padding-bottom: 10px;
+    .el-button + .el-button {
+        margin-left: 20px;
+        margin-bottom: 20px;
+    }
+    .range_item {
+        color: #333333;
     }
     .range_item >>> .el-select {
+        width: 120px;
         margin: 0 8px;
     }
     .radio-item {
         display: inline;
+        color: #333333;
     }
     .radio-item >>> .el-select {
         margin: 0 8px;
         width: 120px;
+    }
+    .tips {
+        font-size: 12px;
+        color: #d9d9d9;
     }
 </style>
