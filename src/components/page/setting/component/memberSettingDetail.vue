@@ -31,7 +31,7 @@
                         <span class="mini_member_card" :style="(colorLeft || colorRight) && cardStyle">{{ formData.name }}</span>
                     </div>
                 </el-form-item>
-                <el-form-item label="条件：">
+                <el-form-item label="条件：" required>
                     <el-radio-group v-model="conditionType">
                         <el-radio class="condition-radio" label="1">
                             <div class="check-box-item">
@@ -123,13 +123,13 @@
                             </el-checkbox>
                         </div>
                         <div class="checkbox-div" v-for="(item, index) in formData.express_right.express" :key="index">
-                            <el-checkbox :label="`${index + 1}`">
+                            <el-checkbox :label="`${index + 2}`">
                                 <div class="check-box-item">
                                     {{ item.name
                                     }}<el-input
                                         type="number"
                                         v-model="item.price"
-                                        :disabled="!checkList2.includes(`${index + 1}`)"
+                                        :disabled="!checkList2.includes(`${index + 2}`)"
                                     ></el-input
                                     >元
                                 </div>
@@ -181,7 +181,7 @@
     </div>
 </template>
 <script>
-    import { getMemberDetail, saveMemberLevel, getCardList } from '@/api/setting';
+    import { getMemberDetail, saveMemberLevel, getCardList, getExpress } from '@/api/setting';
     import { formatDate } from '@/utils/utils';
     export default {
         name: 'MemberSettingDetail',
@@ -202,6 +202,7 @@
                 conditionTableData: [],
                 checkList1: [],
                 checkList2: [],
+                expressList: [],
                 formData: {
                     discount_right: {
                         service: '',
@@ -244,13 +245,16 @@
                 if (!newVal) {
                     this.init();
                 }
+                if (newVal && this.dialogType === 'add') {
+                    this.getExpressList();
+                }
             }
         },
         methods: {
             init() {
                 this.colorLeft = '';
                 this.colorRight = '';
-                this.conditionType = '';
+                this.conditionType = '1';
                 this.conditionValue1 = '';
                 this.conditionValue2 = '';
                 this.conditionTableData = [];
@@ -313,14 +317,66 @@
                     }
                     formData.express_right.express.forEach((m, index) => {
                         if (m.available) {
-                            this.checkList2.push(`${index + 1}`);
+                            this.checkList2.push(`${index + 2}`);
                         }
                     });
                     this.formData = formData;
                 }
             },
-            async handleSaveForm() {
-                console.log('this.formData: ', this.formData);
+            async getExpressList() {
+                const res = await getExpress();
+                if (res.code === 200) {
+                    this.formData.express_right.express = res.data.express;
+                }
+            },
+            handleSaveForm() {
+                this.$refs['ruleForm'].validate(async (valid) => {
+                    if (valid) {
+                        const formData = JSON.parse(JSON.stringify(this.formData));
+                        // 组装颜色参数
+                        const colors = [this.colorLeft || '', this.colorRight || ''];
+                        formData.color = colors.join(',');
+                        // 组装条件参数
+                        const condition = {
+                            type: this.conditionType,
+                            data: ''
+                        };
+                        if (['1', '2'].includes(this.conditionType)) {
+                            condition.data = this[`conditionValue${this.conditionType}`];
+                        }
+                        if (this.conditionType === '3') {
+                            condition.data = this.conditionTableData;
+                        }
+                        formData.condition = JSON.stringify(condition);
+                        // 组装折扣卡参数
+                        if (!this.checkList1.includes('1')) {
+                            formData.discount_right.service = '';
+                        }
+                        if (!this.checkList1.includes('2')) {
+                            formData.discount_right.card = '';
+                        }
+                        if (!this.checkList1.includes('3')) {
+                            formData.discount_right.goods = '';
+                        }
+                        // 组装配送参数
+                        if (!this.checkList2.includes('1')) {
+                            formData.express_right.default_express = '';
+                        }
+                        formData.express_right.express.forEach((m, index) => {
+                            if (this.checkList2.includes(`${index + 2}`)) {
+                                this.$set(m, 'available', true);
+                            } else {
+                                this.$set(m, 'available', false);
+                            }
+                        });
+                        const res = await saveMemberLevel(formData);
+                        if (res.code === 200) {
+                            this.$message.success('保存成功');
+                            this.dialogVisible = false;
+                            this.$parent.getMemberLevel();
+                        }
+                    }
+                });
             },
             async getCardList() {
                 const params = {
