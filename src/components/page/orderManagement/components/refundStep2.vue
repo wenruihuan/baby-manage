@@ -11,7 +11,7 @@
             <!-- 有效期未返回 -->
             <span class="car-endline">有效期：365天</span>
           </div>
-          <div class="car-text" v-if="params.type==='time_card' || 'discount_card'">
+          <div class="car-text" v-if="params.type==='time_card' || params.type==='discount_card'">
             <p>购卡金额</p>
             <p class="car-text-money">￥{{params.consume[0].price}}</p>
           </div>
@@ -21,7 +21,7 @@
             <p class="car-text-money-mini">赠金：￥{{params.consume[0].gift_price}}</p>
           </div>
         </div>
-        <div class="use-info flex flex-center" v-if="params.type === 'time_card' || 'discount_card'">
+        <div class="use-info flex flex-center" v-if="params.type === 'time_card'">
           <p>总次数：{{params.consume[0].total_time}}</p>
           <p>已使用：{{params.consume[0].used_time}}</p>
         </div>
@@ -36,16 +36,16 @@
       <p class="row-label">退卡方案：</p>
       <div class="row-right">
         <div class="schame">
-          <el-radio v-model="form.schame" label="1">退整卡</el-radio>
-          <p class="schame-desc">次卡后续有充值，不支持退整卡</p>
+          <el-radio v-model="form.is_integral" :label="1" @change="handleRadioChange">退整卡</el-radio>
+          <p class="schame-desc">此卡后续有充值，不支持退整卡</p>
         </div>
         <div class="schame">
-          <el-radio v-model="form.schame" label="2">退部分余额</el-radio>
+          <el-radio v-model="form.is_integral" :label="0" @change="handleRadioChange">退部分余额</el-radio>
           <p class="schame-desc">充值卡有效，根据数据本金，赠金卡余额进行余额扣除</p>
         </div>
       </div>
     </div>
-    <div class="row" v-if="params.type === 'recharge'">
+    <div class="row" v-if="params.type === 'recharge' || params.type === 'recharge-card'">
       <p class="row-label">扣除金额：</p>
       <div class="row-right">
         <div class="charge-info flex">
@@ -107,11 +107,10 @@ export default {
       form: {
         order_id: '',
         pay_type_id: '',
-        is_integral: '',
+        is_integral: 1,
         refund_balance: '',
         refund_gift_balance: '',
-        // refund_price: '',
-        // refund_type: '原路返回',
+        refund_price: '',
         refund_explain: ''
       },
       refundAmount: []
@@ -127,16 +126,60 @@ export default {
   },
   created() {
     const item = {
-      total_price: this.params.total_price,
-      pay_type_name: this.params.pay_type_name,
-      pay_type_id: this.params.pay_type_id,
-      refund_type: '',
+      refund_type: '原路返回',
       refund_price: ''
     }
     this.refundAmount.push(item)
+    this.init()
   },
   methods: {
-    handleRefund() {}
+    init() {
+      this.form.pay_type_id = this.params.payTypeId
+      this.form.order_id = this.params.orderId
+      switch(this.params.type) {
+        case 'service':
+        case 'discount_card':
+        case 'time_card':
+        case 'recharge_card':
+          this.refundAmount[0].refund_price = this.params.total_price
+          break
+        case 'recharge':
+          const { consume } =this.params
+          const { balance, price } = consume
+          if (balance < price) {
+            this.refundAmount[0].refund_price = balance
+          } else {
+            this.refundAmount[0].refund_price = price
+          }
+      }
+    },
+    handleRefund() {
+      const prm = Object.assign({}, this.form, this.refundAmount[0])
+      typeObj[this.type](prm).then(res => {
+        const {code, msg} = res
+        if (code === 200) {
+          this.$message.success('退款成功')
+          this.$emit('cancel')
+        } else {
+          this.$message.success(msg)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    handleRadioChange() {
+      if (this.form.is_integral === 1) {
+        this.refundAmount[0].refund_price = this.params.total_price
+      } else {
+        const { consume } =this.params
+        const { balance, price } = consume
+        if (balance < price) {
+          this.refundAmount[0].refund_price = balance
+        } else {
+          this.refundAmount[0].refund_price = price
+        }
+      }
+    }
   }
   
 }

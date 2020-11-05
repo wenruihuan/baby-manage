@@ -351,6 +351,7 @@ export default {
         const {data} = res
         this.refundInfo = data
         this.refundList = data.consume
+        this.payTypeId = data.pay_type_id
         this.dialogShow = true
         this.setDilogProp('refundStep1', '退款商品', '700px', '', this.refundList )
       })
@@ -360,6 +361,7 @@ export default {
       const prm = Object.assign({}, this.refundInfo)
       prm.type = this.type
       prm.orderId = this.orderId
+      prm.payTypeId = this.payTypeId
       console.log('prm', prm)
       this.setDilogProp('refundStep2', '主动退款', '700px', '', prm )
     },
