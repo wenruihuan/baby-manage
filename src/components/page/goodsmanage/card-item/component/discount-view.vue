@@ -528,7 +528,9 @@ export default {
             }
         },
         /* 订单详情 */
-        gotoorderDetail (row) {}
+        gotoorderDetail (row) {
+            this.$router.push(`/OrderDetail/${ row.member_card_id }`);
+        }
     }
 }
 </script>

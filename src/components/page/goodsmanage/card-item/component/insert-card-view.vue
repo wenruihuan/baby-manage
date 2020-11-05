@@ -493,7 +493,9 @@ export default {
             }
         },
         /* 订单详情 */
-        gotoorderDetail (row) {},
+        gotoorderDetail (row) {
+            this.$router.push(`/OrderDetail/${ row.member_card_id }`);
+        },
         /* 保存有效期 */
         async saveExpire () {
             this.isExpireShow = false;
