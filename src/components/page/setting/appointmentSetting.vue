@@ -22,7 +22,7 @@
                         </div>
                         <el-time-picker
                             is-range
-                            v-model="formData.time1"
+                            v-model="timeRange"
                             range-separator="至"
                             start-placeholder="开始时间"
                             end-placeholder="结束时间"
@@ -32,31 +32,33 @@
                     </el-form-item>
                     <el-form-item label="预约范围：">
                         <div class="range_item">
-                            客户可预约<el-select v-model="formData.selectValue1" placeholder="请选择">
+                            客户可预约<el-select v-model="formData.start_range" placeholder="请选择">
                                 <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
                                 </el-option> </el-select
-                            >到<el-select v-model="formData.selectValue2" placeholder="请选择">
+                            >到<el-select v-model="formData.end_range" placeholder="请选择">
                                 <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value">
                                 </el-option> </el-select
                             >以内的任意时间到店
                         </div>
                     </el-form-item>
                     <el-form-item label="取消预约：">
-                        <el-radio-group v-model="formData.cancel">
-                            <el-radio :label="3"> 随时取消或修改预约 </el-radio>
-                            <el-radio :label="6">
+                        <el-radio-group v-model="cancelFlag">
+                            <el-radio :label="true"> 随时取消或修改预约 </el-radio>
+                            <el-radio :label="false">
                                 <div class="radio-item">
-                                    预约到店时间前<el-select v-model="formData.selectValue3" placeholder="请选择">
+                                    预约到店时间前
+                                    <el-select :disabled="cancelFlag" v-model="formData.cancel_booking" placeholder="请选择">
                                         <el-option v-for="item in options3" :key="item.value" :label="item.label" :value="item.value">
-                                        </el-option> </el-select
-                                    >需联系门店修改或取消预约单
+                                        </el-option>
+                                    </el-select>
+                                    需联系门店修改或取消预约单
                                 </div>
                             </el-radio>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="暂停预约：">
                         <el-date-picker
-                            v-model="formData.stop"
+                            v-model="dateRange"
                             type="datetimerange"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
@@ -64,6 +66,9 @@
                         >
                         </el-date-picker>
                         <p class="tips">门店不能提供服务的时间段</p>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="saveGlobal">保存设置</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -154,6 +159,8 @@
 </template>
 <script>
     import breadcrumb from '@/components/common/address';
+    import { getGlobalData, saveGlobal } from '@/api/setting';
+    import { formatDate } from '@/utils/utils';
     export default {
         name: 'AppointmentSetting',
         components: {
@@ -188,12 +195,18 @@
                 options1: [],
                 options2: [],
                 options3: [],
+                cancelFlag: true,
+                timeRange: '',
+                dateRange: '',
                 formData: {
-                    time1: '',
-                    selectValue1: '',
-                    selectValue2: '',
-                    cancel: 3,
-                    stop: ''
+                    time: [],
+                    start_time: '',
+                    end_time: '',
+                    start_range: '',
+                    end_range: '',
+                    cancel_booking: '',
+                    start_stop_range: '',
+                    end_stop_range: ''
                 },
                 page: {
                     size: 10,
@@ -215,23 +228,73 @@
         },
         created() {
             this.options1 = [
-                ...this.initOptions(24, 'h', '小时以后'),
+                ...this.initOptions(23, 'h', '小时以后'),
                 ...this.initOptions(7, 'd', '天以后'),
-                { label: '15天以后', value: '15d' },
-                { label: '30天以后', value: '30d' }
+                { label: '15天以后', value: `${15 * 24 * 60}` },
+                { label: '30天以后', value: `${30 * 24 * 60}` }
             ];
             this.options2 = [
-                { label: '7天', value: '7d' },
-                { label: '15天', value: '15d' },
-                { label: '30天', value: '30d' }
+                { label: '7天', value: `${7 * 24 * 60}` },
+                { label: '15天', value: `${15 * 24 * 60}` },
+                { label: '30天', value: `${30 * 24 * 60}` }
             ];
-            this.options3 = [...this.initOptions(24, 'h', '小时'), ...this.initOptions(7, 'd', '天')];
+            this.options3 = [...this.initOptions(23, 'h', '小时'), ...this.initOptions(7, 'd', '天')];
+            this.getGlobalData();
         },
         methods: {
+            async getGlobalData() {
+                const res = await getGlobalData();
+                if (res.code === 200) {
+                    const formData = res.data;
+                    if (formData.time && formData.time.length > 0) {
+                        this.weekBtns.forEach((m) => {
+                            this.$set(m, 'isActive', formData.time.includes(m.value));
+                        });
+                    }
+                    if (formData.start_time && formData.end_time) {
+                        const defaultDate = '2020/12/12 ';
+                        this.timeRange = [defaultDate + formData.start_time, defaultDate + formData.end_time];
+                    }
+                    if (formData.cancel_booking === '-1') {
+                        this.cancelFlag = true;
+                    } else {
+                        this.cancelFlag = false;
+                    }
+                    if (formData.start_stop_range && formData.end_stop_range) {
+                        this.dateRange = [formData.start_stop_range, formData.end_stop_range];
+                    }
+                    this.formData = formData;
+                }
+            },
+            async saveGlobal() {
+                const formData = JSON.parse(JSON.stringify(this.formData));
+                const time = [];
+                this.weekBtns.forEach((m) => {
+                    if (m.isActive) {
+                        time.push(m.value);
+                    }
+                });
+                formData.time = time;
+                if (this.timeRange.length > 0) {
+                    formData.start_time = formatDate(this.timeRange[0], 'h:m');
+                    formData.end_time = formatDate(this.timeRange[1], 'h:m');
+                }
+                if (this.cancelFlag) {
+                    formData.cancel_booking = '-1';
+                }
+                if (this.dateRange.length > 0) {
+                    formData.start_stop_range = formatDate(this.dateRange[0], 'Y-M-D h:m:s');
+                    formData.end_stop_range = formatDate(this.dateRange[1], 'Y-M-D h:m:s');
+                }
+                const res = await saveGlobal({ ...formData });
+                if (res === 200) {
+                    console.log(res);
+                }
+            },
             initOptions(number, type, label) {
                 const list = [];
                 for (let i = 1; i <= number; i++) {
-                    list.push({ label: i + label, value: i + type });
+                    list.push({ label: i + label, value: String(i * (type === 'h' ? 60 : 24 * 60)) });
                 }
                 return list;
             },

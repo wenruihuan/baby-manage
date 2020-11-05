@@ -298,9 +298,6 @@
                     if (formData.condition.type === '3') {
                         this.conditionTableData = formData.condition.data;
                     }
-                    // 测试
-                    this.conditionType = '3';
-                    this.conditionTableData = formData.condition_type3_.data;
                     // 转换折扣权益字段
                     if (Number(formData.discount_right.service) > 0) {
                         this.checkList1.push('1');

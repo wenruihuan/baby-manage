@@ -269,3 +269,21 @@ export const getCardList = query => {
     params: query
   })
 }
+
+// 获取全局预约设置
+export const getGlobalData = query => {
+  return request({
+    url: `/admin/booking/getGlobal`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 保存全局预约设置
+export const saveGlobal = params => {
+  return request({
+    url: `/admin/booking/saveGlobal`,
+    method: 'post',
+    data: params
+  })
+}
