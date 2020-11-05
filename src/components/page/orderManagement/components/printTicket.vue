@@ -1,7 +1,7 @@
 <template>
   <div>
-  <div id="print-template" style="width:300px;margin: 0 auto;">
-    <div style="padding: 20px;font-size: 12px;">
+  <div id="print-template">
+    <div style="padding: 20px;font-size: 12px; width:300px;margin: 0 auto; box-sizing:border-box">
       <p style="text-align:center;line-height: 36px;font-size: 14px;">多多亲子岁月</p>
       <div>
         <div :style="titleStyle">
@@ -11,19 +11,19 @@
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">订单编号</p>
-          <p>FW20200820131423001</p>
+          <p>{{orderInfo.order_no}}</p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">下单时间</p>
-          <p>2020-08-20 13:14:23</p>
+          <p>{{orderInfo.create_time}}</p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">下单人</p>
-          <p>会*名</p>
+          <p>{{memberInfo.member_name}}</p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">收银员</p>
-          <p>丁丁</p>
+          <p>{{orderInfo.checkout_staff}}</p>
         </div>
       </div>
       <div>
@@ -32,34 +32,37 @@
           <p>消费信息</p>
           <p :style="lineStyle"></p>
         </div>
-        
-        <div :style="rowStyle">
-          <p :style="rowLeft">商品名称</p>
-          <p>FW20200820131423001</p>
-        </div>
-        <div :style="rowStyle">
-          <p :style="rowLeft">数量</p>
-          <p>2020-08-20 13:14:23</p>
-        </div>
-        <div :style="rowStyle">
-          <p :style="rowLeft">小计</p>
-          <p>￥100</p>
+        <div v-for="item in consume" :key="item.name">
+          <div :style="rowStyle">
+            <p :style="rowLeft">商品名称</p>
+            <p>{{item.name}}</p>
+          </div>
+          <div :style="rowStyle">
+            <p :style="rowLeft">数量</p>
+            <p>{{item.count}}</p>
+          </div>
+          <div :style="rowStyle">
+            <p :style="rowLeft">小计</p>
+            <p>￥{{item.total_price}}</p>
+          </div>
         </div>
       </div>
       <div :style="summaryStyle">
         <div :style="rowStyle">
           <p :style="rowLeft">合计</p>
-          <p>￥100.00</p>
+          <p>￥{{consumeInfo.total_price}}</p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">收款</p>
-          <p>￥100.00</p>
+          <p>￥{{consumeInfo.checkout_price}}</p>
         </div>
       </div>
       <div>
         <p :style="tipStyle">扫码收藏店铺，随时可预约</p>
         <p :style="tipStyle">谢谢光临，欢迎光临</p>
-        <p></p>
+        <p style="text-align: center">
+          <img src="./imgs/alipay.png" alt="" style="width:65px;height:65px;border:1px solid #ccc;">
+        </p>
       </div>
     </div>
   </div>
@@ -71,11 +74,11 @@
 </template>
 
 <script>
+import { printPartial } from '@/components/common/utils'
 export default {
   name: 'printTicket',
   data() {
     return {
-      content: {},
       rowStyle: {
         display: "flex",
         justifyContent: 'space-between',
@@ -122,17 +125,35 @@ export default {
     }
   },
   props: {
-    dialogParams: {
+    params: {
       type: Object,
       default: () => {}
     }
+  },
+  computed:{
+    orderInfo() {
+      return this.params.order_info
+    },
+    memberInfo() {
+      return this.params.member_info
+    },
+    consume() {
+      return this.params.consume
+    },
+    consumeInfo() {
+      return this.params.consume_info
+    }
+  },
+  created() {
+    console.log('orderInfo', this.dialogParams)
   },
   methods: {
     handleCancel() {
       this.$emit('cancel')
     },
     handlePrint() {
-      this.$emit('success')
+      const printStr = document.getElementById('print-template').innerHTML
+      this.$emit('success', printStr)
     }
   }
 }

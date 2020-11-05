@@ -236,7 +236,7 @@
         </div>
       </div>
     </div>
-    <print-ticket v-show="false" ref="print"></print-ticket>
+    <!-- <print-ticket v-show="false" ref="print" :params="orderDetailObj"></print-ticket> -->
     <el-dialog 
       v-if="dialogShow"
       :title="dialogTitle"
@@ -378,10 +378,10 @@ export default {
     handleCancel() {
       this.dialogShow = false
     },
-    handlePrintSuccess() {
+    handlePrintSuccess(printStr) {
+      // const printString = this.$refs.print.$el.innerHTML
+      printPartial(printStr)
       this.dialogShow = false
-      const printString = this.$refs.print.$el.innerHTML
-      printPartial(printString)
     },
     dateFormate(row, column, cellValue, index) {
       if (cellValue) {

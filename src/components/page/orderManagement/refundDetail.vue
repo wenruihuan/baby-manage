@@ -149,7 +149,7 @@
         </div>
       </div>
     </div>
-    <print-ticket v-show="false" ref="print"></print-ticket>
+    <!-- <print-ticket v-show="false" ref="print"></print-ticket> -->
     <el-dialog 
       v-if="dialogShow"
       :title="dialogTitle"
@@ -191,7 +191,8 @@ export default {
       refundInfo: {},
       memberInfo: {},
       consume: [],
-      dialogShow: false
+      dialogShow: false,
+      refundInfoObj: {}
     }
   },
   components: {
@@ -208,7 +209,7 @@ export default {
       }
       getRefundDetail(prm).then(res => {
         const { data } = res
-        this.refundInfo = data
+        this.refundInfoObj = data
         const { order_info, refund_info, member_info, consume } = data
         this.memberInfo = member_info || {}
         this.orderInfo = order_info || {}
@@ -219,7 +220,8 @@ export default {
       })
     },
     handlePrint() {
-      this.setDilogProp('printTicket', '', '300px', 'print-dialog', this.refundInfo)
+      console.log('refundInfo', this.refundInfoObj)
+      this.setDilogProp('printTicket', '', '300px', 'print-dialog', this.refundInfoObj)
     },
     setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName, dialogParams) {
       this.dialogTitle = dialogTitle
@@ -232,11 +234,9 @@ export default {
     handleCancel() {
       this.dialogShow = false
     },
-    handlePrintSuccess() {
+    handlePrintSuccess(printStr) {
       this.dialogShow = false
-      const printString = this.$refs.print.$el.innerHTML
-      printPartial(printString)
-
+      printPartial(printStr)
     }
   },
   filters: {

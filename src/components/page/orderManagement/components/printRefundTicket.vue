@@ -1,7 +1,7 @@
 <template>
   <div>
-  <div id="print-template" style="width:300px;margin: 0 auto;">
-    <div style="padding: 20px;font-size: 12px;">
+  <div id="print-template">
+    <div style="padding:20px;font-size: 12px; width:300px;margin: 0 auto;box-sizing:border-box;">
       <p style="text-align:center;line-height: 36px;font-size: 14px;">多多亲子岁月</p>
       <div>
         <div :style="titleStyle">
@@ -11,19 +11,21 @@
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">退款编号</p>
-          <p>FW20200820131423001</p>
+          <p>
+            {{orderInfo.refund_no}}
+          </p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">退款时间</p>
-          <p>2020-08-20 13:14:23</p>
+          <p>{{orderInfo.refund_create_time}}</p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">会员姓名</p>
-          <p>会*名</p>
+          <p>{{memberInfo.refund_create_time}}</p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">联系电话</p>
-          <p>丁丁</p>
+          <p>{{memberInfo.member_phone}}</p>
         </div>
       </div>
       <div>
@@ -32,38 +34,42 @@
           <p>退款信息</p>
           <p :style="lineStyle"></p>
         </div>
+        <div v-for="item in consume" :key="item.name">
+          <div :style="rowStyle">
+            <p :style="rowLeft">商品名称</p>
+            <p>{{item.name}}</p>
+          </div>
+          <div :style="rowStyle">
+            <p :style="rowLeft">数量</p>
+            <p>{{item.count}}</p>
+          </div>
+          <div :style="rowStyle">
+            <p :style="rowLeft">可退金额</p>
+            <p>￥{{item.price}}</p>
+          </div>
+          <div :style="rowStyle">
+            <p :style="rowLeft">退款金额</p>
+            <p>￥{{item.price}}</p>
+          </div>
+        </div>
         
-        <div :style="rowStyle">
-          <p :style="rowLeft">商品名称</p>
-          <p>FW20200820131423001</p>
-        </div>
-        <div :style="rowStyle">
-          <p :style="rowLeft">数量</p>
-          <p>2020-08-20 13:14:23</p>
-        </div>
-        <div :style="rowStyle">
-          <p :style="rowLeft">可退金额</p>
-          <p>￥100</p>
-        </div>
-        <div :style="rowStyle">
-          <p :style="rowLeft">退款金额</p>
-          <p>￥100</p>
-        </div>
       </div>
       <div :style="summaryStyle">
         <div :style="rowStyle">
-          <p :style="rowLeft">门店退款 原路返回</p>
-          <p>￥100.00</p>
+          <p :style="rowLeft">门店退款 {{refundInfo.refund_type}}</p>
+          <p>￥{{refundInfo.refund_price}}</p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">合计退款</p>
-          <p>￥100.00</p>
+          <p>￥{{refundInfo.refund_price}}</p>
         </div>
       </div>
       <div>
         <p :style="tipStyle">扫码收藏店铺，随时可预约</p>
         <p :style="tipStyle">谢谢光临，欢迎光临</p>
-        <p></p>
+        <p style="text-align: center">
+          <img src="./imgs/alipay.png" style="width: 65px;height:65px;" alt="">
+        </p>
       </div>
     </div>
   </div>
@@ -126,9 +132,23 @@ export default {
     }
   },
   props: {
-    dialogParams: {
+    params: {
       type: Object,
       default: () => {}
+    }
+  },
+  computed: {
+    orderInfo() {
+      return this.params.order_info
+    },
+    memberInfo() {
+      return this.params.member_info
+    },
+    consume() {
+      return this.params.consume
+    },
+    refundInfo() {
+      return this.params.refund_info
     }
   },
   methods: {
@@ -136,7 +156,8 @@ export default {
       this.$emit('cancel')
     },
     handlePrint() {
-      this.$emit('success')
+      const printStr = document.getElementById('print-template').innerHTML
+      this.$emit('success', printStr)
     }
   }
 }

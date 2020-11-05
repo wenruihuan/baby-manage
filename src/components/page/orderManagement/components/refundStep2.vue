@@ -11,7 +11,7 @@
             <!-- 有效期未返回 -->
             <span class="car-endline">有效期：365天</span>
           </div>
-          <div class="car-text" v-if="params.type==='time_card'">
+          <div class="car-text" v-if="params.type==='time_card' || 'discount_card'">
             <p>购卡金额</p>
             <p class="car-text-money">￥{{params.consume[0].price}}</p>
           </div>
@@ -21,7 +21,7 @@
             <p class="car-text-money-mini">赠金：￥{{params.consume[0].gift_price}}</p>
           </div>
         </div>
-        <div class="use-info flex flex-center" v-if="params.type === 'time_card'">
+        <div class="use-info flex flex-center" v-if="params.type === 'time_card' || 'discount_card'">
           <p>总次数：{{params.consume[0].total_time}}</p>
           <p>已使用：{{params.consume[0].used_time}}</p>
         </div>
@@ -124,13 +124,6 @@ export default {
     }
   },
   computed: {
-    carText() {
-      if (this.params.type !== 'time_card') {
-        return '购卡金额'
-      } else {
-        return '本次充值'
-      }
-    }
   },
   created() {
     const item = {
