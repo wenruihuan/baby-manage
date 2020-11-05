@@ -12,6 +12,7 @@
                     <el-form-item label="预约时间：">
                         <div class="week_btns">
                             <el-button
+                                class="week-btn"
                                 v-for="(btn, index) in weekBtns"
                                 :key="btn.value"
                                 :type="btn.isActive ? 'primary' : ''"
@@ -337,7 +338,7 @@
     .info-title {
         margin-bottom: 30px;
     }
-    .el-button + .el-button {
+    .week-btn + .week-btn {
         margin-left: 20px;
         margin-bottom: 20px;
     }
