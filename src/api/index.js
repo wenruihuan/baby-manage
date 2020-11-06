@@ -209,3 +209,19 @@ export const staffTechnicianSelect = query => {
         params: query
     });
 };
+// 11.22.获取用户消费时可选权益
+export const worktableRightSelect = query => {
+    return request({
+        url: IP + `/admin/worktable/rightSelect`,
+        method: 'get',
+        params: query
+    });
+};
+// 11.7.获取包厢列表
+export const boxSelectList = query => {
+    return request({
+        url: IP + `/admin/box/selectList`,
+        method: 'get',
+        params: query
+    });
+};
