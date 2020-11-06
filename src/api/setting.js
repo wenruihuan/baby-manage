@@ -287,3 +287,39 @@ export const saveGlobal = params => {
     data: params
   })
 }
+
+// 获取技师列表
+export const getTechnicianList = query => {
+  return request({
+    url: `/admin/booking/technicianList`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 设置技师人数上限
+export const setTechnicianLimit = params => {
+  return request({
+    url: `/admin/booking/setTechnicianLimit`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 设置单独预约技师预约状态
+export const setTechnicianSingle = params => {
+  return request({
+    url: `/admin/booking/setTechnicianSingle`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 编辑技师的关联服务
+export const bindService = params => {
+  return request({
+    url: `/admin/booking/bindService`,
+    method: 'post',
+    data: params
+  })
+}

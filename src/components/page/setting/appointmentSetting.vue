@@ -75,8 +75,8 @@
             </div>
             <div class="technician_setting" v-show="activeTab === 'TechnicianSetting'">
                 <el-table :data="tableData" style="width: 100%">
-                    <el-table-column prop="shop_name" label="姓名" align="center"> </el-table-column>
-                    <el-table-column prop="service_name" label="权限" align="center"> </el-table-column>
+                    <el-table-column prop="technician_name" label="姓名" align="center"> </el-table-column>
+                    <el-table-column prop="right_name" label="权限" align="center"> </el-table-column>
                     <el-table-column label="人数限制（人）" align="center">
                         <template slot-scope="scope">
                             <span
@@ -97,10 +97,20 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="source" label="关联服务" align="center"></el-table-column>
+                    <el-table-column label="关联服务" align="center">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.is_all_service === '1' ? '全部服务' : '指定服务' }}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="支持单独约技师" align="center">
                         <template slot-scope="scope">
-                            <el-checkbox v-model="scope.row.appoint" @change="handleChangeAppoint(scope.$index)">可预约</el-checkbox>
+                            <el-checkbox
+                                v-model="scope.row.is_single"
+                                true-label="1"
+                                false-label="0"
+                                @change="handleChangeAppoint(scope.$index)"
+                                >可预约</el-checkbox
+                            >
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center">
@@ -126,32 +136,32 @@
                     :close-on-press-escape="false"
                     width="680px"
                 >
-                    <el-radio-group v-model="addRadioValue">
-                        <el-radio :label="3">所有服务</el-radio>
-                        <el-radio :label="6">指定服务</el-radio>
+                    <el-radio-group v-model="is_all_service" @change="handleChangeAddRadio">
+                        <el-radio label="1">所有服务</el-radio>
+                        <el-radio label="0">指定服务</el-radio>
                     </el-radio-group>
-                    <el-select v-model="addSelectValue" style="margin-left: 30px; margin-bottom: 10px">
+                    <el-select v-model="addSelectValue" style="margin-left: 30px; margin-bottom: 10px" @change="getServiceList">
                         <el-option v-for="item in addSelectOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                     </el-select>
-                    <el-table :data="addTableData" @selection-change="handleSelectionChange" style="width: 100%">
-                        <el-table-column type="selection" width="55"> </el-table-column>
-                        <el-table-column prop="shop_name" label="服务名称" align="center">
+                    <el-table ref="multipleTable" :data="addTableData" @selection-change="handleSelectionChange" style="width: 100%">
+                        <el-table-column v-if="is_all_service === '0'" type="selection" width="55"> </el-table-column>
+                        <el-table-column prop="name" label="服务名称" align="center">
                             <template slot-scope="scope">
                                 <div class="table-name">
-                                    <el-image style="width: 30px; height: 30px" src="" fit="cover"></el-image>
+                                    <el-image style="width: 30px; height: 30px" :src="scope.row.img" fit="cover"></el-image>
                                     <div class="info">
-                                        <p>服务名称</p>
+                                        <p>{{ scope.row.name }}</p>
                                     </div>
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="service_name" label="价格" align="center"> </el-table-column>
-                        <el-table-column prop="service_name" label="分类" align="center"> </el-table-column>
-                        <el-table-column prop="service_name" label="创建时间" align="center"> </el-table-column>
+                        <el-table-column prop="price" label="价格" align="center"> </el-table-column>
+                        <el-table-column prop="kind_name" label="分类" align="center"> </el-table-column>
+                        <el-table-column prop="created_time" label="创建时间" align="center"> </el-table-column>
                     </el-table>
                     <span slot="footer">
                         <el-button @click="dialogVisibleAdd = false">取 消</el-button>
-                        <el-button type="primary" @click="dialogVisibleAdd = false">保 存</el-button>
+                        <el-button type="primary" @click="handleSaveAdd">保 存</el-button>
                     </span>
                 </el-dialog>
             </div>
@@ -160,7 +170,16 @@
 </template>
 <script>
     import breadcrumb from '@/components/common/address';
-    import { getGlobalData, saveGlobal } from '@/api/setting';
+    import {
+        getGlobalData,
+        saveGlobal,
+        getTechnicianList,
+        setTechnicianLimit,
+        setTechnicianSingle,
+        getServiceClassification,
+        getServiceList,
+        bindService
+    } from '@/api/setting';
     import { formatDate } from '@/utils/utils';
     export default {
         name: 'AppointmentSetting',
@@ -214,17 +233,23 @@
                     number: 1,
                     total: 0
                 },
-                tableData: [{ limit: '1', appoint: false, visible: false, tempLimit: '' }],
+                tableData: [],
                 dialogVisibleAdd: false,
-                addRadioValue: 3,
-                addSelectValue: 1,
-                addSelectOptions: [{ value: 1, label: '所有分类' }],
-                addTableData: []
+                is_all_service: '1',
+                addSelectValue: '',
+                addSelectOptions: [],
+                addTableData: [],
+                addSelectRows: []
             };
         },
         beforeRouteEnter(to, from, next) {
             next((vm) => {
                 vm.activeTab = to.path === '/GlobalSetting' ? 'GlobalSetting' : 'TechnicianSetting';
+                if (vm.activeTab === 'GlobalSetting') {
+                    vm.getGlobalData();
+                } else {
+                    vm.getTechnicianList();
+                }
             });
         },
         created() {
@@ -240,7 +265,6 @@
                 { label: '30天', value: `${30 * 24 * 60}` }
             ];
             this.options3 = [...this.initOptions(23, 'h', '小时'), ...this.initOptions(7, 'd', '天')];
-            this.getGlobalData();
         },
         methods: {
             async getGlobalData() {
@@ -310,23 +334,89 @@
                 item.isActive = !item.isActive;
                 this.weekBtns.splice(index, 1, item);
             },
-            handleCurrentChange() {},
+            async getTechnicianList() {
+                const params = {
+                    page_no: this.page.number,
+                    page_size: this.page.size
+                };
+                const res = await getTechnicianList(params);
+                if (res.code === 200) {
+                    let list = res.data.data || [];
+                    list.forEach((m) => {
+                        m.tempLimit = 0;
+                        m.visible = false;
+                    });
+                    this.tableData = list;
+                    this.page.total = res.data.all_count || 0;
+                }
+            },
+            handleCurrentChange(pageNum) {
+                this.page.number = pageNum;
+                this.getTechnicianList();
+            },
+            async handleChangeLimit(index) {
+                let item = this.tableData[index];
+                const params = {
+                    technician_id: item.technician_id,
+                    limit: item.tempLimit
+                };
+                const res = await setTechnicianLimit(params);
+                if (res.code === 200) {
+                    this.getTechnicianList();
+                }
+            },
+            async handleChangeAppoint(index) {
+                let item = this.tableData[index];
+                const params = {
+                    technician_id: item.technician_id,
+                    is_single: item.is_single
+                };
+                const res = await setTechnicianSingle(params);
+                if (res.code === 200) {
+                    this.getTechnicianList();
+                }
+            },
             handleEdit() {
                 this.dialogVisibleAdd = true;
+                this.getServiceClassification();
+                this.getServiceList();
             },
-            handleChangeLimit(index) {
-                let item = this.tableData[index];
-                item.limit = item.tempLimit;
-                item.tempLimit = '';
-                item.visible = false;
-                this.tableData.splice(index, 1, item);
+            async getServiceClassification() {
+                const res = await getServiceClassification({ page_no: 1, page_size: 999 });
+                if (res.code === 200) {
+                    this.addSelectOptions = res.data || [];
+                }
             },
-            handleChangeAppoint(index) {
-                // let item = this.tableData[index];
-                // item.appoint = !item.appoint;
-                // this.tableData.splice(index, 1, item);
+            async getServiceList() {
+                const params = {
+                    kind_id: this.serverSelectValue,
+                    keyword: ''
+                };
+                const res = await getServiceList(params);
+                if (res.code === 200) {
+                    this.addTableData = res.data || [];
+                }
             },
-            handleSelectionChange() {}
+            handleChangeAddRadio(){
+                this.$refs.multipleTable.clearSelection();
+            },
+            handleSelectionChange(row) {
+                this.addSelectRows = row;
+            },
+            async handleSaveAdd() {
+                const params = {
+                    is_all_service: this.is_all_service
+                };
+                if (this.is_all_service === '0') {
+                    params.service_id_list = this.addSelectRows.map((m) => m.id);
+                }
+                const res = await bindService(params);
+                if (res.code === 200) {
+                    this.$message.success('关联成功');
+                    this.dialogVisibleAdd = false;
+                    this.getTechnicianList();
+                }
+            }
         }
     };
 </script>
