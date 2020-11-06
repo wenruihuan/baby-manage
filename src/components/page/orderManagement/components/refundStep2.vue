@@ -45,7 +45,7 @@
         </div>
       </div>
     </div>
-    <div class="row" v-if="params.type === 'recharge' || params.type === 'recharge-card'">
+    <div class="row" v-if="params.type === 'recharge' || (params.type === 'recharge-card' && form.is_integral === 0)">
       <p class="row-label">扣除金额：</p>
       <div class="row-right">
         <div class="charge-info flex">
@@ -113,7 +113,11 @@ export default {
         refund_price: '',
         refund_explain: ''
       },
-      refundAmount: []
+      refundAmount: [],
+      balance: 0,
+      price: 0,
+      giftBalance: 0,
+      giftPrice: 0
     }
   },
   props: {
@@ -145,7 +149,11 @@ export default {
           break
         case 'recharge':
           const { consume } =this.params
-          const { balance, price } = consume
+          const { balance, price, gift_price, gift_balance } = consume
+          this.balance = balance
+          this.price = price
+          this.giftBalance = gift_balance
+          this.giftPrice = gift_price
           if (balance < price) {
             this.refundAmount[0].refund_price = balance
           } else {
