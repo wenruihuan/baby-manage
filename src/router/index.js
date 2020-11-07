@@ -321,6 +321,26 @@ export default new Router({
                     path: '/activateCard',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/activateCard.vue'),
                     meta: { title: '开卡' }
+                },
+                {
+                    path: '/GivingRights',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/GivingRights.vue'),
+                    meta: { title: '赠送权益' }
+                },
+                {
+                    path: '/integralSubsidiary',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/integralSubsidiary.vue'),
+                    meta: { title: '积分明细' }
+                },
+                {
+                    path: '/memberList',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/memberList.vue'),
+                    meta: { title: '会员列表' }
+                },
+                {
+                    path: '/memberDetails',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/memberDetails.vue'),
+                    meta: { title: '会员详情' }
                 }
             ]
         },

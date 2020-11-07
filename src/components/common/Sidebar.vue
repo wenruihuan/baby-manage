@@ -214,6 +214,10 @@
                             {
                                 index: '/activateCard',
                                 title: '开卡'
+                            },
+                            {
+                                index: '/collectionConfirmation',
+                                title: '确认收款'
                             }
                         ]
                     },
