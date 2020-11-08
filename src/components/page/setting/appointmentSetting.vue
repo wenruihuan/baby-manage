@@ -1,7 +1,7 @@
 <template>
     <div class="appointment_setting">
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
-        <div class="container">
+        <div class="container" v-loading="loading">
             <el-tabs v-model="activeTab" type="card" @tab-click="handleClickTab">
                 <el-tab-pane label="全局设置" name="GlobalSetting"></el-tab-pane>
                 <el-tab-pane label="技师管理" name="TechnicianSetting"></el-tab-pane>
@@ -202,6 +202,7 @@
                         router: 'AppointmentSetting'
                     }
                 ],
+                loading: false,
                 activeTab: 'GlobalSetting',
                 weekBtns: [
                     { label: '周一', value: '1', isActive: false },
@@ -268,7 +269,9 @@
         },
         methods: {
             async getGlobalData() {
+                this.loading = true;
                 const res = await getGlobalData();
+                this.loading = false;
                 if (res.code === 200) {
                     const formData = res.data;
                     if (formData.time && formData.time.length > 0) {
@@ -292,6 +295,7 @@
                 }
             },
             async saveGlobal() {
+                this.loading = true;
                 const formData = JSON.parse(JSON.stringify(this.formData));
                 const time = [];
                 this.weekBtns.forEach((m) => {
@@ -312,8 +316,9 @@
                     formData.end_stop_range = formatDate(this.dateRange[1], 'Y-M-D h:m:s');
                 }
                 const res = await saveGlobal({ ...formData });
-                if (res === 200) {
-                    console.log(res);
+                if (res.code === 200) {
+                    this.$message.success('保存成功');
+                    this.getGlobalData();
                 }
             },
             initOptions(number, type, label) {
@@ -335,11 +340,13 @@
                 this.weekBtns.splice(index, 1, item);
             },
             async getTechnicianList() {
+                this.loading = true;
                 const params = {
                     page_no: this.page.number,
                     page_size: this.page.size
                 };
                 const res = await getTechnicianList(params);
+                this.loading = false;
                 if (res.code === 200) {
                     let list = res.data.data || [];
                     list.forEach((m) => {
@@ -397,13 +404,14 @@
                     this.addTableData = res.data || [];
                 }
             },
-            handleChangeAddRadio(){
+            handleChangeAddRadio() {
                 this.$refs.multipleTable.clearSelection();
             },
             handleSelectionChange(row) {
                 this.addSelectRows = row;
             },
             async handleSaveAdd() {
+                this.loading = true;
                 const params = {
                     is_all_service: this.is_all_service
                 };

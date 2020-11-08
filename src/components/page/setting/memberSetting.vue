@@ -1,7 +1,7 @@
 <template>
     <div class="member-setting">
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
-        <div class="container">
+        <div class="container" v-loading="loading">
             <el-button class="add_btn" type="primary" @click="handleDetail()">新增等级</el-button>
             <el-table :data="tableData" style="width: 100%">
                 <el-table-column prop="name" label="等级名称" align="center"> </el-table-column>
@@ -62,7 +62,8 @@
                     number: 1,
                     total: 0
                 },
-                tableData: []
+                tableData: [],
+                loading: false
             };
         },
         created() {
@@ -70,11 +71,13 @@
         },
         methods: {
             async getMemberLevel() {
+                this.loading = true;
                 const params = {
                     page_no: this.page.number,
                     page_size: this.page.size
                 };
                 const res = await getMemberLevel(params);
+                this.loading = false;
                 if (res.code === 200) {
                     this.page.total = res.data.all_count || 0;
                     this.tableData = res.data.data || [];
@@ -96,9 +99,11 @@
                     type: 'warning'
                 })
                     .then(async () => {
+                        this.loading = true;
                         const res = await deleteMemberLevel({ level_id: id });
                         if (res.code === 200) {
                             this.$message.success('删除成功!');
+                            this.getMemberLevel()
                         }
                     })
                     .catch(() => {});

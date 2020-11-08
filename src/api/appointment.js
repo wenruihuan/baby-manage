@@ -9,3 +9,30 @@ export const getAppointmentList = query => {
     params: query
   })
 }
+
+// 获取预约列表未读
+export const getReadState = query => {
+  return request({
+    url: `${IP}/admin/booking/readState`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取取消预约
+export const cancelBooking = params => {
+  return request({
+    url: `${IP}/admin/booking/cancel`,
+    method: 'post',
+    data: params
+  })
+}
+
+// 获取预约评价列表
+export const getAppointmentRateList = query => {
+  return request({
+    url: `${IP}/admin/rate/list`,
+    method: 'get',
+    params: query
+  })
+}

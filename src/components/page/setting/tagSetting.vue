@@ -1,7 +1,7 @@
 <template>
     <div class="tag-setting">
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
-        <div class="container">
+        <div class="container" v-loading="loading">
             <el-button class="add_btn" type="primary" @click="handleDetail()">新增标签</el-button>
             <el-table :data="tableData" style="width: 100%">
                 <el-table-column prop="tag_name" label="标签名" align="center"> </el-table-column>
@@ -132,7 +132,8 @@
                 },
                 formRules: {
                     tag_name: [{ required: true, message: '请填写标签名称', trigger: 'blur' }]
-                }
+                },
+                loading: false
             };
         },
         watch: {
@@ -157,17 +158,20 @@
                 this.$refs.ruleForm.resetFields();
             },
             async getList() {
+                this.loading = true;
                 const params = {
                     page_no: this.page.number,
                     page_size: this.page.size
                 };
                 const res = await getMemberTagList(params);
+                this.loading = false;
                 if (res.data) {
                     this.tableData = res.data.data;
                     this.page.total = res.data.all_count;
                 }
             },
             async handleSave() {
+                this.loading = true;
                 const condition = [];
                 this.checkList.forEach((m) => {
                     let obj = { type: m, data: this.formData[mapType[m]] };
@@ -215,6 +219,7 @@
                     type: 'warning'
                 })
                     .then(async () => {
+                        this.loading = true;
                         const res = await deleteTag({ tag_id: id });
                         if (res.code === 200) {
                             this.$message.success(res.msg || '删除成功!');

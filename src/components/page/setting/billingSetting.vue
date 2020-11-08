@@ -1,7 +1,7 @@
 <template>
     <div class="billing-setting">
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
-        <div class="container">
+        <div class="container" v-loading="loading">
             <div class="info-title">记账方式</div>
             <p class="tip">默认记账方式</p>
             <div class="default_list">
@@ -70,7 +70,8 @@
                 dialogVisible: false,
                 formData: {
                     name: ''
-                }
+                },
+                loading: false
             };
         },
         created() {
@@ -78,7 +79,9 @@
         },
         methods: {
             async getPaymentData() {
+                this.loading = true;
                 const res = await getPayment();
+                this.loading = false;
                 if (res.code === 200) {
                     const list = res.data || [];
                     this.defaultList = list.filter((m) => m.is_default === 1);
@@ -97,6 +100,7 @@
                     this.$message.error('请填写记账方式名称！');
                     return;
                 }
+                this.loading = true;
                 const params = { name: this.formData.name };
                 if (this.formData.id) {
                     params.id = this.formData.id;

@@ -40,7 +40,7 @@
                                 </div>
                                 <el-button slot="reference" class="edit_btn" type="text">编辑</el-button>
                             </el-popover>
-                            <el-button class="edit_btn" type="text" v-if="!item.isDefault">删除</el-button>
+                            <el-button class="edit_btn" type="text" v-if="!item.isDefault" @click="handleRemove(index)">删除</el-button>
                         </div>
                     </div>
                     <el-button @click="handleAddDistribution">添加物流配送</el-button>
@@ -101,9 +101,9 @@
                 if (res.code === 200) {
                     const commonItem = { visible: false, tempName: '' };
                     const todoor = { ...res.data.todoor, ...commonItem };
-                    this.$set(this, 'noDistributionList', [todoor])
+                    this.$set(this, 'noDistributionList', [todoor]);
                     const defaultItem = { ...res.data.default_express, ...commonItem, isDefault: true };
-                    this.$set(this, 'distributionList', [...[defaultItem], ...res.data.express])
+                    this.$set(this, 'distributionList', [...[defaultItem], ...res.data.express]);
                 }
             },
             handleNoCheck() {
@@ -119,6 +119,9 @@
             handleAddDistribution() {
                 this.distributionList.push(this.defaultItem);
             },
+            handleRemove(index) {
+                this.distributionList.splice(index, 1);
+            },
             formatList(list) {
                 let newList = JSON.parse(JSON.stringify(list));
                 let result = [];
@@ -132,7 +135,7 @@
                     if (m.id) {
                         item.id = m.id;
                     }
-                    newList.push(item);
+                    result.push(item);
                 });
                 return result;
             },
@@ -147,7 +150,7 @@
                 const res = await saveExpress(params);
                 if (res.code === 200) {
                     this.$message.success(res.msg);
-                    this.getExpressData()
+                    this.getExpressData();
                 }
             }
         }

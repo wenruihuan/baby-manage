@@ -1,5 +1,5 @@
 <template>
-    <div class="appointment-list">
+    <div class="appointment-list" v-loading="loading">
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
         <div class="header-bar">
             <div class="header-bar-search">
@@ -16,7 +16,7 @@
                         <el-option v-for="item in selectOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                     </el-select>
                     <el-input placeholder="请输入" prefix-icon="el-icon-search" v-model="searchValue" clearable> </el-input>
-                    <el-button>搜索</el-button>
+                    <el-button @click="getList">搜索</el-button>
                 </div>
             </div>
             <div class="header-bar-date">
@@ -28,6 +28,7 @@
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
                     unlink-panels
+                    @change="getList"
                 >
                 </el-date-picker>
                 <div class="btn-list">
@@ -45,7 +46,7 @@
                 <div class="appointment-item">
                     <span class="item-label">预约来源：</span>
                     <div class="item-content">
-                        <el-select v-model="sourceValue" placeholder="请选择" clearable>
+                        <el-select v-model="sourceValue" placeholder="请选择" clearable @change="getList">
                             <el-option v-for="item in sourceOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                         </el-select>
                     </div>
@@ -56,22 +57,22 @@
         <div class="container">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
                 <el-tab-pane name="all">
-                    <el-badge slot="label" class="tab-badge">全部</el-badge>
+                    <el-badge slot="label" :is-dot="isNeedReadArray[0] && isNeedReadArray[0] === '1'" class="tab-badge">全部</el-badge>
+                </el-tab-pane>
+                <el-tab-pane name="0">
+                    <el-badge slot="label" :is-dot="isNeedReadArray[1] && isNeedReadArray[1] === '1'" class="tab-badge">待服务</el-badge>
                 </el-tab-pane>
                 <el-tab-pane name="1">
-                    <el-badge slot="label" :is-dot="true" class="tab-badge">待服务</el-badge>
+                    <el-badge slot="label" :is-dot="isNeedReadArray[2] && isNeedReadArray[2] === '1'" class="tab-badge">已超时</el-badge>
                 </el-tab-pane>
                 <el-tab-pane name="2">
-                    <el-badge slot="label" :is-dot="true" class="tab-badge">已超时</el-badge>
+                    <el-badge slot="label" :is-dot="isNeedReadArray[3] && isNeedReadArray[3] === '1'" class="tab-badge">已开单</el-badge>
                 </el-tab-pane>
                 <el-tab-pane name="3">
-                    <el-badge slot="label" :is-dot="true" class="tab-badge">已开单</el-badge>
+                    <el-badge slot="label" :is-dot="isNeedReadArray[4] && isNeedReadArray[4] === '1'" class="tab-badge">已取消</el-badge>
                 </el-tab-pane>
                 <el-tab-pane name="4">
-                    <el-badge slot="label" :is-dot="true" class="tab-badge">已取消</el-badge>
-                </el-tab-pane>
-                <el-tab-pane name="5">
-                    <el-badge slot="label" :is-dot="true" class="tab-badge">未分配</el-badge>
+                    <el-badge slot="label" :is-dot="isNeedReadArray[5] && isNeedReadArray[5] === '1'" class="tab-badge">未分配</el-badge>
                 </el-tab-pane>
             </el-tabs>
             <el-table :data="tableData" style="width: 100%">
@@ -95,18 +96,44 @@
                 <el-table-column prop="service_name" label="服务项目" align="center"> </el-table-column>
                 <el-table-column prop="source" label="预约来源" align="center"> </el-table-column>
                 <el-table-column prop="technician_name" label="技师" align="center"> </el-table-column>
-                <el-table-column prop="back_booking_status" label="状态" align="center"> </el-table-column>
+                <el-table-column prop="back_booking_status" label="状态" align="center">
+                    <template slot-scope="scope">
+                        <p>{{ $map.backBookingStatusMap[scope.row.back_booking_status] }}</p>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="create_time" label="下单时间" align="center"> </el-table-column>
                 <el-table-column label="操作" align="right">
                     <template slot-scope="scope">
-                        <el-button v-if="scope.$index === 2" type="text" @click="handleToDetail('view')">预约详情</el-button>
-                        <el-button v-if="scope.$index === 0" type="text" @click="handleToOrder(scope.row)">开单 </el-button>
-                        <el-button v-if="scope.$index === 0" type="text" @click="handleToDetail('edit')">更改</el-button>
-                        <el-button v-if="scope.$index === 0" type="text" @click="handleToDetail('view')">详情</el-button>
-                        <el-button v-if="scope.$index === 0" type="text" @click="handleCancel">取消</el-button>
-                        <div class="cancel-tips" v-if="scope.$index === 1">
-                            <p>客户取消</p>
-                            <p>原因：“我想换个时间”</p>
+                        <el-button v-if="['2'].includes(scope.row.back_booking_status)" type="text" @click="handleToDetail('view')"
+                            >预约详情</el-button
+                        >
+                        <el-button
+                            v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
+                            type="text"
+                            @click="handleToOrder(scope.row)"
+                            >开单
+                        </el-button>
+                        <el-button
+                            v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
+                            type="text"
+                            @click="handleToDetail('edit')"
+                            >更改</el-button
+                        >
+                        <el-button
+                            v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
+                            type="text"
+                            @click="handleToDetail('view')"
+                            >详情</el-button
+                        >
+                        <el-button
+                            v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
+                            type="text"
+                            @click="handleCancel(scope.row.booking_id)"
+                            >取消</el-button
+                        >
+                        <div class="cancel-tips" v-if="['3'].includes(scope.row.back_booking_status)">
+                            <p>{{ $map.cancelStatusMap[scope.row.cancel_status] }}</p>
+                            <p>原因：“{{ scope.row.reason }}”</p>
                         </div>
                     </template>
                 </el-table-column>
@@ -127,7 +154,8 @@
 <script>
     import breadcrumb from '@/components/common/address';
     import appointmentDetail from '@/components/page/appointment/appointmentDetail';
-    import { getAppointmentList } from '@/api/appointment';
+    import { getAppointmentList, getReadState, cancelBooking } from '@/api/appointment';
+    import { formatDate } from '@/utils/utils';
 
     const getDateRange = (number) => {
         const end = new Date();
@@ -165,46 +193,17 @@
                 ],
                 selectValue: '',
                 selectOptions: [
-                    { label: '会员名', value: 1 },
-                    { label: '会员手机号', value: 2 },
-                    { label: '技师', value: 3 },
-                    { label: '服务', value: 4 }
+                    { label: '会员名', value: 'name' },
+                    { label: '会员手机号', value: 'phone' },
+                    { label: '技师', value: 'technician' },
+                    { label: '服务', value: 'service' }
                 ],
                 searchValue: '',
                 selectDate: '',
-                pickerOptions: {
-                    shortcuts: [
-                        {
-                            text: '全部',
-                            onClick(picker) {
-                                picker.$emit('pick', []);
-                            }
-                        },
-                        {
-                            text: '今天',
-                            onClick(picker) {
-                                picker.$emit('pick', getDateRange(0));
-                            }
-                        },
-                        {
-                            text: '近三天',
-                            onClick(picker) {
-                                picker.$emit('pick', getDateRange(3));
-                            }
-                        },
-                        {
-                            text: '近七天',
-                            onClick(picker) {
-                                picker.$emit('pick', getDateRange(7));
-                            }
-                        }
-                    ]
-                },
-                sourceValue: 0,
+                sourceValue: '',
                 sourceOptions: [
-                    { label: '全部', value: 0 },
-                    { label: '线下门店', value: 1 },
-                    { label: '微信小程序', value: 2 }
+                    { label: '线下门店', value: '线下门店' },
+                    { label: '微信小程序', value: '微信小程序' }
                 ],
                 activeName: 'all',
                 page: {
@@ -212,20 +211,48 @@
                     number: 1,
                     total: 0
                 },
-                tableData: []
+                tableData: [],
+                isNeedReadArray: [],
+                loading: false
             };
         },
         created() {
             this.getList();
         },
         methods: {
+            async getReadState() {
+                const res = await getReadState();
+                if (res.code === 200) {
+                    this.isNeedReadArray = res.data.is_needRead_array;
+                }
+            },
             async getList() {
+                this.loading = true;
                 const params = {
                     page_no: this.page.number,
-                    page_size: this.page.size
+                    page_size: this.page.size,
+                    back_booking_status: this.activeName !== 'all' ? this.activeName : ''
                 };
+                if (this.selectValue) {
+                    params.keyword_type = this.selectValue;
+                }
+                if (this.searchValue) {
+                    params.keyword = this.searchValue;
+                }
+                if (this.selectDate && this.selectDate.length > 1) {
+                    params.start_time = formatDate(this.selectDate[0], 'Y-M-D');
+                    params.end_time = formatDate(this.selectDate[1], 'Y-M-D');
+                }
+                if (this.sourceValue) {
+                    params.source = this.sourceValue;
+                }
                 const res = await getAppointmentList(params);
-                console.log(res);
+                this.loading = false;
+                if (res.code === 200) {
+                    this.page.total = res.data.all_count || 0;
+                    this.tableData = res.data.data || [];
+                }
+                this.getReadState();
             },
             handleClickDropdown(command) {
                 this.$refs.detail.appointmentType = command;
@@ -244,20 +271,31 @@
                     return;
                 }
                 this.selectDate = getDateRange(number);
+                this.getList();
             },
-            handleClickTab() {},
-            handleCurrentChange() {},
+            handleClickTab() {
+                this.getList();
+            },
+            handleCurrentChange(number) {
+                this.page.number = number;
+                this.getList();
+            },
             handleToOrder(row) {
-                this.$router.push({ path: '/EvaluateList' });
+                this.$router.push({ path: '/orderList' });
             },
-            handleCancel() {
+            handleCancel(booking_id) {
                 this.$confirm('是否确定取消此订单?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 })
-                    .then(() => {
-                        this.$message.success('取消成功!');
+                    .then(async () => {
+                        this.loading = true;
+                        const res = await cancelBooking({ booking_id });
+                        if (res.code === 200) {
+                            this.$message.success('取消成功!');
+                            this.getList();
+                        }
                     })
                     .catch(() => {});
             }

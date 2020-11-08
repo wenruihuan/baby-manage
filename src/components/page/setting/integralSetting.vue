@@ -1,7 +1,7 @@
 <template>
     <div class="integral-setting">
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
-        <div class="container">
+        <div class="container" v-loading="loading">
             <div class="info-title">设置积分有效期</div>
             <el-form :model="formData" label-width="100px">
                 <el-form-item label="积分说明：">
@@ -191,7 +191,8 @@
                     { condition: '购买次卡', key: 'time_card', value: 4, isLimit: [false, false] },
                     { condition: '购买充值卡', key: 'recharge_card', value: 5, isLimit: [false, false] },
                     { condition: '购买折扣卡', key: 'discount_card', value: 6, isLimit: [false, false] }
-                ]
+                ],
+                loading: false
             };
         },
         created() {
@@ -199,7 +200,9 @@
         },
         methods: {
             async getPointSetting() {
+                this.loading = true;
                 const res = await getPoint();
+                this.loading = false;
                 if (res.code === 200) {
                     this.formData.message = res.data.message;
                     this.tableFormData = res.data.rule;
@@ -214,12 +217,15 @@
                 }
             },
             async handleSaveMessage() {
+                this.loading = true;
                 const res = await savePointMessage({ message: this.formData.message });
                 if (res.code === 200) {
                     this.$message.success(res.msg);
+                    this.getPointSetting();
                 }
             },
             async handleSaveRules() {
+                this.loading = true;
                 const tableFormData = JSON.parse(JSON.stringify(this.tableFormData));
                 this.tableData.forEach((m) => {
                     if (m.key === 'booking') {
@@ -244,6 +250,7 @@
                 const res = await savePointRules({ ...tableFormData });
                 if (res.code === 200) {
                     this.$message.success(res.msg);
+                    this.getPointSetting();
                 }
             }
         }
