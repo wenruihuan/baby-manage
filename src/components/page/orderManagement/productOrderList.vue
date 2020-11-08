@@ -69,8 +69,8 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
-                <p v-if="scope.row.order_status === '1'">
+                <el-button v-if="scope.row.order_info.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_info.order_id)">查看订单</el-button>
+                <p v-if="scope.row.order_info.order_status === '1'">
                   <el-popover
                     placement="top-start"
                     width="400"
@@ -78,17 +78,17 @@
                     <div class="pop-content">
                       <div class="popRow">
                         <p class="popRow-label">收件人：</p>
-                        <p class="popRow-text">王太太/+86 12312312321</p>
+                        <p class="popRow-text">{{scope.row.express_info.receiver}}/+86 12312312321</p>
                       </div>
                       <div class="popRow">
                         <p class="popRow-label">收件人地址：</p>
-                        <p class="popRow-text">江苏省 南京市 建邺区 奥体名座A座 1309室</p>
+                        <p class="popRow-text">{{scope.row.express_info.region}} {{scope.row.express_info.detail_address}}</p>
                       </div>
                     </div>
                     <el-button slot="reference" type="text">查看地址</el-button> 
                   </el-popover>
                   <span>|</span>
-                  <el-button type="text" @click="showSendDialog">发货</el-button>
+                  <el-button type="text" @click="showSendDialog(scope.row.order_info.order_id)">发货</el-button>
                 </p>
               </template>
             </el-table-column>
@@ -116,8 +116,8 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
-                <p v-if="scope.row.order_status === '1'">
+                <el-button v-if="scope.row.order_info.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_info.order_id)">查看订单</el-button>
+                <p v-if="scope.row.order_info.order_status === '1'">
                   <el-popover
                     placement="top-start"
                     width="400"
@@ -125,17 +125,17 @@
                     <div class="pop-content">
                       <div class="popRow">
                         <p class="popRow-label">收件人：</p>
-                        <p class="popRow-text">王太太/+86 12312312321</p>
+                        <p class="popRow-text">{{scope.row.express_info.receiver}}/+86 12312312321</p>
                       </div>
                       <div class="popRow">
                         <p class="popRow-label">收件人地址：</p>
-                        <p class="popRow-text">江苏省 南京市 建邺区 奥体名座A座 1309室</p>
+                        <p class="popRow-text">{{scope.row.express_info.region}} {{scope.row.express_info.region.detail_address}}</p>
                       </div>
                     </div>
                     <el-button slot="reference" type="text">查看地址</el-button> 
                   </el-popover>
                   <span>|</span>
-                  <el-button type="text" @click="showSendDialog">发货</el-button>
+                  <el-button type="text" @click="showSendDialog(scope.row.order_info.order_id)">发货</el-button>
                 </p>
               </template>
             </el-table-column>
@@ -163,8 +163,8 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_id)">查看订单</el-button>
-                <p v-if="scope.row.order_status === '1'">
+                <el-button v-if="scope.row.order_info.order_status === '2'" type="text" @click="jumpToOrderDetail(scope.row.order_info.order_id)">查看订单</el-button>
+                <p v-if="scope.row.order_info.order_status === '1'">
                   <el-popover
                     placement="top-start"
                     width="400"
@@ -172,17 +172,17 @@
                     <div class="pop-content">
                       <div class="popRow">
                         <p class="popRow-label">收件人：</p>
-                        <p class="popRow-text">王太太/+86 12312312321</p>
+                        <p class="popRow-text">{{scope.row.express_info.receiver}}/+86 12312312321</p>
                       </div>
                       <div class="popRow">
                         <p class="popRow-label">收件人地址：</p>
-                        <p class="popRow-text">江苏省 南京市 建邺区 奥体名座A座 1309室</p>
+                        <p class="popRow-text">{{scope.row.express_info.region}}{{scope.row.express_info.detail_address}}</p>
                       </div>
                     </div>
                     <el-button slot="reference" type="text">查看地址</el-button> 
                   </el-popover>
                   <span>|</span>
-                  <el-button type="text" @click="showSendDialog">发货</el-button>
+                  <el-button type="text" @click="showSendDialog(scope.row.order_info.order_id)">发货</el-button>
                 </p>
               </template>
             </el-table-column>
@@ -203,20 +203,20 @@
       title="发货"
       :close-on-click-modal="false"
       :visible.sync="dialogShow"
-      @closed="handleDialogClose"
+      @before-close="handleDialogClose"
     >
       <el-form ref="sendForm" :model="sendForm" :rules="formRules" label-width="100px">
-        <el-form-item label="快递公司：" prop="deliveryName">
+        <el-form-item label="快递公司：" prop="express_company">
           <el-select 
-            v-model="sendForm.deliveryName"
+            v-model="sendForm.express_company"
             filterable
             allow-create
             default-first-option
           ></el-select>
         </el-form-item>
-        <el-form-item label="快递单号：" prop="deliveryNo">
+        <el-form-item label="快递单号：" prop="express_no">
           <div style="width: 300px;">
-            <el-input v-model="sendForm.deliveryNo"></el-input>
+            <el-input v-model="sendForm.express_no"></el-input>
           </div>
         </el-form-item>
         <el-form-item>
@@ -261,14 +261,14 @@ export default {
         order_status: ''
       },
       columnCfg: [
-        {label: '商品订单编号', prop: 'order_no', width: 220},
-        {label: '订购时间', prop: 'create_time'},
-        {label: '订购门店', prop: 'shop_name'},
-        {label: '商品', prop: 'goods_name', showOverflowTooltip: true},
-        {label: '数量', prop: 'count'},
-        {label: '订购人', prop: 'member_name'},
-        {label: '配送方式', prop: 'express_name'},
-        {label: '状态', prop: 'order_status'},
+        {label: '商品订单编号', prop: 'order_info.order_no', width: 220},
+        {label: '订购时间', prop: 'order_info.create_time'},
+        {label: '订购门店', prop: 'order_info.shop_name'},
+        {label: '商品', prop: 'goods_info.name', showOverflowTooltip: true},
+        {label: '数量', prop: 'goods_info.count'},
+        {label: '订购人', prop: 'member_info.member_name'},
+        {label: '配送方式', prop: 'express_info.express_name'},
+        {label: '状态', prop: 'order_info.order_status'},
       ],
       activeTab: 'all',
       dataAll: [],
@@ -280,15 +280,15 @@ export default {
       dateArr: [],
       dialogShow: false,
       sendForm: {
-        // todo: 字段名待定
-        deliveryName: '',
-        deliveryNo: ''
+        express_company: '',
+        express_no: '',
+        order_id: ''
       },
       formRules: {
-        deliveryName: [
+        express_company: [
           { required: true, message: '请输入快递公司名称', trigger: 'change'}
         ],
-        deliveryNo: [
+        express_no: [
           { required: true, message: '请输入快递单号', trigger: 'blur'}
         ]
       }
@@ -346,7 +346,8 @@ export default {
     handleCurChange(page) {
       this.getTableData(page)
     },
-    showSendDialog() {
+    showSendDialog(orderId) {
+      this.sendForm.order_id = orderId
       this.dialogShow = true
     },
     handleDelivery() {
@@ -354,7 +355,7 @@ export default {
         if (valid) {
           deliveryGoods(this.sendForm).then(res => {
             if (res.code === 200) {
-              this.$message.success('发货成功')
+              this.$message.success('提交成功')
               this.dialogShow = false
               this.$refs.sendForm.resetFields()
               this.getTableData(1)
@@ -367,7 +368,7 @@ export default {
         }
       })
     },
-    handleDialogClose() {
+    handleDialogClose(done) {
       this.$refs.sendForm.resetFields()
       done()
     },

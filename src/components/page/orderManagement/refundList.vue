@@ -160,7 +160,6 @@ export default {
       this.getTableData(0)
     },
     getTableData(page) {
-      // todo: 入参待补全
       this.form.page_no = page
       getRefundList(this.form).then(res => {
         const { data, all_count } = res.data

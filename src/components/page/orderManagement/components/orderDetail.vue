@@ -66,7 +66,6 @@
               <span class="text">{{orderInfo.create_time}}</span>
             </div>
             <div>
-              <!-- 未返回信息 -->
               <span class="label">收件人地址：</span>
               <span class="text">{{orderInfo.region}} {{orderInfo.detail_address}}</span>
             </div>
@@ -166,8 +165,7 @@
               <div class="space"></div>
               <span class="summary-label" v-if="isOrder">{{orderInfo.order_status | payText}}：{{payTypeName}}</span>
               <span class="summary-label" v-else>付款{{payTypeName}}</span>
-              <!-- 付款金额未返回 -->
-              <span class="summary-amount">￥0</span>
+              <span class="summary-amount">￥{{totalPrice}}</span>
             </div>
             <div class="summary-item">
               <div class="space"></div>
@@ -177,8 +175,8 @@
           </div>
           <div class="footer-bar" v-if="isOrder">
             <el-button @click="handlePrint">打印小票</el-button>
-            <!-- <el-button type="primary" v-if="showRefundBtn" @click="handleRefund">主动退款</el-button> -->
-            <el-button type="primary" @click="handleRefund">主动退款</el-button>
+            <el-button type="primary" v-if="showRefundBtn" @click="handleRefund">主动退款</el-button>
+            <!-- <el-button type="primary" @click="handleRefund">主动退款</el-button> -->
             <el-button v-if="showCancelBtn" @click="handleCancelOrder">取消订单</el-button>
           </div>
         </div>
@@ -250,7 +248,7 @@
         :params="dialogParams"
         @nextStep="handleNextStep"
         @cancel="handleCancel"
-        @success="handlePrintSuccess"
+        @success="handleSuccess"
       ></component>
     </el-dialog>
   </div>
@@ -261,13 +259,20 @@ import RefundStep1 from './refundStep1'
 import RefundStep2 from './refundStep2'
 import PrintTicket from './printTicket'
 import dayjs from 'dayjs'
-import { getServiceDetail, getTimeCardDetail, getDiscountCardDetail, getRechargeetail } from '@/api/orderManagement'
+import { getServiceDetail, 
+  getTimeCardDetail, 
+  getDiscountCardDetail, 
+  getRechargeCardDetail,
+  getRechargeDetail,
+  cancelOrder
+} from '@/api/orderManagement'
 import { printPartial } from '@/components/common/utils'
 const typeObj = {
   service: getServiceDetail,
   time_card: getTimeCardDetail,
   discount_card: getDiscountCardDetail,
-  recharge_card: getRechargeetail
+  recharge_card: getRechargeCardDetail,
+  recharge: getRechargeDetail
 }
 export default {
   name: 'orderDetail',
@@ -297,7 +302,8 @@ export default {
       refundData: [],
       expressInfo: {},
       refundInfo: null,
-      refundList: []
+      refundList: [],
+      successCb: null
     }
   },
   props: {
@@ -324,28 +330,31 @@ export default {
     }
   },
   created() {
-    const params = {order_id: this.orderId}
-    this.reqFn(params).then(res => {
-      const {order_info, member_info, type, consume,
-        booking_info, consume_info, refund_detail, 
-        oplog_detail, total_price=0, checkout_price=0,
-        express_info = {}, pay_type_name
-     } = res.data
-      this.orderDetailObj = res.data
-      this.orderInfo = order_info || {}
-      this.memberInfo = member_info || {}
-      this.type = type || ''
-      this.consume = consume || []
-      this.bookingInfo = booking_info || null
-      this.totalPrice = consume_info ? consume_info.total_price : total_price
-      this.checkoutPrice = consume_info ? consume_info.checkout_price : checkout_price
-      this.payTypeName = consume_info ? consume_info.pay_type_name : (pay_type_name || '')
-      refund_detail && this.refundData.push(refund_detail)
-      oplog_detail && this.logData.push(oplog_detail)
-      this.expressInfo = express_info
-    })
+    this.getDetail()
   },
   methods: {
+    getDetail() {
+      const params = {order_id: this.orderId}
+      this.reqFn(params).then(res => {
+        const {order_info, member_info, type, consume,
+          booking_info, consume_info, refund_detail, 
+          oplog_detail, total_price=0, checkout_price=0,
+          express_info = {}, pay_type_name
+       } = res.data
+        this.orderDetailObj = res.data
+        this.orderInfo = order_info || {}
+        this.memberInfo = member_info || {}
+        this.type = type || ''
+        this.consume = consume || []
+        this.bookingInfo = booking_info || null
+        this.totalPrice = consume_info && consume_info.total_price || 0
+        this.checkoutPrice = consume_info && consume_info.checkout_price || 0
+        this.payTypeName = consume_info && consume_info.pay_type_name || 0
+        refund_detail && this.refundData.push(refund_detail)
+        oplog_detail && this.logData.push(oplog_detail)
+        this.expressInfo = express_info
+      })
+    },
     handleRefund() {
       typeObj[this.type]({order_id: this.orderId}).then(res => {
         const {data} = res
@@ -363,27 +372,34 @@ export default {
       prm.orderId = this.orderId
       prm.payTypeId = this.payTypeId
       console.log('prm', prm)
-      this.setDilogProp('refundStep2', '主动退款', '700px', '', prm )
+      this.setDilogProp('refundStep2', '主动退款', '700px', '', prm, this.handleRefundSuccess )
     },
     handlePrint() {
-      this.setDilogProp('printTicket', '', '300px', 'print-dialog', this.orderDetailObj)
+      this.setDilogProp('printTicket', '', '300px', 'print-dialog', this.orderDetailObj, this.handlePrintSuccess)
     },
 
-    setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName, dialogParams) {
+    setDilogProp(componentName, dialogTitle, dialogWidth, dialogClassName, dialogParams, successCb) {
       this.dialogTitle = dialogTitle
       this.componentName = componentName
       this.dialogWidth = dialogWidth
       this.dialogClassName = dialogClassName
       this.dialogParams = dialogParams
+      this.successCb = successCb || null
       this.dialogShow = true
     },
     handleCancel() {
       this.dialogShow = false
     },
+    handleSuccess(str = '') {
+      this.successCb(str)
+    },
     handlePrintSuccess(printStr) {
-      // const printString = this.$refs.print.$el.innerHTML
       printPartial(printStr)
       this.dialogShow = false
+    },
+    handleRefundSuccess() {
+      this.dialogShow = false
+      this.getDetail()
     },
     dateFormate(row, column, cellValue, index) {
       if (cellValue) {
@@ -396,6 +412,20 @@ export default {
       this.$router.push(`/RefundDetail/${refundId}`)
     },
     handleCancelOrder() {
+      const prm = {
+        order_id: this.orderId
+      }
+      cancelOrder(prm).then(res => {
+        const { code, msg } = res
+        if (code === 200) {
+          this.$message.success('取消成功')
+          this.getDetail()
+        } else {
+          this.$message.warning(msg)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
 
     },
     technicianFormatter(row, column, cellValue, index) {

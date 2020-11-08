@@ -47,13 +47,22 @@ export const getDiscountCardDetail = query => {
   })
 }
 // 获取储值卡退款详情
-export const getRechargeetail = query => {
+export const getRechargeCardDetail = query => {
   return request({
     url: `/admin/refund/card/rechargeDetail`,
     method: 'get',
     params: query
   })
 }
+// 获取充值退款详情
+export const getRechargeDetail = query => {
+  return request({
+    url: `/admin/refund/recharge/detail`,
+    method: 'get',
+    params: query
+  })
+}
+
 // 提交储值卡退款
 export const refundRechargeCard = query => {
   return request({
@@ -82,6 +91,23 @@ export const refundService = query => {
 export const refundTimeCard = query => {
   return request({
     url: `/admin/refund/card/doTimeRefund`,
+    method: 'post',
+    data: query
+  })
+}
+// 提交充值退款
+export const refundRecharge = query => {
+  return request({
+    url: `/admin/refund/recharge/doRechargeRefund`,
+    method: 'post',
+    data: query
+  })
+}
+
+// 取消订单
+export const cancelOrder = query => {
+  return request({
+    url: `/admin/order/cancel`,
     method: 'post',
     data: query
   })
@@ -135,5 +161,6 @@ export const exportGoodsOrder = query => {
     params: query
   })
 }
+
 
 

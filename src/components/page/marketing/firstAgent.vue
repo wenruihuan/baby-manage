@@ -100,7 +100,6 @@ export default {
       form: {
         start_date: '',
         end_date: '',
-        // todo: 待定
         keyword: '',
         page_size: 20,
         page_no: 1

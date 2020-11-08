@@ -8,8 +8,7 @@
           <div class="car-img">
             <img :src="params.consume[0].img" alt="" width="100%" height="100%">
             <span class="car-name">{{params.consume[0].name}}</span>
-            <!-- 有效期未返回 -->
-            <span class="car-endline">有效期：365天</span>
+            <span class="car-endline">有效期：{{params.consume[0].validity}}天</span>
           </div>
           <div class="car-text" v-if="params.type==='time_card' || params.type==='discount_card'">
             <p>购卡金额</p>
@@ -50,13 +49,13 @@
       <div class="row-right">
         <div class="charge-info flex">
           <p class="charge-label">本金扣除：</p>
-          <p><el-input v-model="form.refund_balance" class="charge-money"></el-input></p>
-          <p class="charge-desc">本次退卡后卡内本金余额：￥500.00</p>
+          <p><el-input v-model.number="form.refund_balance" class="charge-money"></el-input></p>
+          <p class="charge-desc">本次退卡后卡内本金余额：￥{{(params.consume[0].balance-form.refund_balance).toFixed(2)}}</p>
         </div>
         <div class="charge-info flex">
           <p class="charge-label">赠金扣除：</p>
-          <p><el-input v-model="form.refund_gift_balance" class="charge-money"></el-input></p>
-          <p class="charge-desc">本次退卡后卡内赠金余额：￥0.00</p>
+          <p><el-input v-model.number="form.refund_gift_balance" class="charge-money"></el-input></p>
+          <p class="charge-desc">本次退卡后卡内赠金余额：￥{{(params.consume[0].gift_balance - form.refund_gift_balance).toFixed(2)}}</p>
         </div>
       </div>
     </div>
@@ -67,6 +66,7 @@
         <el-table-column label="支付金额（元）" prop="total_price" align="center"></el-table-column>
         <el-table-column label="退款金额（元）" align="center">
           <template slot-scope="scope">
+            <!-- <el-input v-model="scope.row.refund_price" @input="changeRefundPrice"></el-input> -->
             <el-input v-model="scope.row.refund_price"></el-input>
           </template>
         </el-table-column>
@@ -93,12 +93,19 @@
 </template>
 
 <script>
-import {refundRechargeCard, refundDiscountCard, refundService, refundTimeCard} from '@/api/orderManagement'
+import {
+  refundRechargeCard, 
+  refundDiscountCard, 
+  refundService, 
+  refundTimeCard,
+  refundRecharge
+} from '@/api/orderManagement'
 const typeObj = {
   service: refundService,
   discount_card: refundDiscountCard,
   time_card: refundTimeCard,
-  recharge_card: refundRechargeCard
+  recharge_card: refundRechargeCard,
+  recharge: refundRecharge
 }
 export default {
   name: 'refundStep2',
@@ -130,6 +137,8 @@ export default {
   },
   created() {
     const item = {
+      total_price: this.params.total_price,
+      pay_type_name: this.params.pay_type_name,
       refund_type: '原路返回',
       refund_price: ''
     }
@@ -162,14 +171,28 @@ export default {
       }
     },
     handleRefund() {
-      const prm = Object.assign({}, this.form, this.refundAmount[0])
-      typeObj[this.type](prm).then(res => {
+      const formPrm = Object.assign({}, this.form)
+      const type = this.params.type
+      switch(type) {
+        case 'service':
+        case 'time_card':
+        case 'discount_card':
+          delete formPrm.is_integral
+          delete formPrm.refund_balance
+          delete formPrm.refund_gift_balance
+          break
+        case 'recharge':
+          delete formPrm.is_integral
+      }
+      const prm = Object.assign({}, formPrm, this.refundAmount[0])
+      delete prm.total_price
+      typeObj[this.params.type](prm).then(res => {
         const {code, msg} = res
         if (code === 200) {
           this.$message.success('退款成功')
           this.$emit('cancel')
         } else {
-          this.$message.success(msg)
+          this.$message.warning(msg)
         }
       }).catch(err => {
         console.log(err)
@@ -187,6 +210,63 @@ export default {
           this.refundAmount[0].refund_price = price
         }
       }
+    },
+    // 输入校验
+    changePrincipal(newVal) {
+      switch(this.params.type) {
+        case 'service':
+        case 'discount_card':
+        case 'time_card':
+          if (newVal > this.params.total_price) {
+            this.refundAmount[0].refund_price = this.params.total_price
+          } else {
+            this.refundAmount[0].refund_price = newVal
+          }
+          break
+        case 'recharge_card': 
+          const { total_price, consume } = this.params
+          const { balance, price } = consume
+          if (this.form.is_integral === 1) {
+            if (newVal > total_price) {
+              this.refundAmount[0].refund_price = total_price
+            } else {
+              this.refundAmount[0].refund_price = newVal
+            }
+          } else {
+            if (balance < price) {
+              if (newVal > balance) {
+                this.refundAmount[0].refund_price = balance
+              } else {
+                this.refundAmount[0].refund_price = newVal
+              }
+            } else {
+              if (newVal > price) {
+                this.refundAmount[0].refund_price = price
+              } else {
+                this.refundAmount[0].refund_price = newVal
+              }
+            }
+          }
+          break
+        case 'recharge': 
+          if (balance < price) {
+            if (newVal > balance) {
+              this.refundAmount[0].refund_price = balance
+            } else {
+              this.refundAmount[0].refund_price = newVal
+            }
+          } else {
+            if (newVal > price) {
+              this.refundAmount[0].refund_price = price
+            } else {
+              this.refundAmount[0].refund_price = newVal
+            }
+          }
+          break
+      }
+    },
+    changeGift(newVal) {
+
     }
   }
   

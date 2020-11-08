@@ -140,7 +140,6 @@ export default {
       })
     },
     getTableData(page) {
-      // todo: 入参待补全
       this.form.page_no = page
       getSecondAgentList(this.form).then(res => {
         const { data=[], all_count } = res.data || {}
