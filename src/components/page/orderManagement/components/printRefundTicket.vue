@@ -43,16 +43,15 @@
             <p :style="rowLeft">数量</p>
             <p>{{item.count}}</p>
           </div>
-          <div :style="rowStyle">
-            <p :style="rowLeft">可退金额</p>
-            <p>￥{{item.price}}</p>
-          </div>
-          <div :style="rowStyle">
-            <p :style="rowLeft">退款金额</p>
-            <p>￥{{item.price}}</p>
-          </div>
         </div>
-        
+        <div :style="rowStyle">
+          <p :style="rowLeft">可退金额</p>
+          <p>￥{{refundInfo.refund_price_limit}}</p>
+        </div>
+        <div :style="rowStyle">
+          <p :style="rowLeft">退款金额</p>
+          <p>￥{{refundInfo.refund_price}}</p>
+        </div>
       </div>
       <div :style="summaryStyle">
         <div :style="rowStyle">
