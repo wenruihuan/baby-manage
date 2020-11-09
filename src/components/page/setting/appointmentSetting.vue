@@ -140,8 +140,8 @@
                         <el-radio label="1">所有服务</el-radio>
                         <el-radio label="0">指定服务</el-radio>
                     </el-radio-group>
-                    <el-select v-model="addSelectValue" style="margin-left: 30px; margin-bottom: 10px" @change="getServiceList">
-                        <el-option v-for="item in addSelectOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+                    <el-select v-model="addSelectValue" style="margin-left: 30px; margin-bottom: 10px" :disabled="is_all_service === '1'" @change="getServiceList">
+                        <el-option v-for="item in addSelectOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
                     </el-select>
                     <el-table ref="multipleTable" :data="addTableData" @selection-change="handleSelectionChange" style="width: 100%">
                         <el-table-column v-if="is_all_service === '0'" type="selection" width="55"> </el-table-column>

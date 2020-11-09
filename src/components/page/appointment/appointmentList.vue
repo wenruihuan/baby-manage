@@ -104,7 +104,10 @@
                 <el-table-column prop="create_time" label="下单时间" align="center"> </el-table-column>
                 <el-table-column label="操作" align="right">
                     <template slot-scope="scope">
-                        <el-button v-if="['2'].includes(scope.row.back_booking_status)" type="text" @click="handleToDetail('view')"
+                        <el-button
+                            v-if="['2'].includes(scope.row.back_booking_status)"
+                            type="text"
+                            @click="handleToDetail('view', scope.row.booking_id)"
                             >预约详情</el-button
                         >
                         <el-button
@@ -116,13 +119,13 @@
                         <el-button
                             v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
                             type="text"
-                            @click="handleToDetail('edit')"
+                            @click="handleToDetail('edit', scope.row.booking_id)"
                             >更改</el-button
                         >
                         <el-button
                             v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
                             type="text"
-                            @click="handleToDetail('view')"
+                            @click="handleToDetail('view', scope.row.booking_id)"
                             >详情</el-button
                         >
                         <el-button
@@ -260,10 +263,11 @@
                 this.$refs.detail.dialogTitle = this.dropdownOptions.find((m) => m.value === command).label;
                 this.$refs.detail.dialogVisible = true;
             },
-            handleToDetail(type) {
+            handleToDetail(type, id) {
                 this.$refs.detail.dialogType = type;
                 this.$refs.detail.dialogTitle = type === 'edit' ? '修改预约' : '预约详情';
                 this.$refs.detail.dialogVisible = true;
+                this.$refs.detail.dialogId = id;
             },
             handleClickDate(number) {
                 if (number === 'all') {
