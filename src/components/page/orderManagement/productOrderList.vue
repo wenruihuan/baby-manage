@@ -78,7 +78,7 @@
                     <div class="pop-content">
                       <div class="popRow">
                         <p class="popRow-label">收件人：</p>
-                        <p class="popRow-text">{{scope.row.express_info.receiver}}/+86 12312312321</p>
+                        <p class="popRow-text">{{scope.row.express_info.receiver}}/+86 {{scope.row.express_info.phone}}</p>
                       </div>
                       <div class="popRow">
                         <p class="popRow-label">收件人地址：</p>
