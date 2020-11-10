@@ -93,9 +93,21 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="shop_name" label="预约门店" align="center"> </el-table-column>
-                <el-table-column prop="service_name" label="服务项目" align="center"> </el-table-column>
+                <el-table-column prop="service_name" label="服务项目" align="center">
+                    <template slot-scope="scope">
+                        <p v-for="(item, index) in scope.row.service" :key="index">
+                            {{ item.service_name ? index + 1 + '：' + item.service_name : '' }}
+                        </p>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="source" label="预约来源" align="center"> </el-table-column>
-                <el-table-column prop="technician_name" label="技师" align="center"> </el-table-column>
+                <el-table-column prop="technician_name" label="技师" align="center">
+                    <template slot-scope="scope">
+                        <p v-for="(item, index) in scope.row.service" :key="index">
+                            {{ item.technician_name ? index + 1 + '：' + item.technician_name : '' }}
+                        </p>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="back_booking_status" label="状态" align="center">
                     <template slot-scope="scope">
                         <p>{{ $map.backBookingStatusMap[scope.row.back_booking_status] }}</p>
@@ -264,6 +276,7 @@
                 this.$refs.detail.dialogVisible = true;
             },
             handleToDetail(type, id) {
+                this.$refs.detail.appointmentType = command;
                 this.$refs.detail.dialogType = type;
                 this.$refs.detail.dialogTitle = type === 'edit' ? '修改预约' : '预约详情';
                 this.$refs.detail.dialogVisible = true;

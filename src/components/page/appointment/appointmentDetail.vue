@@ -31,17 +31,24 @@
                 </div>
             </el-form-item>
             <el-form-item label="下单人：" v-else>
-                <p>王太太（普通会员） +86 1340000000</p>
+                <p>
+                    {{ showFormData.booking_info.customer }}（{{ showFormData.member_info.level_name }}）
+                    {{ showFormData.booking_info.phone }}
+                </p>
             </el-form-item>
             <el-form-item label="到店人：" prop="customer">
                 <el-input v-if="dialogType === 'add'" v-model="formData.customer" placeholder="请填写到店人姓名"></el-input>
-                <p v-else>王太太（普通会员） +86 1340000000</p>
+                <p v-else>
+                    {{ showFormData.booking_info.customer }}（{{ showFormData.member_info.level_name }}）
+                    {{ showFormData.booking_info.phone }}
+                </p>
             </el-form-item>
             <el-form-item label="预约门店：">
-                <p>多多亲子岁月一店</p>
+                <p v-if="dialogType === 'add'">多多亲子岁月一店</p>
+                <p v-else>{{ showFormData.shop_name }}</p>
             </el-form-item>
             <el-form-item label="预约服务和技师：">
-                <el-table :data="formData.service_list" style="width: 100%">
+                <el-table v-if="dialogType !== 'view'" :data="formData.service_list" style="width: 100%">
                     <el-table-column prop="service_id" label="预约服务" align="center">
                         <template slot-scope="scope">
                             <el-cascader
@@ -84,6 +91,10 @@
                         </template>
                     </el-table-column>
                 </el-table>
+                <el-table v-else :data="showFormData.service" style="width: 100%">
+                    <el-table-column prop="service_name" label="预约服务" align="center"></el-table-column>
+                    <el-table-column prop="technician_name" label="技师" align="center"></el-table-column>
+                </el-table>
                 <el-button style="margin-top: 5px" v-if="showAddRow" @click="handleAddRow">添加</el-button>
             </el-form-item>
             <el-form-item label="服务占用时长：" v-if="dialogType !== 'view'">
@@ -107,7 +118,12 @@
                 >
                     <el-option v-for="(item, index) in timeOptions" :key="index" :label="item" :value="item"> </el-option>
                 </el-select>
-                <p v-else>2020-10-11 12:12:12</p>
+                <p v-else>
+                    {{ showAppointmentTime }}
+                </p>
+            </el-form-item>
+            <el-form-item label="买家备注：" v-if="dialogType === 'view'">
+                <p>{{ showFormData.member_remark }}</p>
             </el-form-item>
             <el-form-item label="商家备注：">
                 <el-input
@@ -119,7 +135,10 @@
                     show-word-limit
                 >
                 </el-input>
-                <p v-else>{{ formData.remark }}</p>
+                <p v-else>{{ showFormData.shop_remark }}</p>
+            </el-form-item>
+            <el-form-item label="开单时间：" v-if="dialogType === 'view' && ['3', '4'].includes(showFormData.booking_status)">
+                <p>{{ showFormData.checkout.checkout_time }}</p>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -140,7 +159,7 @@
                     >开 单</el-button
                 >
             </div>
-            <div v-if="dialogType === 'view'">
+            <div v-if="dialogType === 'view' && ['3', '4'].includes(showFormData.booking_status)">
                 <el-button type="primary" @click="dialogVisible = false">查看订单详情</el-button>
             </div>
         </span>
@@ -179,6 +198,17 @@
                 serviceHour: '',
                 serviceMinute: '',
                 timeOptions: [],
+                showFormData: {
+                    booking_info: {},
+                    booking_status: '',
+                    checkout: {},
+                    member_info: {},
+                    member_remark: '',
+                    service: [],
+                    shop_id: '',
+                    shop_name: '',
+                    shop_remark: ''
+                },
                 formData: {
                     phone: '',
                     customer: '',
@@ -197,13 +227,26 @@
         computed: {
             showAddRow() {
                 return this.dialogType !== 'view' && !(['1', '3'].includes(this.appointmentType) && this.formData.service_list.length >= 1);
+            },
+            showAppointmentTime() {
+                return this.showFormData && this.showFormData.booking_info
+                    ? formatDate(this.showFormData.booking_info.start_time, 'Y-M-D h:m:s') +
+                          ' 至 ' +
+                          formatDate(
+                              new Date(
+                                  +new Date(this.showFormData.booking_info.start_time) + Number(this.showFormData.booking_info.total_length)
+                              ),
+                              'Y-M-D h:m:s'
+                          )
+                    : '';
             }
         },
         watch: {
             dialogVisible(newVal) {
                 if (newVal) {
-                    this.dialogId && this.getDetail();
-                    this.getServiceList();
+                    this.getServiceList().then(() => {
+                        this.dialogId && this.getDetail();
+                    });
                 } else {
                     this.init();
                 }
@@ -221,7 +264,7 @@
                             let obj = { service_id: m.service_id[0] || '', technician_id: m.technician_id || '', total: total };
                             list.push(obj);
                         }
-                        if (m.service_id.length === 0 && (!m.technicianOptions || m.technicianOptions.length <= 0)) {
+                        if (m.service_id.length !== 0 && (!m.technicianOptions || m.technicianOptions.length <= 0)) {
                             this.getTechnicianList('', i);
                         }
                     });
@@ -266,7 +309,26 @@
             async getDetail() {
                 const res = await bookDetail({ booking_id: this.dialogId });
                 if (res.code === 200) {
-                    console.log(res);
+                    this.showFormData = res.data;
+                    if (this.dialogType === 'edit') {
+                        const formData = {
+                            phone: res.data.booking_info.phone || '',
+                            customer: res.data.booking_info.customer || '',
+                            service_list: [],
+                            start_time: res.data.booking_info.start_time || '',
+                            select_time: '',
+                            remark: res.data.shop_remark || ''
+                        };
+                        const service = res.data.service || [];
+                        service.forEach((m) => {
+                            let obj = {
+                                service_id: m.sku ? [m.service_id, m.sku] : [m.service_id],
+                                technician_id: m.technician_id
+                            };
+                            formData.service_list.push(obj);
+                        });
+                        this.formData = formData;
+                    }
                 }
             },
             async remoteMethod(query) {
