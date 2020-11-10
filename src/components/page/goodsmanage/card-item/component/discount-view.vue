@@ -7,7 +7,7 @@
         <div class="content-container">
             <div class="top">
                 <div class="left">
-                    <el-card class="box-card-left">
+                    <el-card class="box-card-left" shadow="never">
                         <img class="card-img" :src="insertDetail.img || defaultPic" alt="">
                         <ul class="card-detail">
                             <li>
@@ -134,15 +134,6 @@
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="历史卡项">
-                        <div class="search-container">
-                            <el-input
-                                    class="search-input"
-                                    placeholder="请输入客户手机号"
-                                    prefix-icon="el-icon-search"
-                                    v-model="searchVal">
-                            </el-input>
-                            <el-button class="search-btn" @click="handleSearch2">搜索</el-button>
-                        </div>
                         <el-table
                                 :data="historyList"
                                 @selection-change="handleSelectionChange"
@@ -568,6 +559,7 @@ export default {
     .box-card-left {
         text-align: center;
         background: #eeeeee;
+        border: 0;
     }
     .content-container .top {
         margin-bottom: 15px;
@@ -576,10 +568,14 @@ export default {
         flex: 1;
     }
     .content-container .card-detail {
+        width: 100%;
         list-style: none;
-        margin-left: -100px;
+        margin-left: -28px;
     }
     .content-container .card-detail li {
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
         line-height: 30px;
     }
     .content-container .card-detail li .key {
