@@ -379,6 +379,10 @@ export default {
 </script>
 
 <style lang="css" scoped>
+/deep/ .cell {
+    font-size: 14px;
+    color: #333333;
+}
 .operate-btn {
     position: relative;
 }
