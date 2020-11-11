@@ -230,7 +230,10 @@ a {
     line-height: 32px;
 }
 .width200 {
-    width: 200px;
+    width: 200px !important;
+}
+.width85 {
+    width: 85px !important;
 }
 
 /* 服务级联 */

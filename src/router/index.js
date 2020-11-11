@@ -323,6 +323,11 @@ export default new Router({
                     meta: { title: '开卡' }
                 },
                 {
+                    path: '/collectionConfirmation',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/collectionConfirmation.vue'),
+                    meta: { title: '开卡' }
+                },
+                {
                     path: '/GivingRights',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/GivingRights.vue'),
                     meta: { title: '赠送权益' }

@@ -8,19 +8,20 @@
             <div class="info">
                 <div class="row">
                     <span>支付方式：</span>
-                    <i>微信</i>
+                    <i>{{info.payment}}</i>
                 </div>
                 <div class="row">
                     <span>应收金额：</span>
-                    <i>￥100.00</i>
+                    <i>￥{{info.price}}</i>
                 </div>
                 <div class="row">
                     <span>实收金额：</span>
-                    <i>￥100.00</i>
+                    <i>￥{{info.price1}}</i>
                 </div>
             </div>
             <div class="operation">
-                <el-button type="primary">继续收银</el-button>
+                <el-button type="primary" v-if="info.price1 > info.price || info.price1 === info.price" @click="getLink">继续开单</el-button>
+                <el-button type="primary" v-else @click="getBack">继续收银</el-button>
 
                 <el-button >查看订单</el-button>
 
@@ -42,13 +43,22 @@
                 isShow: false
             }
         },
+        created () {
+            this.info = this.$route.query
+        },
         components: {
             orderInfo
         },
         methods: {
             print () {
                 this.isShow = true
-            }
+            },
+            getBack () {
+                this.$router.go(-1);
+            },
+            getLink () {
+                this.$router.push('/billing');
+            },
         }
     };
 </script>

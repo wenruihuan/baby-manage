@@ -92,6 +92,17 @@
                         ]
                     },
                     {
+                        icon: 'el-icon-time',
+                        index: 'memberList',
+                        title: '会员管理',
+                        subs: [
+                            {
+                                index: 'memberList',
+                                title: '会员列表'
+                            }
+                        ]
+                    },
+                    {
                         icon: 'el-icon-tickets',
                         index: 'OrderList',
                         title: '订单管理',

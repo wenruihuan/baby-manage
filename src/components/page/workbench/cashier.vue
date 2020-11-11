@@ -16,45 +16,33 @@
             <div class="right">
                 <div class="collection">
                     <span>待收款：</span>
-                    <b>￥99.00</b>
+                    <b>￥{{price}}</b>
                 </div>
                 <div class="paymen-term box">
                     <div class="title">选择收款方式</div>
                     <div class="list">
-                        <div :class="active ? 'active item' : 'item' ">
+                        <div
+                            v-for="(item, index) in paymentList"
+                            :class="index === currentPayment ? 'active item' : 'item'"
+                            :key="item.id"
+                            @click="selectPaymentFn(index)"
+                        >
                             <div>
-                                <p class="name">微信</p>
+                                <p class="name">{{item.name}}</p>
                                 <p>记账收款</p>
                             </div>
-                        </div>
-                        <div class="item">
-                            <div>
-                                <p class="name">微信</p>
-                                <p>记账收款</p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div>
-                                <p class="name">微信</p>
-                                <p>记账收款</p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div>
-                                <p class="name">微信</p>
-                                <p>记账收款</p>
-                            </div>
+                            <div class="checkbox" v-if="index === currentPayment"><i class="el-icon-check"></i></div>
                         </div>
                     </div>
                 </div>
                 <div class="box">
-                    <div class="title">POS</div>
+                    <div class="title">{{paymentList[currentPayment].name}}</div>
                     <div class="row">
-                        实收金额： <el-input class="input"></el-input> <span>不用找零</span>
+                        实收金额： <el-input class="input" v-model="price1"></el-input> <span>不用找零</span>
                     </div>
                 </div>
                 <div class="bottom">
-                    <el-button type="primary">确认收款</el-button>
+                    <el-button type="primary" @click="confirmReceipt">确认收款</el-button>
                 </div>
             </div>
         </div>
@@ -63,6 +51,7 @@
 
 <script>
 import orderInfo from './common/orderInfo'
+import * as api from '../../../api/index'
 export default {
     name: 'cashier',
     components: {
@@ -70,7 +59,39 @@ export default {
     },
     data () {
         return {
-            active: true
+            active: true,
+            paymentList: [
+                {
+                    name: ''
+                }
+            ],
+            currentPayment: 0,
+            price: 100,
+            price1: 50
+        }
+    },
+    created() {
+        this.getPaymentList();
+    },
+    methods: {
+        async getPaymentList () {
+            const { data } = await api.paymentList();
+            this.paymentList = data.map(m => {
+                m.active = false;
+                return m;
+            });
+        },
+        // 选中支付方式
+        selectPaymentFn (item) {
+            this.currentPayment = item;
+        },
+        // 确认收款
+        confirmReceipt () {
+            this.$router.push({ path: '/collectionConfirmation',query: {
+                payment: this.paymentList[this.currentPayment].name,
+                price: this.price,
+                price1: this.price1
+            } })
         }
     }
 };
@@ -133,19 +154,47 @@ export default {
     display: flex;
     flex-wrap: wrap;
 }
+
 .cashier .content .right .box .list .item{
     width: 220px;
     height: 100px;
     border: 1px solid #dddddd;
     color: #dddddd;
-    margin: 0 15px;
+    margin: 0 15px 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    position: relative;
 }
 .cashier .content .right .box .list .item.active{
     border: 1px solid #1890ff;
+}
+.cashier .content .right .box .list .item .checkbox{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    color: #fff;
+    background: #1890ff;
+}
+.cashier .content .right .box .list .item .checkbox:before{
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    content: '';
+    border-width: 15px;
+    border-color: #fff transparent transparent #fff ;
+    border-style: solid;
+}
+.cashier .content .right .box .list .item .checkbox i{
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
 }
 .cashier .content .right .box .list .item p{
     line-height: 30px;

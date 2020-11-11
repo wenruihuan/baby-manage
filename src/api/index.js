@@ -225,3 +225,56 @@ export const boxSelectList = query => {
         params: query
     });
 };
+// 5.1.8. 所有卡项
+export const memberAllCard = query => {
+    return request({
+        url: IP + `/mp/member/allCard`,
+        method: 'get',
+        params: query
+    });
+};
+// 9.2.2.4.等级信息
+export const memberLevelDetail = query => {
+    return request({
+        url: IP + `/admin/memberLevel/detail`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 9.4.1.开单设置列表（收款方式）
+export const paymentList = query => {
+    return request({
+        url: IP + `/admin/payment/list`,
+        method: 'get',
+        params: query
+    });
+};
+
+
+// 11.3.会员等级列表
+export const memberLevelList = query => {
+    return request({
+        url: IP + `/admin/memberLevel/selectList`,
+        method: 'get',
+        params: query
+    });
+};
+
+//4.2.5.获取会员列表
+export const memberList = query => {
+    return request({
+        url: IP + `/admin/member/list`,
+        method: 'get',
+        params: query
+    });
+};
+
+//11.10.获取健康管理师下来列表
+export const hmSelectList = query => {
+    return request({
+        url: IP + `/admin/hm/selectList`,
+        method: 'get',
+        params: query
+    });
+};

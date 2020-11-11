@@ -73,12 +73,12 @@
         <div class="billing-content">
             <div class="tab-box">
                 <div class="tabOperation">
-                    <span :class="tabOperation === '0' ? 'active' : ''" @click="tabOperation = '0'">充值</span>
-                    <span :class="tabOperation === '1' ? 'active' : ''" @click="tabOperation = '1'">开单</span>
-                    <span :class="tabOperation === '2' ? 'active' : ''" @click="tabOperation = '2'">开卡</span>
+                    <span @click="getLink('recharge')">充值</span>
+                    <span class="active">开单</span>
+                    <span>开卡</span>
                 </div>
                 <div class="billing-tab-box">
-                    <div class="billing-tab-box-content" v-if="tabOperation === '1'">
+                    <div class="billing-tab-box-content">
                         <div class="billing-tab-box-content-top">
                             <div class="tabOperation1">
                                 <span :class="tabOperation1 === '0' ? 'active' : ''" @click="tabOperation1 = '0'">服务</span>
@@ -372,6 +372,10 @@ export default {
         },
     },
     methods: {
+        //
+        getLink (link) {
+            this.$router.push(`/${link}`);
+        },
         // 获取包厢列表
         async getboxSelectList (value) {
             const { data } = await api.boxSelectList({ page_size: 10, page_no: value });
@@ -552,6 +556,7 @@ export default {
     position: relative;
     background: #F7F8FA;
     padding: 10px;
+    justify-content: space-between;
 }
 .billing-top>div.user .item {
     display: flex;
