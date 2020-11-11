@@ -51,10 +51,10 @@
                 <el-table-column
                         width="200"
                         prop="kind_name"
-                        label="包厢">
+                        label="服务">
                     <template slot-scope="scope">
                         <div class="box-column">
-                            <img class="img-wrapper" :src="scope.row.first_img" alt="">
+                            <img class="img-wrapper" :src="scope.row.img" alt="">
                             <div>
                                 <p class="category-text">{{ scope.row.name }}</p>
                                 <p class="category-text">￥{{ scope.row.price }}</p>
@@ -303,7 +303,7 @@ export default {
                     kind_id: this.selected === 'all' ? '' : this.selected,
                     tag_id: this.tagSelected === 'all' ? '' : this.tagSelected
                 });
-                this.tableData = data.data;
+                this.tableData = data.data.data;
             } catch (e) {
                 console.log(`service getList error: ${e}`);
             }
@@ -416,7 +416,7 @@ export default {
 
 .top-container .select-container .key {
     margin: 0 10px 0 20px;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .top-container .select-container .category-select {
@@ -439,12 +439,13 @@ export default {
 }
 .box-column {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 .box-column .img-wrapper {
     max-width: 100px;
     display: inline-block;
+    margin-right: 24px;
 }
 .box-column .category-text {
     display: inline-block;
