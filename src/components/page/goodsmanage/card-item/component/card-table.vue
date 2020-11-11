@@ -200,12 +200,13 @@ export default {
 }
 .box-column {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 .img-wrapper {
     max-width: 60px;
     height: auto;
+    margin-right: 24px;
 }
 .category-tip {
     color: #bbbbbb;

@@ -235,6 +235,12 @@ export default {
     height: calc(100% - 67px);
     overflow: auto;
 }
+/deep/ .el-tabs__item {
+    color: #333333!important;
+}
+/deep/ .el-tabs__item.is-active {
+    color: #409EFF!important;
+}
 </style>
 
 <style lang="css">
