@@ -43,7 +43,7 @@
                             </el-radio>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="网店展示:" prop="is_show">
+                    <el-form-item class="show-online" label="网店展示:" prop="is_show">
                         <el-radio-group v-model="form.is_show">
                             <el-radio :label="0">不展示</el-radio>
                             <el-radio :label="1">展示</el-radio>
@@ -54,10 +54,10 @@
             <div class="title">
                 <span class="text">卡样式</span>
             </div>
-            <div>卡片封面:</div>
             <div class="content">
                 <div class="left">
-                    <el-radio-group v-model="form.is_custom_cover" @change="changePic">
+                    <p class="card-start">卡片封面:</p>
+                    <el-radio-group class="pic-choose" v-model="form.is_custom_cover" @change="changePic">
                         <el-radio :label="0">默认背景图</el-radio>
                         <el-radio :label="1">
                             <span>自定义图片</span>
@@ -315,6 +315,26 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.card-start {
+    margin-bottom: 10px;
+    margin-left: 21px;
+    color: #606266;
+}
+.pic-choose {
+    flex-direction: column;
+    align-items: flex-start!important;
+}
+.pic-choose .el-radio:first-child {
+    margin-bottom: 15px;
+}
+.show-online {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.show-online /deep/ .el-form-item__content {
+    margin-left: 0!important;
+}
 .cika-container {
     padding: 30px 15px;
     background: white;
@@ -330,7 +350,7 @@ export default {
 }
 .cika-container .content-container .title .text {
     position: relative;
-    padding-left: 5px;
+    padding-left: 10px;
 }
 .cika-container .content-container .title .text:before {
     width: 3px;
@@ -339,7 +359,7 @@ export default {
     display: inline-block;
     position: absolute;
     left: 0;
-    top: -2px;
+    top: 0px;
     background: dodgerblue;
 }
 .card-opt {
@@ -385,6 +405,8 @@ export default {
 .tip2 {
     line-height: 25px;
     margin-top: 5px;
+    font-size: 12px;
+    color: #999999;
 }
 /deep/ .el-radio-group {
     align-items: center;
