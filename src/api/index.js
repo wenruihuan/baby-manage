@@ -278,3 +278,14 @@ export const hmSelectList = query => {
         params: query
     });
 };
+
+
+//11.19  获取卡列表（不分页版）
+export const listNoPage = query => {
+    return request({
+        url: IP + `/admin/card/listNoPage`,
+        method: 'get',
+        params: query
+    });
+};
+

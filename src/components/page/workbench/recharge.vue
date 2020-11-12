@@ -1,81 +1,11 @@
 <template>
     <div class="billing">
-        <div class="billing-top">
-            <div v-if="!currentMemberInfo.id" class="unUser">
-                <div class="left">
-                    <el-select
-                            v-model="memberId"
-                            filterable
-                            placeholder="请选择"
-                            remote
-                            :remote-method="getWorktableMemberInfo"
-                            @change="getWorktableMemberAllRechargeCard(memberId)"
-                    >
-                        <el-option
-                                v-for="item in worktableMemberInfoList"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.id"
-                        >
-                        </el-option>
-                    </el-select>
-                </div>
-                <div class="right">
-                    <div>
-                        <el-button icon="el-icon-plus" type="primary">添加新会员</el-button>
-                    </div>
-                    <div>
-                        <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">取单</el-button>
-                        <el-button >关闭</el-button>
-                    </div>
-                </div>
-            </div>
-            <div v-if="currentMemberInfo.id" class="user">
-                <div class="item item1">
-                    <i @click="reselectUser" class="el-icon-close"></i>
-                    <img :src="currentMemberInfo.head_img">
-                    <div>
-                        <p>{{currentMemberInfo.name}}</p>
-                        <p>
-                            {{currentMemberInfo.phone}}
-                        </p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div>
-                        <p>
-                            {{currentMemberInfo.userCard.length}}</p>
-                        <p>
-                            持有卡项
-                        </p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div>
-                        <p>
-                            {{currentMemberInfo.total_buy}}</p>
-                        <p>
-                            累计消费金额（元）
-                        </p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div>
-                        <p>
-                            {{currentMemberInfo.last_buy}}</p>
-                        <p>
-                            最近一次到店时间 （元）
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="billing-content">
             <div class="tab-box">
                 <div class="tabOperation">
-                    <span class="active" @click="getLink('recharge')">充值</span>
-                    <span @click="getLink('billing')">开单</span>
-                    <span>开卡</span>
+                    <span @click="getLink(0)" class="active">充值</span>
+                    <span @click="getLink(1)">开单</span>
+                    <span @click="getLink(2)">开卡</span>
                 </div>
                 <div class="billing-tab-box">
                     <div class="billing-tab-box-content">
@@ -87,15 +17,17 @@
                                 <el-input prefix-icon="el-icon-search" placeholder="输入服务名称"></el-input>
                             </div>
                         </div>
+                        {{WorktableMemberAllRechargeCardList}}
                         <div class="billing-tab-box-content-bottom">
                             <div class="service-list clearfix">
                                 <div class="item"
                                      :class="item.selectState ? 'item active' : 'item'"
                                      @click="handleServiceList(item)"
-                                     v-for="item in worktableCommonServiceList"
+                                     v-for="item in WorktableMemberAllRechargeCardList"
                                 >
-                                    <div class="name">{{item.name + item.service_time}}分钟</div>
-                                    <div class="price">￥{{item.original_price}}</div>
+                                    <div class="name">{{item.name}}</div>
+                                    <div class="price"><span>￥{{item.balance}}</span> <span>赠送{{item.gift_price}}</span></div>
+                                    <div class="price">有效期：365天</div>
                                 </div>
                             </div>
                         </div>
@@ -326,6 +258,7 @@
                 tabValue1: '',
                 consumeList: [],
                 addServiceList: [],
+                WorktableMemberAllRechargeCardList: [],
                 commonServiceList: [],
                 commonBoxSelectList: [],
                 currentConsumeList: [],
@@ -344,6 +277,9 @@
                 staffTechnicianDialogVisible: false,
             }
         },
+        props: {
+            memberId: ''
+        },
         created () {
             this.getServiceKind();
             // this.getServiceSelectList();
@@ -351,6 +287,7 @@
             this.getWorktableMemberInfo();
             this.getWorktableCommonService();
             this.getStaffTechnicianSelect();
+            this.getWorktableMemberAllRechargeCard(this.memberId);
             this.getboxSelectList(1);
         },
         watch: {
@@ -362,9 +299,13 @@
             },
         },
         methods: {
+            getInfo (val) {
+                console.log(val);
+            },
             //
-            getLink (link) {
-                this.$router.push(`/${link}`);
+            getLink (index) {
+                // this.$router.push(`/${link}`);
+                this.$emit('getNum', index);
             },
             // 获取包厢列表
             async getboxSelectList (value) {
@@ -405,7 +346,8 @@
             // 获取用户的所有充值卡
             async getWorktableMemberAllRechargeCard (member_id) {
                 const { data } = await api.worktableMemberAllRechargeCard({ member_id: member_id});
-                this.currentMemberInfo = { ...this.worktableMemberInfoList.filter(m => m.id === this.memberId )[0], userCard: data};
+                this.WorktableMemberAllRechargeCardList = data;
+                // this.currentMemberInfo = { ...this.worktableMemberInfoList.filter(m => m.id === this.memberId )[0], userCard: data};
             },
             // 获取技师下拉列表
             async getStaffTechnicianSelect (value) {
@@ -512,10 +454,6 @@
 </script>
 
 <style scoped>
-    .billing {
-        background: #FFF;
-        padding: 20px 20px 0;
-    }
     .billing-top>div{
         display: flex;
         justify-content: space-between;

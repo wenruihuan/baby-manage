@@ -1,111 +1,34 @@
 <template>
     <div class="billing">
-        <div class="billing-top">
-            <div v-if="!currentMemberInfo.id" class="unUser">
-                <div class="left">
-                    <el-select
-                            v-model="memberId"
-                            filterable
-                            placeholder="请选择"
-                            remote
-                            :remote-method="getWorktableMemberInfo"
-                            @change="getWorktableMemberAllRechargeCard(memberId)"
-                    >
-                        <el-option
-                                v-for="item in worktableMemberInfoList"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.id"
-                        >
-                        </el-option>
-                    </el-select>
-                </div>
-                <div class="right">
-                    <div>
-                        <el-button icon="el-icon-plus" type="primary">添加新会员</el-button>
-                    </div>
-                    <div>
-                        <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">取单</el-button>
-                        <el-button >关闭</el-button>
-                    </div>
-                </div>
-            </div>
-            <div v-if="currentMemberInfo.id" class="user">
-                <div class="item item1">
-                    <i @click="reselectUser" class="el-icon-close"></i>
-                    <img :src="currentMemberInfo.head_img">
-                    <div>
-                        <p>{{currentMemberInfo.name}}</p>
-                        <p>
-                            {{currentMemberInfo.phone}}
-                        </p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div>
-                        <p>
-                            {{currentMemberInfo.userCard.length}}</p>
-                        <p>
-                            持有卡项
-                        </p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div>
-                        <p>
-                            {{currentMemberInfo.total_buy}}</p>
-                        <p>
-                            累计消费金额（元）
-                        </p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div>
-                        <p>
-                            {{currentMemberInfo.last_buy}}</p>
-                        <p>
-                            最近一次到店时间 （元）
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="billing-content">
             <div class="tab-box">
                 <div class="tabOperation">
-                    <span @click="getLink('recharge')">充值</span>
-                    <span class="active">开单</span>
-                    <span>开卡</span>
+                    <span @click="getLink(0)">充值</span>
+                    <span @click="getLink(1)">开单</span>
+                    <span class="active" @click="getLink(2)">开卡</span>
                 </div>
                 <div class="billing-tab-box">
                     <div class="billing-tab-box-content">
                         <div class="billing-tab-box-content-top">
                             <div class="tabOperation1">
-                                <span :class="tabOperation1 === '0' ? 'active' : ''" @click="tabOperation1 = '0'">服务</span>
-                                <span :class="tabOperation1 === '1' ? 'active' : ''" @click="tabOperation1 = '1'">包厢</span>
+                                <span :class="tabOperation1 === '0' ? 'active' : ''" @click="tabOperation1 = '0'">次卡</span>
+                                <span :class="tabOperation1 === '1' ? 'active' : ''" @click="tabOperation1 = '1'">充值卡</span>
                             </div>
                             <div class="">
                                 <el-input prefix-icon="el-icon-search" placeholder="输入服务名称"></el-input>
                             </div>
                         </div>
+                        {{listNoPageData}}
                         <div class="billing-tab-box-content-bottom" v-if="tabOperation1 === '0'">
-                            <div class="left-tab">
-                                <span :class="tabOperation2 === '0' ? 'active' : ''" @click="tabOperation2 = '0'">常用服务</span>
-                                <a >所有分类</a>
-                                <span
-                                        :class="tabOperation2 === ('1' + index) ? 'active' : ''"
-                                        @click="getServiceSelectList(item,index)"
-                                        v-for="(item, index) in serviceKindList"
-                                >{{item.name}}</span>
-                            </div>
                             <div class="service-list clearfix">
                                 <div class="item"
                                      :class="item.selectState ? 'item active' : 'item'"
                                      @click="handleServiceList(item)"
-                                     v-for="item in worktableCommonServiceList"
+                                     v-for="item in listNoPageData"
                                 >
-                                    <div class="name">{{item.name + item.service_time}}分钟</div>
-                                    <div class="price">￥{{item.original_price}}</div>
+                                    <div class="name">{{item.name}}</div>
+                                    <div class="price">￥{{item.price}}</div>
+                                    <div class="date">有效期：{{item.create_time}}</div>
                                 </div>
                             </div>
                         </div>
@@ -334,6 +257,7 @@
                 tabOperation2: '0',
                 state: '',
                 tabValue1: '',
+                listNoPageData: [],
                 consumeList: [],
                 addServiceList: [],
                 commonServiceList: [],
@@ -355,6 +279,7 @@
             }
         },
         created () {
+            this.getListNoPage();
             this.getServiceKind();
             // this.getServiceSelectList();
             this.getWorktableOrderList();
@@ -372,9 +297,13 @@
             },
         },
         methods: {
-            //
-            getLink (link) {
-                this.$router.push(`/${link}`);
+            async getListNoPage () {
+                const { data } = await api.listNoPage();
+                this.listNoPageData = data;
+            },
+            getLink (index) {
+                // this.$router.push(`/${link}`);
+                this.$emit('getNum', index);
             },
             // 获取包厢列表
             async getboxSelectList (value) {
@@ -522,67 +451,6 @@
 </script>
 
 <style scoped>
-    .billing {
-        background: #FFF;
-        padding: 20px 20px 0;
-    }
-    .billing-top>div{
-        display: flex;
-        justify-content: space-between;
-        padding: 0px 0 20px;
-        border-bottom: 1px solid #f8f8f8;
-    }
-    .billing-top .right,
-    .billing-top .left{
-        display: flex;
-        justify-content: space-between;
-        width: 49%;
-    }
-    .billing-top>div.user{
-        display: flex;
-    }
-    .billing-top>div.user .item1 i{
-        position: absolute;
-        right: -5px;
-        top: -5px;
-        background: #E6E6E6;
-        border-radius: 100%;
-        display: inline-block;
-        padding: 5px;
-        cursor: pointer;
-        color: #fff;
-    }
-    .billing-top>div.user .item1 {
-        position: relative;
-        background: #F7F8FA;
-        padding: 10px;
-        justify-content: space-between;
-    }
-    .billing-top>div.user .item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-        max-width: 300px;
-        text-align: center;
-    }
-    .billing-top>div.user .item p:first-child{
-        color: #409EFF;
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .billing-top>div.user .item1  p:first-child{
-        font-size: 16px;
-        text-align: left;
-        font-weight: normal;
-    }
-    .billing-top>div.user .item img{
-        width: 50px;
-        height: 50px;
-        margin-right: 10px;
-        border-radius: 100%;
-    }
     .billing .billing-content{
         position: relative;
         display: flex;

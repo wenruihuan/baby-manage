@@ -303,6 +303,11 @@ export default new Router({
                   meta: { title: '会员价' }
                 },
                 {
+                  path: '/workbench',
+                  component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/index.vue'),
+                  meta: { title: '工台' }
+                },
+                {
                   path: '/billing',
                   component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/billing.vue'),
                   meta: { title: '开单' }
