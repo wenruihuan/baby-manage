@@ -97,6 +97,9 @@ export default {
         /* 更改名字或者取消操作 */
         handleFirOpera (index, row) {
             this.$set(row, 'isEdit', !row.isEdit);
+            if (!row.isEdit) {
+                this.getTagList();
+            }
         },
         /* 保存编辑或者删除 */
         async handleSecOpera (index, row) {
