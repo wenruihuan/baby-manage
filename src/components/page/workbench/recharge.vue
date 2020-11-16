@@ -129,7 +129,7 @@
                 </div>
                 <div class="item">
                     <el-button @click="clearConsumeList">挂单</el-button>
-                    <el-button type="primary" @click="clearConsumeList">收款</el-button>
+                    <el-button type="primary" @click="getCashier">收款</el-button>
                 </div>
             </div>
         </div>
@@ -299,6 +299,9 @@
             },
         },
         methods: {
+            getCashier () {
+                this.$router.push('/cashier');
+            },
             getInfo (val) {
                 console.log(val);
             },

@@ -68,6 +68,32 @@
                 </div>
             </div>
         </div>
+        <el-dialog
+                class="single-dialog"
+                title="取单列表"
+                :visible.sync="singleDialogVisible"
+                width="70%"
+                :before-close="handleClose">
+            <div class="list">
+                <div class="item" v-for="item in worktableOrderList">
+                    <div class="name">{{item.shop_name}}</div>
+                    <div class="name">{{item.order_no}}</div>
+                    <div class="name">消费项目：{{item.order_name}}</div>
+                    <div class="name">下单时间：{{item.create_time}}</div>
+                    <div class="name">
+                        <span>￥{{item.total_price}}</span>
+                        <div>
+                            <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">收款</el-button>
+                            <el-button >取消</el-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="singleDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="singleDialogVisible = false">确 定</el-button>
+        </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -77,26 +103,38 @@ export default {
     name: 'index',
     data () {
         return {
+            singleDialogVisible: false,
             worktableMemberInfoList: [],
+            worktableOrderList: [],
             currentMemberInfo: '',
             memberId: ''
         }
     },
     created() {
         this.getWorktableMemberInfo();
+        this.getWorktableOrderList();
     },
     methods: {
+        async getWorktableOrderList () {
+            const { data } = await api.worktableOrderList();
+            this.worktableOrderList = data.data;
+        },
         // 清除用户信息
         reselectUser () {
             this.currentMemberInfo = {};
             this.memberId = '';
         },
         async getWorktableMemberInfo (value) {
+            console.log(111);
             const { data } = await api.worktableMemberInfo({ keyword: value });
             this.worktableMemberInfoList = data;
         },
+        handleClose () {
+            this.singleDialogVisible = false;
+        },
         // 获取用户的所有充值卡
         async getWorktableMemberAllRechargeCard (member_id) {
+            this.memberId = member_id;
             const { data } = await api.worktableMemberAllRechargeCard({ member_id: member_id});
             this.currentMemberInfo = { ...this.worktableMemberInfoList.filter(m => m.id === this.memberId )[0], userCard: data};
             this.$emit('getInfo', member_id);
@@ -163,5 +201,18 @@ export default {
         height: 50px;
         margin-right: 10px;
         border-radius: 100%;
+    }
+    .single-dialog .list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .single-dialog .list .item {
+        width: 23.5%;
+        background: #F7F8FA;
+        border-radius: 3px;
+        padding: 10px;
+        box-sizing: border-box;
+        margin-bottom: 20px;
     }
 </style>

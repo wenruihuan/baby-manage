@@ -11,36 +11,66 @@
                     <div class="billing-tab-box-content">
                         <div class="billing-tab-box-content-top">
                             <div class="tabOperation1">
-                                <span :class="tabOperation1 === '0' ? 'active' : ''" @click="tabOperation1 = '0'">次卡</span>
-                                <span :class="tabOperation1 === '1' ? 'active' : ''" @click="tabOperation1 = '1'">充值卡</span>
+                                <span :class="tabOperation === '0' ? 'active' : ''" @click="switchPage('0', 'time_card')">次卡</span>
+                                <span :class="tabOperation === '1' ? 'active' : ''" @click="switchPage('1', 'recharge_card')">充值卡</span>
+                                <span :class="tabOperation === '2' ? 'active' : ''" @click="switchPage('2', 'discount_card')">折扣卡</span>
                             </div>
                             <div class="">
-                                <el-input prefix-icon="el-icon-search" placeholder="输入服务名称"></el-input>
+                                <el-input
+                                    v-model="selectValue"
+                                    prefix-icon="el-icon-search"
+                                    placeholder="输入卡项名称"
+                                ></el-input>
                             </div>
                         </div>
-                        {{listNoPageData}}
-                        <div class="billing-tab-box-content-bottom" v-if="tabOperation1 === '0'">
-                            <div class="service-list clearfix">
-                                <div class="item"
+                        <div class="billing-tab-box-content-bottom">
+                            <div v-show="tabOperation === '0'" class="service-list service-list0 clearfix">
+                                <div
                                      :class="item.selectState ? 'item active' : 'item'"
-                                     @click="handleServiceList(item)"
-                                     v-for="item in listNoPageData"
+                                     @click="selectCardList(item, 'time_card')"
+                                     v-for="item in listData.time_card"
                                 >
-                                    <div class="name">{{item.name}}</div>
-                                    <div class="price">￥{{item.price}}</div>
-                                    <div class="date">有效期：{{item.create_time}}</div>
+                                    <div class="bg"><img :src="item.img" alt=""></div>
+                                    <div class="info">
+                                        <div class="name">
+                                            <span>{{item.name}}</span>
+                                            <span>{{}}次</span>
+                                        </div>
+                                        <div class="price">￥{{item.price}}</div>
+                                        <div class="date">有效期：{{item.validity | validityFilter }}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="billing-tab-box-content-bottom" v-if="tabOperation1 === '1'">
-                            <div class="service-list clearfix">
-                                <div class="item"
+                            <div v-show="tabOperation === '1'" class="service-list service-list1 clearfix">
+                                <div
                                      :class="item.selectState ? 'item active' : 'item'"
-                                     @click="handleBoxSelectList(item)"
-                                     v-for="item in boxSelectList"
+                                     @click="selectCardList(item, 'discount_card')"
+                                     v-for="item in listData.discount_card"
                                 >
-                                    <div class="name">{{item.name}}</div>
-                                    <div class="price">￥{{item.original_price}}</div>
+                                    <div class="bg"><img :src="item.img" alt=""></div>
+                                    <div class="info">
+                                        <div class="name">{{item.name}}1</div>
+                                        <div class="price">￥{{item.price}}</div>
+                                        <div class="date">有效期：{{item.validity | validityFilter }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-show="tabOperation === '2'" class="service-list service-list2 clearfix">
+                                <div
+                                     :class="item.selectState ? 'item active' : 'item'"
+                                     @click="selectCardList(item, 'recharge_card')"
+                                     v-for="item in listData.recharge_card"
+                                >
+
+                                    <div class="bg"><img :src="item.img" alt=""></div>
+                                    <div class="info">
+                                        <div class="name">
+                                            <span>{{item.name}}</span>
+                                            <span>{{}}次</span>
+                                        </div>
+                                        <div class="price">￥{{item.price}}</div>
+                                        <div class="date">有效期：{{item.validity | validityFilter }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -49,66 +79,36 @@
             </div>
             <div class="info-box">
                 <div class="message">
-                    <span>消费明细({{consumeList.length}})</span>
+                    <span>消费明细({{checkedList.length}})</span>
                     <el-button @click="clearConsumeList">清空</el-button>
                 </div>
                 <div class="consume-list">
-                    <div class="consume-item" v-for="item in consumeList">
+                    <div class="consume-item" v-for="item in checkedList">
                         <div>
                             <div class="close" @click="clearConsumeItem(item)"><i class="el-icon-close"></i></div>
                             <div class="row">
                                 <div class="name">
-                                    <span v-if="item.service_time">{{item.name + item.service_time}}分钟</span>
-                                    <span v-else>{{item.name}}</span>
+                                    <span>{{item.name}}</span>
                                 </div>
                                 <el-input-number v-model="item.sort" :min="1" :max="10"></el-input-number>
-                                <div class="price" v-if="item.original_price">
-                                    <span>￥{{item.original_price * item.sort}}</span>
+                                <div class="price">
+                                    <span>￥{{item.price * item.sort}}</span>
                                     <el-button @click="clearConsumeList">改价</el-button>
-                                </div>
-                            </div>
-                            <div class="row row-bottom" v-if="item.original_price">
-                                <div>
-                                    技师：
-                                    <span class="item" v-for="itemStaff in itemStaffTechnicianSelectList">
-                                        {{itemStaff.name}}
-                                        <el-input v-model="itemStaff.time" class="shuru"></el-input>
-                                        分钟
-                                    </span>
-                                    <el-button icon="el-icon-plus" @click="showStaffTechnicianDialogVisible"></el-button>
-                                </div>
-                                <div>
-                                    <el-select v-model="item.rightSelectValue" placeholder="请选择">
-                                        <el-option
-                                                v-for="item in item.rightSelect"
-                                                :key="item.right_id"
-                                                :label="item.right_name"
-                                                :value="item.right_id">
-                                        </el-option>
-                                    </el-select>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="" @click="serviceDialogVisible = true">赠送服务</div>
-                    <div class="consume-item consume-item1" v-for="item in addServiceList">
+                    <div class="" @click="cardDialogVisible = true">赠送服务</div>
+                    <div class="consume-item consume-item1" v-for="item in giveCardDataList">
                         <div>
                             <div class="row">
                                 <div class="name">
                                     <span>{{item.name}}</span>
                                 </div>
-                                <div>
-                                    <el-input class="shuru" v-model="item.sort"></el-input>次数
+                                <div class="info">
+                                    <span>￥{{item.price}}</span>&nbsp;&nbsp;
+                                    <div @click="clearGiveCardDataItem(item)">删除</div>
                                 </div>
-                                <div>
-                                    <el-date-picker
-                                            v-model="item.date"
-                                            type="date"
-                                            placeholder="选择日期">
-                                    </el-date-picker>
-                                    前有效
-                                </div>
-                                <div @click="clearConsumeServiceItem(item)">删除</div>
                             </div>
                         </div>
                     </div>
@@ -126,118 +126,73 @@
             </div>
             <div class="operation">
                 <div class="item">
-                    待收款：<span>￥99.00</span>
+                    待收款：<span>￥{{totalMoney}}</span>
                 </div>
                 <div class="item">
                     <el-button @click="clearConsumeList">挂单</el-button>
-                    <el-button type="primary" @click="clearConsumeList">收款</el-button>
+                    <el-button type="primary" @click="getCashier">收款</el-button>
                 </div>
             </div>
         </div>
-        <!--<div>single1</div>-->
         <el-dialog
-                class="single-dialog"
-                title="取单列表"
-                :visible.sync="singleDialogVisible"
-                width="70%"
-                :before-close="handleClose">
-            <div class="list">
-                <div class="item" v-for="item in worktableOrderList">
-                    <div class="name">{{item.shop_name}}</div>
-                    <div class="name">{{item.order_no}}</div>
-                    <div class="name">消费项目：{{item.order_name}}</div>
-                    <div class="name">下单时间：{{item.create_time}}</div>
-                    <div class="name">
-                        <span>￥{{item.total_price}}</span>
-                        <div>
-                            <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">收款</el-button>
-                            <el-button >取消</el-button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-            <el-button @click="singleDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="singleDialogVisible = false">确 定</el-button>
-        </span>
-        </el-dialog>
-        <el-dialog
-                class="staffTechnician-dialog"
-                title="选择技师"
-                :visible.sync="staffTechnicianDialogVisible"
-                width="400px"
-                :before-close="handleClose">
-            <div class="search" style="margin-bottom: 30px;">
-                <el-input v-model="staffTechnicianValue" @input="getStaffTechnicianSelect"></el-input>
-            </div>
-            <div class="list">
-                <div class="item">
-                    <el-checkbox-group v-model="currentStaffTechnicianSelectList">
-                        <el-checkbox v-for="item in staffTechnicianSelectList" :label="item.id">{{item.name}}</el-checkbox>
-                    </el-checkbox-group>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-            <el-button @click="staffTechnicianDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="setStaffTechnician">确 定</el-button>
-        </span>
-        </el-dialog>
-        <el-dialog
-                class="service-dialog"
-                title="添加服务"
-                :visible.sync="serviceDialogVisible"
-                width="800px">
-            <div class="search" style="margin-bottom: 30px;">
-                <el-select
-                        v-model="memberId1"
-                        placeholder="请选择"
-                        @change="getServiceSelectList1"
-                >
-                    <el-option
-                            v-for="item in serviceKindList"
-                            :key="item.id"
+            class="single-dialog"
+            title="添加卡项"
+            :visible.sync="cardDialogVisible"
+            width="70%"
+            :before-close="handleClose">
+                <div class="contentBox">
+                    <el-select
+                        @change="getCardListFn"
+                        v-model="cardSelectValue"
+                    >
+                        <el-option
+                            v-for="item in cardDataList"
                             :label="item.name"
-                            :value="item.id"
-                    >{{item.name}}
-                    </el-option>
-                </el-select>
-            </div>
-            <el-table
-                    ref="multipleTable"
-                    :data="serviceSelectList"
-                    tooltip-effect="dark"
-                    style="width: 100%">
-                <el-table-column
-                        type="selection"
-                        width="55">
-                </el-table-column>
-                <el-table-column
-                        label="服务名称"
-                >
-                    <template slot-scope="scope">
-                        <img :src="scope.row.img" width="40" height="40" alt="">
-                        {{ scope.row.name }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        prop="price"
-                        label="价格"
-                        width="120">
-                </el-table-column>
-                <el-table-column
-                        prop="tag_name"
-                        label="分类"
-                        show-overflow-tooltip>
-                </el-table-column>
-                <el-table-column
-                        prop="service_time"
-                        label="创建时间"
-                        show-overflow-tooltip>
-                </el-table-column>
-            </el-table>
+                            :value="item.value"
+                        >
+                            {{item.name}}
+                        </el-option>
+                    </el-select>
+                    <div class="table" style="height: 300px;overflow-y: scroll;">
+                        <el-table
+                            ref="multipleTable"
+                            :data="giveCardData"
+                            tooltip-effect="dark"
+                            style="width: 100%"
+                            @selection-change="handleSelectionChange">
+                            <el-table-column
+                                type="selection"
+                                width="55">
+                            </el-table-column>
+                            <el-table-column
+                                label="卡项名称"
+                            >
+                                <template slot-scope="scope">
+                                    <img :src="scope.row.img" width="50">
+                                    {{ scope.row.name }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                label="价格"
+                                width="120">
+                                <template slot-scope="scope">{{ scope.row.price }}</template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="create_time"
+                                label="创建时间"
+                            >
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                        <el-pagination
+                            background
+                            layout="prev, pager, next"
+                            :total="cardDataTotal">
+                        </el-pagination>
+                </div>
             <span slot="footer" class="dialog-footer">
-            <el-button @click="serviceDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="serviceSelectListConfirm">确 定</el-button>
+            <el-button @click="cardDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="cardDialogVisible = false">确 定</el-button>
         </span>
         </el-dialog>
     </div>
@@ -249,18 +204,45 @@
         name: 'billing',
         data () {
             return {
+                totalMoney: 0, // 代付款
                 memberId: '', // 选中用户ID
-                memberId1: '', // 选中用户ID
                 currentMemberInfo: {}, // 选中用户信息
                 tabOperation: '0',
-                tabOperation1: '0',
-                tabOperation2: '0',
+                type: 'time_card',
                 state: '',
+                cardSelectValue: 'time_card',
+                cardDataTotal: 0,
+                listData: {
+                    time_card: [], //  time_card 次卡
+                    discount_card: [], //  discount_card 折扣卡
+                    recharge_card: []   //  recharge_card 储值卡
+                },
+                commonList: {
+                    time_card: [], //  time_card 次卡
+                    discount_card: [], //  discount_card 折扣卡
+                    recharge_card: []   //  recharge_card 储值卡
+                },
+                checkedList: [], // 选中的所有数据
+                giveCardData: [], //赠送卡列表
+                selectValue: '',
                 tabValue1: '',
+                giveCardDataList: [],
                 listNoPageData: [],
                 consumeList: [],
                 addServiceList: [],
-                commonServiceList: [],
+                cardDataList: [
+                    {
+                        name: '次卡',
+                        value: 'time_card'
+                    },
+                    {
+                        name: '折扣卡',
+                        value: 'discount_card'
+                    }
+                ],
+                discountCardList: [],
+                rechargeCardList: [],
+                commonCardList: [],
                 commonBoxSelectList: [],
                 currentConsumeList: [],
                 serviceKindList: [],
@@ -274,82 +256,126 @@
                 itemStaffTechnicianSelectList: [],
                 currentStaffTechnicianSelectList: [],
                 singleDialogVisible: false,
-                serviceDialogVisible: false,
+                cardDialogVisible: false,
                 staffTechnicianDialogVisible: false,
             }
         },
         created () {
-            this.getListNoPage();
-            this.getServiceKind();
-            // this.getServiceSelectList();
-            this.getWorktableOrderList();
-            this.getWorktableMemberInfo();
-            this.getWorktableCommonService();
-            this.getStaffTechnicianSelect();
-            this.getboxSelectList(1);
+            this.getListData('discount_card');
+            this.getListData('recharge_card');
+            this.getListData('time_card');
+            this.getCardListFn('time_card');
         },
         watch: {
-            commonServiceList () {
-                this.operationConsumeList();
+            selectValue (value) {
+                console.log(value);
+                this.getListData('', value);
+            },
+            commonList: {
+                handler () {
+                    this.operationAllList();
+                },
+                immediate: true,
+                deep: true
             },
             commonBoxSelectList () {
                 this.operationConsumeList();
             },
         },
+        filters: {
+            validityFilter (item) {
+                if (item > -1) {
+                    return item + '天';
+                } else {
+                    return '永久有效';
+                }
+            }
+        },
         methods: {
-            async getListNoPage () {
-                const { data } = await api.listNoPage();
-                this.listNoPageData = data;
+            // 切换页面
+            switchPage (index, type) {
+                this.tabOperation = index;
+                this.type = type;
             },
-            getLink (index) {
-                // this.$router.push(`/${link}`);
-                this.$emit('getNum', index);
+            // 获取赠送卡列表
+            async getCardListFn (value) {
+                const { data }= await api.cardList({ type: value, keyword: ''});
+                this.giveCardData = data.data;
+                this.cardDataTotal = data.all_count;
             },
-            // 获取包厢列表
-            async getboxSelectList (value) {
-                const { data } = await api.boxSelectList({ page_size: 10, page_no: value });
-                this.boxSelectList = data.data.map(m => {
-                    m.selectState = false;
+            handleSelectionChange (value) {
+                this.giveCardDataList = value;
+            },
+            getCashier () {
+                this.$router.push('/cashier');
+            },
+            // 选中卡时操作
+            selectCardList (item, list) {
+                item.selectState = !item.selectState;
+                this.commonList[list] = this.listData[list].filter(m => {
+                    if (m.selectState) {
+                       return item;
+                    };
+                });
+            },
+            // 消费明细 及 待收款总额计算
+            operationAllList () {
+                this.totalMoney = 0;
+                this.checkedList = this.commonList.time_card.concat(this.commonList.discount_card, this.commonList.recharge_card);
+                this.checkedList.forEach((m) => {
+                    this.totalMoney = m.price*1 + this.totalMoney;
+                })
+            },
+            getListNoPageFn (value) {
+                this.getListNoPage(this.tabOperation, this.type, value);
+            },
+            async getListData (type, keyword = '') {
+                console.log(type);
+                if (type !== '') {
+                    this.type = type;
+                } else {
+                    type = this.type;
+                }
+                let params = {
+                    type: this.type,
+                    keyword: keyword
+                };
+                console.log(type);
+                const { data } = await api.listNoPage(params);
+                this.listData[type] = data.map(m => {
+                    m.card_id = m.card_id + Math.random();
+                    m.name = m.name + type;
+                    m.sort = 1;
                     return m;
                 });
+                // this.listData[type] = data;
+            },
+            async getListNoPage (index, type, keyword = '1') {
+                //  type
+                //  time_card 次卡
+                //  discount_card 折扣卡
+                //  recharge_card 储值卡
+                this.type = type;
+                this.tabOperation = index;
+                let params = {
+                    type: type,
+                    keyword: keyword
+                };
+                const { data } = await api.listNoPage(params);
+                this.listNoPageData = data;
             },
             getServiceSelectList (item, index) {
                 this.tabOperation2 = ('1' + index);
                 this.getServiceSelectList1(item);
             },
             async getServiceSelectList1 (item) {
-                console.log(item);
                 const { data } = await api.serviceSelectList({ kind_id: item.id });
                 this.serviceSelectList = data;
-            },
-            async getWorktableMemberInfo (value) {
-                const { data } = await api.worktableMemberInfo({ keyword: value });
-                this.worktableMemberInfoList = data;
-            },
-            async getServiceKind (value) {
-                const { data } = await api.serviceKind({ keyword: value });
-                this.serviceKindList = data.data;
-            },
-            async getWorktableCommonService (value) {
-                const { data } = await api.worktableCommonService({ keyword: value });
-                this.worktableCommonServiceList = data.map(m => {
-                    m.selectState = false;
-                    return m;
-                });
-            },
-            async getWorktableOrderList () {
-                const { data } = await api.worktableOrderList();
-                this.worktableOrderList = data.data;
             },
             // 获取用户的所有充值卡
             async getWorktableMemberAllRechargeCard (member_id) {
                 const { data } = await api.worktableMemberAllRechargeCard({ member_id: member_id});
                 this.currentMemberInfo = { ...this.worktableMemberInfoList.filter(m => m.id === this.memberId )[0], userCard: data};
-            },
-            // 获取技师下拉列表
-            async getStaffTechnicianSelect (value) {
-                const { data } = await api.staffTechnicianSelect(value);
-                this.staffTechnicianSelectList = data;
             },
             // 获取用户消费时可选权益
             async setWorktableRightSelect(id) {
@@ -365,11 +391,6 @@
             clearConsumeList () {
                 this.consumeList = [];
             },
-            // 选中服务时操作
-            handleServiceList (item) {
-                item.selectState = !item.selectState;
-                this.handleWorktableCommonServiceList(item);
-            },
             // 选中包厢时操作
             handleBoxSelectList (item) {
                 item.selectState = !item.selectState;
@@ -383,21 +404,17 @@
                 let rightSelect = {};
                 this.setWorktableRightSelect(item.id).then((res) => {
                     rightSelect = res;
-                    this.commonServiceList = this.worktableCommonServiceList.filter(m => {
-                        if(m.selectState) {
-                            m.rightSelect = rightSelect;
-                            return m;
-                        };
-                    });
+                });
+                this.commonCardList = this.worktableCommonServiceList.filter(m => {
+                    if(m.selectState) {
+                        m.rightSelect = rightSelect;
+                        return m;
+                    };
                 });
             },
             // 包厢和服务选择时数组处理
             operationConsumeList () {
-                this.consumeList = this.commonServiceList.concat(this.commonBoxSelectList);
-            },
-            reselectUser () {
-                this.currentMemberInfo = {};
-                this.memberId = '';
+                this.consumeList = this.commonCardList.concat(this.commonBoxSelectList);
             },
             //删除选中明细
             clearConsumeItem (item) {
@@ -407,8 +424,6 @@
                     }
                 });
                 this.worktableCommonServiceList.forEach((m) => {
-                    console.log(m);
-                    console.log(item);
                     if (item.id === m.id) {
                         item.selectState = false;
                     }
@@ -432,19 +447,21 @@
             },
             // 确认赠送服务
             serviceSelectListConfirm () {
-                console.log(this.$refs.multipleTable.selection);
                 this.addServiceList = this.$refs.multipleTable.selection;
-                this.serviceDialogVisible = false;
+                this.cardDialogVisible = false;
             },
             //删除选中赠送
-            clearConsumeServiceItem (item) {
-                this.addServiceList.forEach((m, index) => {
-                    if (item.id === m.id) {
-                        console.log(index);
-                        this.addServiceList.splice(index, 1);
+            clearGiveCardDataItem (item) {
+                this.giveCardDataList.forEach((m, index) => {
+                    if (item.card_id === m.card_id) {
+                        this.giveCardDataList.splice(index, 1);
                         // this.$foreceUpdate()
                     }
                 });
+            },
+            getLink (index) {
+                // this.$router.push(`/${link}`);
+                this.$emit('getNum', index);
             },
         }
     };
@@ -600,6 +617,7 @@
     }
     .billing .billing-tab-box-content-bottom .service-list .item{
         background: #F7F8FA;
+        position: relative;
         border: 1px solid #F7F8FA;
         width: 48%;
         float: left;
@@ -608,8 +626,39 @@
         padding: 20px;
         box-sizing: border-box;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 10px;
         margin-right: 4%;
+        overflow: hidden;
+    }
+    .billing .billing-tab-box-content-bottom .service-list .item .info{
+        position: relative;
+        z-index: 1;
+        color: #fff;
+    }
+    .billing .billing-tab-box-content-bottom .service-list .item .info .name{
+        display: flex;
+        justify-content: space-between;
+    }
+    .billing .billing-tab-box-content-bottom .service-list .item .bg{
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .billing .billing-tab-box-content-bottom .service-list0 .item .bg{
+        background: -webkit-linear-gradient(left, #FFA78F, #FFA78F);
+    }
+    .billing .billing-tab-box-content-bottom .service-list1 .item .bg{
+        background: -webkit-linear-gradient(top, #DFC698, #EDDCB9);
+    }
+    .billing .billing-tab-box-content-bottom .service-list2 .item .bg{
+        background: -webkit-linear-gradient(left, #FFA78F, #FFA78F);
+    }
+    .billing .billing-tab-box-content-bottom .service-list .item .bg img{
+        width: 100%;
+        height: 100%;
+        opacity: 0.3;
     }
     .billing .billing-tab-box-content-bottom .service-list .item:nth-child(2n) {
         margin-right: 0;

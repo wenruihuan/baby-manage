@@ -211,7 +211,7 @@
                         title: '工台',
                         subs: [
                             {
-                                index: '/billing',
+                                index: '/workbench',
                                 title: '开单'
                             },
                             {

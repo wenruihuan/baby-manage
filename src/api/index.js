@@ -289,3 +289,12 @@ export const listNoPage = query => {
     });
 };
 
+//3.2.5.获取卡项列表（分页）
+export const cardList = query => {
+    return request({
+        url: IP + `/admin/card/list`,
+        method: 'get',
+        params: query
+    });
+};
+

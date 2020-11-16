@@ -219,7 +219,7 @@
                 >
                     <template slot-scope="scope">
                         <el-button @click="handleMemberDetails(scope)" type="text" size="small">详情</el-button>
-                        <el-button type="text" size="small">更多</el-button>
+                        <el-button type="text" size="small" @click="handleBilling(scope)">开单</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -387,6 +387,11 @@ export default {
             this.operationState = '查看';
             this.ruleForm = scope.row;
             this.memberdialogVisible = true;
+        },
+        handleBilling (scope) {
+            console.log(scope);
+            // this.$router.push({ path: '/workbench', query: { id: scope.row.memeber_id }})
+            this.$router.push({ path: '/workbench', query: { id: '315728c141a1475680e6519d444a4314' }})
         }
     }
 };
@@ -394,7 +399,7 @@ export default {
 
 <style scoped>
 .memberList .search{
-    height: 250px;
+    height: 266px;
     transition: 0.5s;
     overflow: hidden;
     position: relative;
@@ -444,6 +449,6 @@ export default {
     color: #fff;
 }
 .memberList .search.active{
-    height: 700px;
+    height: 565px;
 }
 </style>

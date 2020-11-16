@@ -1,6 +1,6 @@
 <template>
     <div class="workbench">
-        <userInfo v-on:getInfo="getInfo"></userInfo>
+        <userInfo ref="userInfoBox" v-on:getInfo="getInfo"></userInfo>
         <component :memberId="memberId" @getNum="pageIndexValue" :is="componentList[pageIndex].name"></component>
     </div>
 </template>
@@ -34,6 +34,15 @@ export default {
                     name: activateCard
                 },
             ]
+        }
+    },
+    created () {
+    },
+    mounted () {
+        if (this.$route.query.id) {
+            this.$refs.userInfoBox.getWorktableMemberInfo(this.$route.query.id).then(() => {
+                this.$refs.userInfoBox.getWorktableMemberAllRechargeCard(this.$route.query.id);
+            });
         }
     },
     methods: {

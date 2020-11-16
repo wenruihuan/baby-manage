@@ -10,7 +10,13 @@ import './assets/css/icon.css';
 import './components/common/directives';
 import 'babel-polyfill';
 import mapData from './utils/map'
-
+import VueAMap from 'vue-amap';
+Vue.use(VueAMap);
+// 初始化vue-amap
+VueAMap.initAMapApiLoader({
+    key: '4d81136d607c68fb6c906599c0bd1de1',
+    plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+});
 Vue.config.productionTip = false;
 Vue.prototype.$map = mapData;
 Vue.use(VueI18n);

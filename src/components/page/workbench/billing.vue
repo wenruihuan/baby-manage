@@ -136,38 +136,12 @@
                     待收款：<span>￥99.00</span>
                 </div>
                 <div class="item">
-                    <el-button @click="clearConsumeList">挂单</el-button>
-                    <el-button type="primary" @click="clearConsumeList">收款</el-button>
+                    <el-button>挂单</el-button>
+                    <el-button type="primary" @click="getCashier">收款</el-button>
                 </div>
             </div>
         </div>
         <!--<div>single1</div>-->
-        <el-dialog
-            class="single-dialog"
-            title="取单列表"
-            :visible.sync="singleDialogVisible"
-            width="70%"
-            :before-close="handleClose">
-            <div class="list">
-                <div class="item" v-for="item in worktableOrderList">
-                    <div class="name">{{item.shop_name}}</div>
-                    <div class="name">{{item.order_no}}</div>
-                    <div class="name">消费项目：{{item.order_name}}</div>
-                    <div class="name">下单时间：{{item.create_time}}</div>
-                    <div class="name">
-                        <span>￥{{item.total_price}}</span>
-                        <div>
-                            <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">收款</el-button>
-                            <el-button >取消</el-button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="singleDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="singleDialogVisible = false">确 定</el-button>
-        </span>
-        </el-dialog>
         <el-dialog
             class="staffTechnician-dialog"
             title="选择技师"
@@ -276,14 +250,12 @@ export default {
             serviceKindList: [],
             serviceSelectList: [],
             boxSelectList: [],
-            worktableOrderList: [],
             worktableMemberInfoList: [],
             worktableCommonServiceList: [],
             staffTechnicianValue: '',
             staffTechnicianSelectList: [],
             itemStaffTechnicianSelectList: [],
             currentStaffTechnicianSelectList: [],
-            singleDialogVisible: false,
             serviceDialogVisible: false,
             staffTechnicianDialogVisible: false,
         }
@@ -291,7 +263,6 @@ export default {
     created () {
         this.getServiceKind();
         // this.getServiceSelectList();
-        this.getWorktableOrderList();
         this.getWorktableMemberInfo();
         this.getWorktableCommonService();
         this.getStaffTechnicianSelect();
@@ -306,6 +277,9 @@ export default {
         },
     },
     methods: {
+        getCashier () {
+            this.$router.push('/cashier');
+        },
         getLink (index) {
             // this.$router.push(`/${link}`);
             this.$emit('getNum', index);
@@ -341,10 +315,6 @@ export default {
                 m.selectState = false;
                 return m;
             });
-        },
-        async getWorktableOrderList () {
-            const { data } = await api.worktableOrderList();
-            this.worktableOrderList = data.data;
         },
         // 获取用户的所有充值卡
         async getWorktableMemberAllRechargeCard (member_id) {
@@ -623,19 +593,6 @@ export default {
 .billing .billing-tab-box-content-bottom .service-list .item .price{
     color: #F725B4;
     margin-top: 10px;
-}
-.single-dialog .list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-.single-dialog .list .item {
-    width: 23.5%;
-    background: #F7F8FA;
-    border-radius: 3px;
-    padding: 10px;
-    box-sizing: border-box;
-    margin-bottom: 20px;
 }
 .billing .billing-bottom{
     display: flex;

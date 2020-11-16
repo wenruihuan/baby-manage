@@ -6,7 +6,8 @@
                 <div class="title">店铺信息</div>
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="店铺名称" prop="name">
-                        <el-input :disabled="disabled" v-model="ruleForm.name"></el-input>
+                        <!--<el-input :disabled="disabled" v-model="ruleForm.name"></el-input>-->
+                        {{ruleForm.name}}
                     </el-form-item>
                     <el-form-item label="店铺logo">
                         <img :src="ruleForm.logo" alt="">
@@ -17,20 +18,24 @@
                         </div>
                     </el-form-item>
                     <el-form-item label="客服电话" prop="tel" :title="ruleForm.tel">
-                        <el-input :disabled="disabled" v-model="ruleForm.tel"></el-input>
+                        <!--<el-input :disabled="disabled" v-model="ruleForm.tel"></el-input>-->
+                        {{ruleForm.tel}}
                     </el-form-item>
                     <el-form-item label="营业时间" prop="service_time" :title="ruleForm.service_time">
-                        <el-input :disabled="disabled" v-model="ruleForm.service_time"></el-input>
+                        <!--<el-input :disabled="disabled" v-model="ruleForm.service_time"></el-input>-->
+                        {{ruleForm.service_time}}
                     </el-form-item>
                     <el-form-item label="店铺地址" prop="address" :title="ruleForm.address">
-                        <el-input type="textarea" :disabled="disabled" v-model="ruleForm.address"></el-input>
+                        <!--<el-input type="textarea" :disabled="disabled" v-model="ruleForm.address"></el-input>-->
+                        {{ruleForm.address}}
                     </el-form-item>
                     <el-form-item label="店铺介绍">
-                        <el-input type="textarea" :disabled="disabled" v-model="ruleForm.intr" :title="ruleForm.intr"></el-input>
+                        <!--<el-input type="textarea" :disabled="disabled" v-model="ruleForm.intr" :title="ruleForm.intr"></el-input>-->
+                        {{ruleForm.intr}}
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="$router.push({path: '/storeEdit'})">编辑信息</el-button>
-                        <el-button @click="resetForm('ruleForm')">保存</el-button>
+                        <!--<el-button @click="resetForm('ruleForm')">保存</el-button>-->
                     </el-form-item>
                 </el-form>
             </div>

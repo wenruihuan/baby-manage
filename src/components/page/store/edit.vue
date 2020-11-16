@@ -58,6 +58,14 @@
                     </el-form-item>-->
                     <el-form-item label="店铺地址" prop="name">
                         <!--<el-select></el-select>-->
+                        <el-input class="width200" v-model="ruleForm.longitude"></el-input>
+                        <el-input class="width200" v-model="ruleForm.latitude"></el-input>
+                        <div class="amap-page-container">
+                            <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
+                            <el-amap vid="amapDemo" :zoom="zoom" :center="center" class="amap-demo mapBox" :events="events">
+                                <el-amap-marker :position="markers.position" :visible="markers.visible" :vid="markers.index"></el-amap-marker>
+                            </el-amap>
+                        </div>
                     </el-form-item>
                     <el-form-item label="店铺介绍">
                         <el-input type="textarea" :disabled="disabled" v-model="ruleForm.intr"></el-input>
@@ -81,6 +89,34 @@ export default {
     },
     data () {
         return {
+            searchOption: {
+                city: '上海',
+                citylimit: true
+            },
+            events: {
+                init: (o) => {
+                    console.log(o.getCenter())
+                    o.getCity(result => {
+                        console.log(result)
+                    })
+                },
+                'moveend': () => {
+                },
+                'zoomchange': () => {
+                },
+                'click': (e) => {
+                        this.setMapNum(e.lnglat.lng, e.lnglat.lat);
+                    }
+            },
+            zoom: 12,
+            center: [121.5273285, 31.31515044],
+            markers: {
+                position: [121.5073285, 51.91715058],
+                visible: true,
+                index: 1,
+                draggable: false,
+                template: '<span>122222222221</span>',
+            },
             imageUrl: '',
             disabled: false,
             // 面包屑信息
@@ -111,7 +147,26 @@ export default {
     created () {
         this.getShopInfo();
     },
+    mounted: function() {
+    },
     methods: {
+        onSearchResult (value) {
+            console.log(value);
+            this.setMapNum(value[0].lng, value[0].lat);
+            this.ruleForm.address = value[0].address;
+        },
+        setMapNum (lng, lat) {
+            this.$set(this, 'center',  [lng, lat]);
+            this.$set(this.markers, 'position', [lng, lat]);
+            this.ruleForm.longitude = lng;
+            this.ruleForm.latitude = lat;
+        },
+        addMarker() {
+            let marker = {
+                position: [121.5273285 + (Math.random() - 0.5) * 0.02, 31.21515044 + (Math.random() - 0.5) * 0.02]
+            };
+            this.markers.push(marker);
+        },
         handleAvatarSuccess () {},
         beforeAvatarUpload () {},
         async getShopInfo () {
@@ -145,7 +200,27 @@ export default {
 .storeDetails .block-tips{
     color: #d9d9d9;
 }
+.storeDetails .mapBox{
+    width: 100%;
+    height: 300px;
+}
 .storeDetails .inline-tips{
     color: #d9d9d9;
+}
+
+.amap-demo {
+    width: 100%;
+    height: 300px;
+}
+
+.search-box {
+    position: absolute;
+    top: 100px;
+    left: 20px;
+}
+
+.amap-page-container {
+    padding: 50px 0;
+    position: relative;
 }
 </style>
