@@ -10,7 +10,7 @@
                 <span v-else>{{ form.name }}</span>
             </el-form-item>
             <el-form-item label="分类:" prop="kind_id">
-                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
+                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择服务分类">
                     <el-option
                         v-for="item in categoryList"
                         :key="item.id"
@@ -20,7 +20,7 @@
                 </el-select>
                 <span v-else>{{ form.kind_name }}</span>
                 <p class="tips" v-if="isEdit">一个商品对应一个分类，用于后台设置</p>
-                <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理包厢分类</el-button>
+                <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理服务分类</el-button>
             </el-form-item>
             <el-form-item label="标签:" prop="box_no">
                 <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择服务标签">
