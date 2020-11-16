@@ -539,6 +539,10 @@ export default {
 </script>
 
 <style lang="css" scoped>
+/deep/ .el-tabs {
+    box-shadow: none;
+    border: 0;
+}
 .cika-view {
     background: white;
 }

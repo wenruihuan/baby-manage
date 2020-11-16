@@ -76,9 +76,10 @@
             <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
             <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
             <el-popover
+                    ref="popover"
                     v-if="activeStep === 2"
                     placement="top-start"
-                    width="260"
+                    width="128"
                     trigger="click"
             >
                 <div id="SERVICE_QRCODE"></div>
@@ -253,6 +254,10 @@ export default {
                 const data = await getQrCode(this.form);
                 if (data.code === ERR_OK) {
                     this.qrCode = data.data;
+                    const dom = document.getElementById("SERVICE_QRCODE");
+                    if (dom) {
+                        dom.innerHTML = '';
+                    }
                     this.qrCode = new QRCode("SERVICE_QRCODE", {
                         text: data.data,
                         width: 128,
@@ -261,6 +266,7 @@ export default {
                         colorLight : "#ffffff",
                         correctLevel : QRCode.CorrectLevel.L
                     });
+                    this.$refs.popover.updatePopper();
                 }
             } catch (e) {
                 console.log(`/goodsmanage/card-item/component/discount-card.vue handleView error: ${ e }`);

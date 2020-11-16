@@ -252,8 +252,8 @@ export const getTimeHisDetail = query => {
 export const getTimeQrcode = query => {
     return request({
         url: `${IP}/admin/card/time/previewQr`,
-        method: 'get',
-        params: query
+        method: 'post',
+        data: query
     });
 };
 

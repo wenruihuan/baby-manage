@@ -197,7 +197,7 @@ export default {
             ],
             categoryList: [],
             tagList: [],
-            tagSelected: '',
+            tagSelected: 'all',
             tableData: [],
             curPage: 1,
             selection: [],

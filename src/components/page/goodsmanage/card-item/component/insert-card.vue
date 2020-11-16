@@ -90,10 +90,12 @@
             <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
             <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
             <el-popover
+                ref="popover"
                 v-if="activeStep === 2"
                 placement="top-start"
-                width="260"
+                width="128"
                 trigger="click"
+                :popper-options="{ boundariesElement: 'viewport', removeOnDestroy: true }"
             >
                 <div id="SERVICE_QRCODE"></div>
                 <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
@@ -265,6 +267,10 @@ export default {
                 const data = await previewQr(this.form);
                 if (data.code === ERR_OK) {
                     this.qrCode = data.data;
+                    const dom = document.getElementById("SERVICE_QRCODE");
+                    if (dom) {
+                        dom.innerHTML = '';
+                    }
                     this.qrCode = new QRCode("SERVICE_QRCODE", {
                         text: data.data,
                         width: 128,
@@ -273,6 +279,7 @@ export default {
                         colorLight : "#ffffff",
                         correctLevel : QRCode.CorrectLevel.L
                     });
+                    this.$refs.popover.updatePopper();
                 }
             } catch (e) {
                 console.log(`/goodsmanage/card-item/component/insert-card.vue handleView error: ${ e }`);

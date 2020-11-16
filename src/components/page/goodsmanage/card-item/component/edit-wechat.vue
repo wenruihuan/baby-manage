@@ -47,7 +47,7 @@ export default {
 
 <style lang="css" scoped>
 .wechat-edit-container {
-    height: 700px;
+    height: 630px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -104,5 +104,8 @@ export default {
 }
 .WECHAT_EDIT ul, ol {
     padding-left: 1.5em;
+}
+.wechat-edit-container /deep/ .ql-editor {
+    height:400px;
 }
 </style>

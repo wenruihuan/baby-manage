@@ -1,6 +1,6 @@
 <template>
     <el-dialog
-        title="管理服务标签"
+        title="管理商品标签"
         :visible.sync="visible"
         width="35%"
     >
@@ -97,6 +97,9 @@ export default {
         /* 更改名字或者取消操作 */
         handleFirOpera (index, row) {
             this.$set(row, 'isEdit', !row.isEdit);
+            if (!row.isEdit) {
+                this.getTagList();
+            }
         },
         /* 保存编辑或者删除 */
         async handleSecOpera (index, row) {

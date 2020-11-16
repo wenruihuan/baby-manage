@@ -120,7 +120,7 @@ export default {
                     kind_id: this.kind_id,
                     tag_id: ''
                 });
-                this.serviceList = data.data;
+                this.serviceList = data.data.data;
             } catch (e) {
                 console.log(`src/components/page/goodsmanage/card-item/component/edit-service/index.vue getList error: ${ e }`);
             }
