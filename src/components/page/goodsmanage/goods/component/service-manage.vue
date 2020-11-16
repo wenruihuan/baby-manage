@@ -1,6 +1,6 @@
 <template>
     <el-dialog
-        title="管理服务标签"
+        title="管理商品标签"
         :visible.sync="visible"
         width="35%"
     >
