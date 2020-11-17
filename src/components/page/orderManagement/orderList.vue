@@ -72,6 +72,7 @@
           <el-row>
             <el-form-item label="付款方式：" class="form-item">
               <el-select v-model="form.pay_type_id">
+                <el-option label="全部" value=""></el-option>
                 <el-option
                   v-for="item in paymentOpts"
                   :label="item.name"

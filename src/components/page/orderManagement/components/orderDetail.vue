@@ -44,7 +44,7 @@
         </div>
       </div>
     </div>
-    <div class="info" v-if="isProductOrderInfo">
+    <div class="info product-info" v-if="isProductOrderInfo">
       <p class="info-title">订单信息</p>
       <div class="info-body">
         <p class="status">{{orderInfo.order_status | orderStatusText}}</p>
@@ -57,7 +57,7 @@
             <div>
               <!-- 未返回收件人电话 -->
               <span class="label">收件人：</span>
-              <span class="text">{{orderInfo.receiver}}/+86 12312312321</span>
+              <span class="text">{{expressInfo.receiver}}/+86 12312312321</span>
             </div>
           </div>
           <div class="row">
@@ -67,7 +67,7 @@
             </div>
             <div>
               <span class="label">收件人地址：</span>
-              <span class="text">{{orderInfo.region}} {{orderInfo.detail_address}}</span>
+              <span class="text">{{expressInfo.region}} {{expressInfo.detail_address}}</span>
             </div>
           </div>
           <div class="row">
@@ -127,7 +127,7 @@
       </div>
     </div>
     <div class="info">
-      <p class="info-title">消费信息</p>
+      <p class="info-title">{{isProductOrderInfo ? '订购信息' : '消费信息'}}</p>
       <div class="">
         <div class="info-body-main">
           <el-table :data="consume" style="width:100%">
@@ -148,7 +148,7 @@
             <el-table-column v-if="isProductOrderInfo" label="规格" prop="sku" align="center"></el-table-column>
             <el-table-column label="单价（元）" prop="price" align="center"></el-table-column>
             <el-table-column label="数量" prop="count" align="center"></el-table-column>
-            <el-table-column v-if="!isProductOrderInfo" label="商品优惠" align="center">
+            <el-table-column label="商品优惠" align="center">
               <template slot-scope="scope">
                 <span>{{scope.row.price*scope.row.count-scope.row.total_price}}</span>
               </template>
@@ -164,7 +164,7 @@
             <div class="summary-item">
               <div class="space"></div>
               <span class="summary-label" v-if="isOrder">{{orderInfo.order_status | payText}}：{{payTypeName}}</span>
-              <span class="summary-label" v-else>付款{{payTypeName}}</span>
+              <span class="summary-label" v-else>付款({{payTypeName}}):</span>
               <span class="summary-amount">￥{{totalPrice}}</span>
             </div>
             <div class="summary-item">
@@ -526,6 +526,11 @@ export default {
   .label {
     color: #909399;
     margin-right: 10px;
+  }
+  .product-info .label {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
   }
   .summary-item {
     display: flex;
