@@ -87,7 +87,7 @@
                     </div>
                     <el-button slot="reference" type="text">查看地址</el-button> 
                   </el-popover>
-                  <span>|</span>
+                  <span style="color: #dddddd; margin: 0 5px">|</span>
                   <el-button type="text" @click="showSendDialog(scope.row.order_info.order_id)">发货</el-button>
                 </p>
               </template>
