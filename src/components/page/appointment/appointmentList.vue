@@ -86,7 +86,10 @@
                 </el-table-column>
                 <el-table-column label="到店时间" align="center">
                     <template slot-scope="scope">
-                        <p>{{ scope.row.arrive_time }}</p>
+                        <div class="date_item" v-if="scope.row.arrive_time">
+                            <p>{{ formatDate(scope.row.arrive_time, 'Y-M-D') }}</p>
+                            <p>{{ formatDate(scope.row.arrive_time, 'h:m:s') }}</p>
+                        </div>
                         <p class="warn-tips" v-if="scope.row.warn_text && scope.row.warn_text.length > 0">
                             <span class="point"></span>&nbsp;{{ scope.row.warn_text.join('；') }}
                         </p>
@@ -113,42 +116,53 @@
                         <p>{{ $map.backBookingStatusMap[scope.row.back_booking_status] }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column prop="create_time" label="下单时间" align="center"> </el-table-column>
-                <el-table-column label="操作" align="right">
+                <el-table-column prop="create_time" label="下单时间" align="center">
                     <template slot-scope="scope">
-                        <el-button
-                            v-if="['2'].includes(scope.row.back_booking_status)"
-                            type="text"
-                            @click="handleToDetail('view', scope.row.booking_id)"
-                            >预约详情</el-button
-                        >
-                        <el-button
-                            v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
-                            type="text"
-                            @click="handleToOrder(scope.row)"
-                            >开单
-                        </el-button>
-                        <el-button
-                            v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
-                            type="text"
-                            @click="handleToDetail('edit', scope.row.booking_id)"
-                            >更改</el-button
-                        >
-                        <el-button
-                            v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
-                            type="text"
-                            @click="handleToDetail('view', scope.row.booking_id)"
-                            >详情</el-button
-                        >
-                        <el-button
-                            v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
-                            type="text"
-                            @click="handleCancel(scope.row.booking_id)"
-                            >取消</el-button
-                        >
-                        <div class="cancel-tips" v-if="['3'].includes(scope.row.back_booking_status)">
-                            <p>{{ $map.cancelStatusMap[scope.row.cancel_status] }}</p>
-                            <p>原因：“{{ scope.row.reason }}”</p>
+                        <div class="date_item" v-if="scope.row.create_time">
+                            <p>{{ formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                            <p>{{ formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" align="right" width="180px">
+                    <template slot-scope="scope">
+                        <div class="table_btn">
+                            <el-button
+                                class="no_border"
+                                v-if="['2'].includes(scope.row.back_booking_status)"
+                                type="text"
+                                @click="handleToDetail('view', scope.row.booking_id)"
+                                >预约详情</el-button
+                            >
+                            <el-button
+                                v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
+                                type="text"
+                                @click="handleToOrder(scope.row)"
+                                >开单
+                            </el-button>
+                            <el-button
+                                v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
+                                type="text"
+                                @click="handleToDetail('edit', scope.row.booking_id)"
+                                >更改</el-button
+                            >
+                            <el-button
+                                v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
+                                type="text"
+                                @click="handleToDetail('view', scope.row.booking_id)"
+                                >详情</el-button
+                            >
+                            <el-button
+                                class="no_border"
+                                v-if="['0', '1', '4'].includes(scope.row.back_booking_status)"
+                                type="text"
+                                @click="handleCancel(scope.row.booking_id)"
+                                >取消</el-button
+                            >
+                            <div class="cancel-tips" v-if="['3'].includes(scope.row.back_booking_status)">
+                                <p>{{ $map.cancelStatusMap[scope.row.cancel_status] }}</p>
+                                <p>原因：“{{ scope.row.reason }}”</p>
+                            </div>
                         </div>
                     </template>
                 </el-table-column>
@@ -228,7 +242,8 @@
                 },
                 tableData: [],
                 isNeedReadArray: [],
-                loading: false
+                loading: false,
+                formatDate: formatDate
             };
         },
         created() {
@@ -276,7 +291,8 @@
                 this.$refs.detail.dialogVisible = true;
             },
             handleToDetail(type, id) {
-                this.$refs.detail.appointmentType = command;
+                // 那个傻逼后台没有返回给我
+                this.$refs.detail.appointmentType = '';
                 this.$refs.detail.dialogType = type;
                 this.$refs.detail.dialogTitle = type === 'edit' ? '修改预约' : '预约详情';
                 this.$refs.detail.dialogVisible = true;
@@ -298,7 +314,7 @@
                 this.getList();
             },
             handleToOrder(row) {
-                this.$router.push({ path: '/orderList' });
+                this.$router.push({ path: '/workbench' });
             },
             handleCancel(booking_id) {
                 this.$confirm('是否确定取消此订单?', '提示', {
@@ -384,5 +400,20 @@
         height: 8px;
         border-radius: 50%;
         background-color: #f56c6c;
+    }
+    .table_btn >>> .el-button {
+        position: relative;
+    }
+    .table_btn >>> .el-button::after {
+        content: '';
+        width: 1px;
+        height: 15px;
+        position: absolute;
+        top: 7.5px;
+        right: -6px;
+        background: #dddddd;
+    }
+    .no_border::after {
+        display: none;
     }
 </style>

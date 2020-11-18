@@ -21,7 +21,7 @@
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">会员姓名</p>
-          <p>{{memberInfo.refund_create_time}}</p>
+          <p>{{memberInfo.member_name}}</p>
         </div>
         <div :style="rowStyle">
           <p :style="rowLeft">联系电话</p>

@@ -33,17 +33,17 @@
               <span class="text">{{orderInfo.operator}}</span>
             </div>
             <div>
-              <span class="label">收银员：&nbsp;&nbsp;&nbsp;</span>
+              <span class="label">收银员：</span>
               <span class="text">{{orderInfo.checkout_staff}}</span>
             </div>
           </div>
           <div class="row">
             <div>
-              <span class="label">现金退款：&nbsp;&nbsp;&nbsp;</span>
-              <span class="text">{{refundInfo.refund_price}}</span>
+              <span class="label">现金退款：</span>
+              <span class="text">￥{{refundInfo.refund_price}}</span>
             </div>
             <div>
-              <span class="label">下单门店：&nbsp;&nbsp;&nbsp;</span>
+              <span class="label">下单门店：</span>
               <span class="text">{{orderInfo.shop_name}}</span>
             </div>
           </div>
@@ -318,6 +318,9 @@ export default {
     flex: 1;
   }
   .label {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
     color: #909399;
     margin-right: 10px;
   }

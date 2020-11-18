@@ -178,7 +178,7 @@
                 this.getListData();
             },
             handleToOrder() {
-                this.$router.push('/orderList');
+                this.$router.push('/workbench');
             }
         }
     };

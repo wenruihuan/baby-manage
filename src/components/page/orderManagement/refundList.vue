@@ -41,7 +41,7 @@
           <el-row>
             <el-form-item label="退款方式：" class="form-item">
               <el-select v-model="form.refund_way" clearable>
-                <!-- <el-option label="全部" :value="0"></el-option> -->
+                <el-option label="全部" value=""></el-option>
                 <el-option label="原路返回" value="原路返回"></el-option>
                 <el-option label="现金退款" value="现金退款"></el-option>
                 <el-option label="其他" value="其他"></el-option>
@@ -52,7 +52,7 @@
             </el-form-item>
             <el-form-item label="订单来源：" class="form-item">
               <el-select v-model="form.source" clearable>
-                <!-- <el-option label="全部" value="0"></el-option> -->
+                <el-option label="全部" value=""></el-option>
                 <el-option label="第三方支付" value="第三方支付"></el-option>
                 <el-option label="店内消费" value="店内消费"></el-option>
                 <el-option label="线上支付" value="线上支付"></el-option>

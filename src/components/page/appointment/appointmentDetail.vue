@@ -153,7 +153,7 @@
                     type="primary"
                     @click="
                         () => {
-                            $router.push('/orderList');
+                            $router.push('/workbench');
                         }
                     "
                     >开 单</el-button
