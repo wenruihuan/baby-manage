@@ -106,6 +106,7 @@
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
                 <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
+                <span v-else-if="item.prop === 'create_time'">{{scoped.row[item.prop]|dateFormatter}}</span>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -140,6 +141,7 @@
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
                 <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
+                <span v-else-if="item.prop === 'create_time'">{{scoped.row[item.prop]|dateFormatter}}</span>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -174,6 +176,7 @@
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
                 <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
+                <span v-else-if="item.prop === 'create_time'">{{scoped.row[item.prop]|dateFormatter}}</span>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -202,6 +205,7 @@
               :prop="item.prop"
               :width="item.width"
               align="center"
+              :formatter="item.formatter"
             >
               <template slot-scope="scoped">
                 <div v-if="item.prop === 'price'">
@@ -209,6 +213,7 @@
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
                 <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
+                <span v-else-if="item.prop === 'create_time'">{{scoped.row[item.prop]|dateFormatter}}</span>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -271,9 +276,9 @@ export default {
         order_status: ''
       },
       columnCfg: [
-        {label: '订单编号', prop: 'order_no', width: '200'},
-        {label: '下单时间', prop: 'create_time'},
-        {label: '购买项目', prop: 'order_name'},
+        {label: '订单编号', prop: 'order_no', width: 200},
+        {label: '下单时间', prop: 'create_time', width: 200},
+        {label: '购买项目', prop: 'order_name', width: 200},
         {label: '技师', prop: 'technician_name'},
         {label: '单价（元）', prop: 'price'},
         {label: '数量', prop: 'count'},
@@ -396,12 +401,20 @@ export default {
         }
       }
     }
+    
   },
   filters: {
     statusFormatter(val) {
       // 0待付款 1待发货 2已发货 3已完成 4已退款 5已取消
       const statusObj = {'0': '待付款', '1': '待发货', '2': '已发货', '3': '已完成', '4': '已退款', '5': '已取消'}
       return statusObj[val]
+    },
+    dateFormatter(val) {
+      if (val) {
+        return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
     }
   }
 }

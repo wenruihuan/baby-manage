@@ -9,7 +9,7 @@
               <el-button type="primary" @click="handleAdd">添加一级推广员</el-button>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号" clearable></el-input>
+              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入推广员姓名或手机号" clearable></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSearch">搜索</el-button>

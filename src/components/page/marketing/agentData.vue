@@ -17,7 +17,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号"></el-input>
+              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入二级推广员姓名或手机号"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSearch">搜索</el-button>
@@ -107,9 +107,9 @@ export default {
         page_no: 1
       },
       columnCfg: [
-        {label: '会员信息', prop: 'memeber_name', width: 220},
+        {label: '会员信息', prop: 'memeber_name', width: 240},
         {label: '最近消费', prop: 'last_buy'},
-        {label: '消费次数', prop: 'buy_time', width: 220},
+        {label: '消费次数', prop: 'buy_time'},
         {label: '累计消费', prop: 'total_buy'},
         {label: '注册时间', prop: 'reg_time'},
         {label: '归属门店', prop: 'shop_name'},
