@@ -10,6 +10,7 @@ import './assets/css/icon.css';
 import './components/common/directives';
 import 'babel-polyfill';
 import mapData from './utils/map'
+import { formatDate } from './utils/utils'
 import VueAMap from 'vue-amap';
 Vue.use(VueAMap);
 // 初始化vue-amap
@@ -19,6 +20,7 @@ VueAMap.initAMapApiLoader({
 });
 Vue.config.productionTip = false;
 Vue.prototype.$map = mapData;
+Vue.prototype.$formatDate = formatDate;
 Vue.use(VueI18n);
 Vue.use(ElementUI, {
     size: 'small'

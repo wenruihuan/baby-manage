@@ -9,8 +9,21 @@
                 <el-table-column prop="condition" label="条件" align="center"></el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="handleDetail(scope.row.level_id, scope.row.is_initial)">编辑</el-button>
-                        <el-button type="text" v-if="scope.row.is_initial !== '1'" @click="handleRemove(scope.row.level_id)">删除</el-button>
+                        <div class="table_btn">
+                            <el-button
+                                type="text"
+                                :class="scope.row.is_initial === '1' ? 'no_border' : ''"
+                                @click="handleDetail(scope.row.level_id, scope.row.is_initial)"
+                                >编辑
+                            </el-button>
+                            <el-button
+                                type="text"
+                                class="no_border"
+                                v-if="scope.row.is_initial !== '1'"
+                                @click="handleRemove(scope.row.level_id)"
+                                >删除
+                            </el-button>
+                        </div>
                     </template>
                 </el-table-column>
             </el-table>
@@ -125,5 +138,20 @@
     }
     .container .add_btn {
         margin-bottom: 20px;
+    }
+    .table_btn >>> .el-button {
+        position: relative;
+    }
+    .table_btn >>> .el-button::after {
+        content: '';
+        width: 1px;
+        height: 15px;
+        position: absolute;
+        top: 7.5px;
+        right: -6px;
+        background: #dddddd;
+    }
+    .no_border::after {
+        display: none;
     }
 </style>

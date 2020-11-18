@@ -58,7 +58,14 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="technician_name" label="技师" align="center"> </el-table-column>
-                <el-table-column prop="arrive_time" label="下单时间" align="center"> </el-table-column>
+                <el-table-column prop="arrive_time" label="下单时间" align="center">
+                    <template slot-scope="scope">
+                        <div class="date_item" v-if="scope.row.arrive_time">
+                            <p>{{ $formatDate(scope.row.arrive_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.arrive_time, 'h:m:s') }}</p>
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="buyer_name" label="买家" align="center"> </el-table-column>
             </el-table>
             <div class="page-box">

@@ -87,8 +87,8 @@
                 <el-table-column label="到店时间" align="center">
                     <template slot-scope="scope">
                         <div class="date_item" v-if="scope.row.arrive_time">
-                            <p>{{ formatDate(scope.row.arrive_time, 'Y-M-D') }}</p>
-                            <p>{{ formatDate(scope.row.arrive_time, 'h:m:s') }}</p>
+                            <p>{{ $formatDate(scope.row.arrive_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.arrive_time, 'h:m:s') }}</p>
                         </div>
                         <p class="warn-tips" v-if="scope.row.warn_text && scope.row.warn_text.length > 0">
                             <span class="point"></span>&nbsp;{{ scope.row.warn_text.join('；') }}
@@ -119,8 +119,8 @@
                 <el-table-column prop="create_time" label="下单时间" align="center">
                     <template slot-scope="scope">
                         <div class="date_item" v-if="scope.row.create_time">
-                            <p>{{ formatDate(scope.row.create_time, 'Y-M-D') }}</p>
-                            <p>{{ formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                            <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
                         </div>
                     </template>
                 </el-table-column>
@@ -242,8 +242,7 @@
                 },
                 tableData: [],
                 isNeedReadArray: [],
-                loading: false,
-                formatDate: formatDate
+                loading: false
             };
         },
         created() {

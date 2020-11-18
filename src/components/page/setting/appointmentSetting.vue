@@ -140,7 +140,12 @@
                         <el-radio label="1">所有服务</el-radio>
                         <el-radio label="0">指定服务</el-radio>
                     </el-radio-group>
-                    <el-select v-model="addSelectValue" style="margin-left: 30px; margin-bottom: 10px" :disabled="is_all_service === '1'" @change="getServiceList">
+                    <el-select
+                        v-model="addSelectValue"
+                        style="margin-left: 30px; margin-bottom: 10px"
+                        :disabled="is_all_service === '1'"
+                        @change="getServiceList"
+                    >
                         <el-option v-for="item in addSelectOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
                     </el-select>
                     <el-table ref="multipleTable" :data="addTableData" @selection-change="handleSelectionChange" style="width: 100%">
@@ -157,7 +162,14 @@
                         </el-table-column>
                         <el-table-column prop="price" label="价格" align="center"> </el-table-column>
                         <el-table-column prop="kind_name" label="分类" align="center"> </el-table-column>
-                        <el-table-column prop="created_time" label="创建时间" align="center"> </el-table-column>
+                        <el-table-column prop="create_time" label="创建时间" align="center">
+                            <template slot-scope="scope">
+                                <div class="date_item" v-if="scope.row.create_time">
+                                    <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                                    <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                                </div>
+                            </template>
+                        </el-table-column>
                     </el-table>
                     <span slot="footer">
                         <el-button @click="dialogVisibleAdd = false">取 消</el-button>
@@ -285,6 +297,7 @@
                     }
                     if (formData.cancel_booking === '-1') {
                         this.cancelFlag = true;
+                        formData.cancel_booking = '';
                     } else {
                         this.cancelFlag = false;
                     }
