@@ -1,13 +1,14 @@
 <template>
     <div class="AddEmployees">
         <el-form ref="form" :model="form" label-width="130px">
-            <el-form-item label="归属门店:" prop="name" :rules="[{ required: true, message: '请输入归属门店', trigger: 'blur' } ]">
-                <el-input v-model="form.name"></el-input>
+            <el-form-item label="归属门店:" prop="name">
+                <!--<el-input v-model="form.name"></el-input>-->
+                多多亲子岁月一店
             </el-form-item>
             <el-form-item label="职位名称:" prop="name" :rules="[{ required: true, message: '请输入职位名称', trigger: 'blur' } ]">
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
-            <el-form-item label="职位描述:" prop="desc" :rules="[{ required: true, message: '请输入职位描述', trigger: 'blur' } ]">
+            <el-form-item label="职位描述:" prop="desc" :rules="[{ message: '请输入职位描述'} ]">
                 <el-input type="textarea" v-model="form.desc"></el-input>
             </el-form-item>
             <el-form-item>
@@ -18,28 +19,20 @@
     </div>
 </template>
 <script>
+import * as api from '@/api/index'
 export default {
     name: 'AddEmployees',
     data() {
         return {
-            form: {
-                name: '',
-                region: '',
-                date1: '',
-                date2: '',
-                delivery: false,
-                type: [],
-                resource: '',
-                desc: ''
-            },
-            imageUrl: ''
+            form: {}
         }
     },
     methods: {
         onSubmit(formName) {
-            this.$refs[formName].validate((valid) => {
+            this.$refs[formName].validate( async (valid) => {
                 if (valid) {
-                    alert('submit!');
+                    const { data } = await api.positionSave(this.form);
+                    this.$parent.handleClose();
                 } else {
                     console.log('error submit!!');
                     return false;

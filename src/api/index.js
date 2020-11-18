@@ -55,6 +55,15 @@ export const staffList = query => {
 };
 
 
+// 2.1.2.添加（编辑）职位
+export const positionSave = query => {
+    return request({
+        url: IP + `/admin/position/save`,
+        method: 'post',
+        params: query
+    });
+};
+
 // 添加（编辑）员工
 export const staffSave = query => {
     return request({
@@ -293,6 +302,16 @@ export const listNoPage = query => {
 export const cardList = query => {
     return request({
         url: IP + `/admin/card/list`,
+        method: 'get',
+        params: query
+    });
+};
+
+
+//3.2.5.获取卡项列表（分页）
+export const rechargeRight = query => {
+    return request({
+        url: IP + `/admin/card/recharge/right`,
         method: 'get',
         params: query
     });

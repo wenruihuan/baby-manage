@@ -125,7 +125,6 @@ export default {
             this.memberId = '';
         },
         async getWorktableMemberInfo (value) {
-            console.log(111);
             const { data } = await api.worktableMemberInfo({ keyword: value });
             this.worktableMemberInfoList = data;
         },
