@@ -218,18 +218,18 @@
                                 index: '/cashier',
                                 title: '收银台'
                             },
-                            {
-                                index: '/recharge',
-                                title: '充值'
-                            },
-                            {
-                                index: '/activateCard',
-                                title: '开卡'
-                            },
-                            {
-                                index: '/collectionConfirmation',
-                                title: '确认收款'
-                            }
+                            // {
+                            //     index: '/recharge',
+                            //     title: '充值'
+                            // },
+                            // {
+                            //     index: '/activateCard',
+                            //     title: '开卡'
+                            // },
+                            // {
+                            //     index: '/collectionConfirmation',
+                            //     title: '确认收款'
+                            // }
                         ]
                     },
                     {

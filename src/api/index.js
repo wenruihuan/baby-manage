@@ -317,3 +317,22 @@ export const rechargeRight = query => {
     });
 };
 
+
+//4.3.7.添加（编辑）会员
+export const memberSave = query => {
+    return request({
+        url: IP + `/admin/member/save`,
+        method: 'post',
+        params: query
+    });
+};
+
+//4.3.3.会员详情
+export const memberDetail= query => {
+    return request({
+        url: IP + `/admin/member/detail`,
+        method: 'get',
+        params: query
+    });
+};
+
