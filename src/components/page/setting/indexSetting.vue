@@ -27,11 +27,7 @@
                             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         </el-upload>
                         <div class="action-btn">
-                            <el-button
-                                :class="index + 1 <= showDeleteIndex ? 'no_border' : ''"
-                                type="text"
-                                v-if="activeName === '1'"
-                                @click="handleEdit(index)"
+                            <el-button :class="index + 1 <= showDeleteIndex ? 'no_border' : ''" type="text" @click="handleEdit(index)"
                                 >编辑</el-button
                             >
                             <el-button
@@ -75,7 +71,7 @@
                 @selection-change="handleSelectionChange"
                 style="width: 100%"
             >
-                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column type="selection" width="55" v-if="editIndex < 0"> </el-table-column>
                 <el-table-column prop="name" label="服务名称" align="center">
                     <template slot-scope="scope">
                         <div class="table-name">
@@ -88,9 +84,21 @@
                 </el-table-column>
                 <el-table-column prop="price" label="价格" align="center"> </el-table-column>
                 <el-table-column prop="kind_name" label="分类" align="center"> </el-table-column>
-                <el-table-column prop="created_time" label="创建时间" align="center"> </el-table-column>
+                <el-table-column prop="create_time" label="创建时间" align="center">
+                    <template slot-scope="scope">
+                        <div class="date_item" v-if="scope.row.create_time">
+                            <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" align="right" v-if="editIndex > -1">
+                    <template slot-scope="scope">
+                        <el-button type="text" @click="handleChangeService(scope.row)">选择</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
-            <span slot="footer">
+            <span slot="footer" v-if="editIndex < 0">
                 <el-button @click="dialogVisibleServer = false">取 消</el-button>
                 <el-button type="primary" @click="handleSaveServer()">保 存</el-button>
             </span>
@@ -114,7 +122,7 @@
                 @selection-change="handleSelectionChange"
                 style="width: 100%"
             >
-                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column type="selection" width="55" v-if="editIndex < 0"> </el-table-column>
                 <el-table-column prop="name" label="商品名称" align="center">
                     <template slot-scope="scope">
                         <div class="table-name">
@@ -127,9 +135,21 @@
                 </el-table-column>
                 <el-table-column prop="price" label="价格" align="center"> </el-table-column>
                 <el-table-column prop="kind_name" label="分类" align="center"> </el-table-column>
-                <el-table-column prop="created_time" label="创建时间" align="center"> </el-table-column>
+                <el-table-column prop="create_time" label="创建时间" align="center">
+                    <template slot-scope="scope">
+                        <div class="date_item" v-if="scope.row.create_time">
+                            <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" align="right" v-if="editIndex > -1">
+                    <template slot-scope="scope">
+                        <el-button type="text" @click="handleChangeGoods(scope.row)">选择</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
-            <span slot="footer">
+            <span slot="footer" v-if="editIndex < 0">
                 <el-button @click="dialogVisibleGoods = false">取 消</el-button>
                 <el-button type="primary" @click="handleSaveGoods">保 存</el-button>
             </span>
@@ -199,7 +219,8 @@
                 goodsSelectOptions: [],
                 goodsTableData: [],
                 goodsLoading: false,
-                selectRows: []
+                selectRows: [],
+                editIndex: -1
             };
         },
         computed: {
@@ -240,6 +261,11 @@
                     this.serverTableData = res.data || [];
                 }
             },
+            handleChangeService(row) {
+                let obj = { id: row.id, img: row.img, name: row.name };
+                this.tableList.splice(this.editIndex, 1, obj);
+                this.dialogVisibleServer = false;
+            },
             handleSaveServer() {
                 this.selectRows.forEach((m) => {
                     let obj = { id: m.id, img: m.img, name: m.name };
@@ -267,6 +293,11 @@
                 if (res.code === 200) {
                     this.goodsTableData = res.data || [];
                 }
+            },
+            handleChangeGoods(row) {
+                let obj = { id: row.id, img: row.img, name: row.name };
+                this.tableList.splice(this.editIndex, 1, obj);
+                this.dialogVisibleGoods = false;
             },
             handleSaveGoods() {
                 this.selectRows.forEach((m) => {
@@ -296,6 +327,7 @@
                 }
             },
             handleAdd() {
+                this.editIndex = -1;
                 if (this.activeName === '1') {
                     this.tableList.push({ img: '' });
                 }
@@ -330,12 +362,36 @@
                 });
             },
             handleEdit(index) {
+                console.log(index)
+                this.editIndex = index;
                 if (this.activeName === '1') {
                     this.setDisable(index, false);
                     this.$nextTick(() => {
                         this.$refs[`imgRef${index}`][0].$el.click();
                         this.setDisable(index, true);
                     });
+                }
+                if (this.activeName === '2') {
+                    this.dialogVisibleServer = true;
+                    setTimeout(() => {
+                        this.$nextTick(() => {
+                            if (this.$refs.servertable) {
+                                this.$refs.servertable.clearSelection()
+                            }
+                            this.selectRows = [];
+                        });
+                    }, 300)
+                }
+                if (this.activeName === '3') {
+                    this.dialogVisibleGoods = true;
+                    setTimeout(() => {
+                        this.$nextTick(() => {
+                            if (this.$refs.goodstable) {
+                                this.$refs.goodstable.clearSelection()
+                            }
+                            this.selectRows = [];
+                        });
+                    }, 300)
                 }
             },
             async handleSave() {
