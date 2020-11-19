@@ -16,7 +16,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输入手机号、退款编号"></el-input>
+              <el-input prefix-icon="el-icon-search" v-model="form.keyword" placeholder="请输二级推广员姓名或手机号"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSearch">搜索</el-button>
@@ -53,8 +53,8 @@
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="downloadCode(scope.row.name)">下载邀请码</el-button>
-            <span>&nbsp;|&nbsp;</span>
-            <el-button type="text" v-if="scope.row.member_count === 0" @click="handleRemove(scope.row.id)"> | 清退</el-button>
+            <span v-if="scope.row.member_count === 0" style="color: #DDDDDD;margin: 0 5px;">|</span>
+            <el-button type="text" v-if="scope.row.member_count === 0" @click="handleRemove(scope.row.id)"> 清退</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -113,7 +113,7 @@ export default {
         {label: '手机号码', prop: 'phone'},
         {label: '所属一级推广员', prop: 'parent_name'},
         {label: '推荐用户', prop: 'member_count'},
-        {label: '加入时间', prop: 'create_time', formatter: this.dateFormatter}
+        {label: '加入时间', prop: 'create_time', width: 220, formatter: this.dateFormatter}
       ],
       tableData: [],
       total: 0,

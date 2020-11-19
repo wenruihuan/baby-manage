@@ -40,7 +40,9 @@
                                 </div>
                                 <el-button slot="reference" class="edit_btn" type="text">编辑</el-button>
                             </el-popover>
-                            <el-button class="edit_btn" type="text" v-if="!item.isDefault" @click="handleRemove(index)">删除</el-button>
+                            <el-button class="edit_btn border_btn" type="text" v-if="!item.isDefault" @click="handleRemove(index)"
+                                >删除</el-button
+                            >
                         </div>
                     </div>
                     <el-button @click="handleAddDistribution">添加物流配送</el-button>
@@ -187,5 +189,17 @@
     }
     .edit_btn {
         margin-left: 10px;
+    }
+    .border_btn {
+        position: relative;
+    }
+    .border_btn::after {
+        content: '';
+        width: 1px;
+        height: 15px;
+        position: absolute;
+        top: 8.5px;
+        left: -7px;
+        background: #dddddd;
     }
 </style>

@@ -24,17 +24,24 @@
         </div>
         <div class="container">
             <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="title" label="资讯标题" align="left"></el-table-column>
-                <el-table-column label="头图" align="left">
+                <el-table-column prop="title" label="资讯标题" align="center"></el-table-column>
+                <el-table-column label="头图" align="center">
                     <template slot-scope="scope">
-                        <el-image style="width: 100px; height: 80px" :src="scope.row.img" fit="cover">
+                        <el-image style="width: 160px; height: 80px" :src="scope.row.img" fit="cover">
                             <div slot="error" class="error-image-slot">
                                 <i class="el-icon-picture-outline"></i>
                             </div>
                         </el-image>
                     </template>
                 </el-table-column>
-                <el-table-column prop="create_time" label="发布时间" align="center"> </el-table-column>
+                <el-table-column prop="create_time" label="发布时间" align="center">
+                    <template slot-scope="scope">
+                        <div class="date_item" v-if="scope.row.create_time">
+                            <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column label="" align="center">
                     <template slot-scope="scope">
                         <el-checkbox v-model="scope.row.is_publish" @change="handleChangeStatus(scope.row)">发布</el-checkbox>
@@ -42,8 +49,10 @@
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="handleDetail(scope.row)">编辑</el-button>
-                        <el-button type="text" @click="handleRemove(scope.row.id)">删除</el-button>
+                        <div class="table_btn">
+                            <el-button type="text" @click="handleDetail(scope.row)">编辑</el-button>
+                            <el-button class="no_border" type="text" @click="handleRemove(scope.row.id)">删除</el-button>
+                        </div>
                     </template>
                 </el-table-column>
             </el-table>
@@ -196,5 +205,20 @@
     }
     .header-bar .header-bar-search .header-bar-search-input .search-btn {
         margin-left: 10px;
+    }
+    .table_btn >>> .el-button {
+        position: relative;
+    }
+    .table_btn >>> .el-button::after {
+        content: '';
+        width: 1px;
+        height: 15px;
+        position: absolute;
+        top: 7.5px;
+        right: -6px;
+        background: #dddddd;
+    }
+    .no_border::after {
+        display: none;
     }
 </style>

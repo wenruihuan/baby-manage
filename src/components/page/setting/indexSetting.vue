@@ -27,8 +27,21 @@
                             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         </el-upload>
                         <div class="action-btn">
-                            <el-button type="text" v-if="activeName === '1'" @click="handleEdit(index)">编辑</el-button>
-                            <el-button type="text" v-if="index + 1 > showDeleteIndex" @click="handleDelete(index)">删除</el-button>
+                            <el-button
+                                :class="index + 1 <= showDeleteIndex ? 'no_border' : ''"
+                                type="text"
+                                v-if="activeName === '1'"
+                                @click="handleEdit(index)"
+                                >编辑</el-button
+                            >
+                            <el-button
+                                type="text"
+                                class="no_border"
+                                :style="`visibility: ${index + 1 <= showDeleteIndex ? 'hidden' : 'visible'}`"
+                                :disabled="index + 1 <= showDeleteIndex"
+                                @click="handleDelete(index)"
+                                >删除</el-button
+                            >
                         </div>
                     </div>
                     <div class="add-btn">
@@ -465,6 +478,20 @@
 
     .action-btn .el-button {
         font-size: 15px;
+        position: relative;
+    }
+
+    .action-btn >>> .el-button::after {
+        content: '';
+        width: 1px;
+        height: 15px;
+        position: absolute;
+        top: 8.5px;
+        right: -6px;
+        background: #dddddd;
+    }
+    .no_border::after {
+        display: none;
     }
 
     .avatar-uploader .el-upload {

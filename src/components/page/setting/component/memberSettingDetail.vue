@@ -28,7 +28,7 @@
                                 <i class="el-icon-user-solid"></i><span>{{ formData.name }}</span>
                             </p>
                         </div>
-                        <span class="mini_member_card" :style="(colorLeft || colorRight) && cardStyle">{{ formData.name }}</span>
+                        <span class="mini_member_card" :style="(colorLeft || colorRight) && cardStyle">{{ formData.name || '请填写等级名称' }}</span>
                     </div>
                 </el-form-item>
                 <el-form-item label="条件：" required>
@@ -169,7 +169,10 @@
                 <el-table-column prop="price" label="价格" align="center"> </el-table-column>
                 <el-table-column prop="create_time" label="创建时间" align="center">
                     <template slot-scope="scope">
-                        <span>{{ formatDate(scope.row.create_time, 'Y-M-D h:m:s') }}</span>
+                        <div class="date_item" v-if="scope.row.create_time">
+                            <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                        </div>
                     </template>
                 </el-table-column>
             </el-table>

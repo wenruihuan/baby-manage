@@ -8,7 +8,14 @@
                 <el-table-column prop="count" label="会员数" align="center"> </el-table-column>
                 <el-table-column prop="create_staff" label="创建人" align="center"></el-table-column>
                 <el-table-column prop="condition" label="自动打标签条件" align="center"></el-table-column>
-                <el-table-column prop="create_time" label="更新时间" align="center"></el-table-column>
+                <el-table-column prop="create_time" label="更新时间" align="center">
+                    <template slot-scope="scope">
+                        <div class="date_item" v-if="scope.row.create_time">
+                            <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" @click="handleDetail(scope.row.tag_id)">编辑</el-button>
