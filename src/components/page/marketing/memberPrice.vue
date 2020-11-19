@@ -23,11 +23,18 @@
           align="center"
           :formatter="item.formatter"
         >
+          <template slot-scope="scope">
+            <div v-if="item.type === 'level'">
+              <p>{{scope.row[item.prop].discount}}</p>
+              <p>{{scope.row[item.prop].price}}</p>
+            </div>
+            <span v-else>{{scope.row[item.prop]}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-            <span>&nbsp;|&nbsp;</span>
+            <span style="color:#DDDDDD;margin: 0 5px;">|</span>
             <el-button type="text" @click="handleRemove(scope.row.id)">移除</el-button>
           </template>
         </el-table-column>
@@ -111,7 +118,8 @@ export default {
           const temp = data.map(item => {
             return {
               label: item.name,
-              prop: `${item.level_id}.price`
+              prop: `${item.level_id}`,
+              type: 'level'
             }
           })
           this.columnCfg.push(...temp)

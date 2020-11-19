@@ -17,29 +17,16 @@
                                 <el-input prefix-icon="el-icon-search" placeholder="输入服务名称"></el-input>
                             </div>
                         </div>
-                        {{WorktableMemberAllRechargeCardList}}
                         <div class="billing-tab-box-content-bottom">
                             <div class="service-list clearfix">
                                 <div class="item"
                                      :class="item.selectState ? 'item active' : 'item'"
-                                     @click="handleServiceList(item)"
-                                     v-for="item in WorktableMemberAllRechargeCardList"
+                                     @click="handleRechargeCardListFn(item)"
+                                     v-for="item in rechargeCardList"
                                 >
                                     <div class="name">{{item.name}}</div>
                                     <div class="price"><span>￥{{item.balance}}</span> <span>赠送{{item.gift_price}}</span></div>
-                                    <div class="price">有效期：365天</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="billing-tab-box-content-bottom" v-if="tabOperation1 === '1'">
-                            <div class="service-list clearfix">
-                                <div class="item"
-                                     :class="item.selectState ? 'item active' : 'item'"
-                                     @click="handleBoxSelectList(item)"
-                                     v-for="item in boxSelectList"
-                                >
-                                    <div class="name">{{item.name}}</div>
-                                    <div class="price">￥{{item.original_price}}</div>
+                                    <div class="time">有效期：365天</div>
                                 </div>
                             </div>
                         </div>
@@ -48,11 +35,11 @@
             </div>
             <div class="info-box">
                 <div class="message">
-                    <span>消费明细({{consumeList.length}})</span>
+                    <span>消费明细({{commonRechargeCardList.length}})</span>
                     <el-button @click="clearConsumeList">清空</el-button>
                 </div>
                 <div class="consume-list">
-                    <div class="consume-item" v-for="item in consumeList">
+                    <div class="consume-item" v-for="item in commonRechargeCardList">
                         <div>
                             <div class="close" @click="clearConsumeItem(item)"><i class="el-icon-close"></i></div>
                             <div class="row">
@@ -60,31 +47,13 @@
                                     <span v-if="item.service_time">{{item.name + item.service_time}}分钟</span>
                                     <span v-else>{{item.name}}</span>
                                 </div>
-                                <el-input-number v-model="item.sort" :min="1" :max="10"></el-input-number>
-                                <div class="price" v-if="item.original_price">
-                                    <span>￥{{item.original_price * item.sort}}</span>
-                                    <el-button @click="clearConsumeList">改价</el-button>
+                                <div class="item">
+                                    <p>充值金额</p>
+                                    <p><el-input class="width85" v-model="item.price1"></el-input></p>
                                 </div>
-                            </div>
-                            <div class="row row-bottom" v-if="item.original_price">
-                                <div>
-                                    技师：
-                                    <span class="item" v-for="itemStaff in itemStaffTechnicianSelectList">
-                                        {{itemStaff.name}}
-                                        <el-input v-model="itemStaff.time" class="shuru"></el-input>
-                                        分钟
-                                    </span>
-                                    <el-button icon="el-icon-plus" @click="showStaffTechnicianDialogVisible"></el-button>
-                                </div>
-                                <div>
-                                    <el-select v-model="item.rightSelectValue" placeholder="请选择">
-                                        <el-option
-                                                v-for="item in item.rightSelect"
-                                                :key="item.right_id"
-                                                :label="item.right_name"
-                                                :value="item.right_id">
-                                        </el-option>
-                                    </el-select>
+                                <div class="item">
+                                    <p>赠送金额</p>
+                                    <p><el-input class="width85" v-model="item.gift_price1"></el-input></p>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +94,7 @@
             </div>
             <div class="operation">
                 <div class="item">
-                    待收款：<span>￥99.00</span>
+                    待收款：<span>￥{{totalMoney}}</span>
                 </div>
                 <div class="item">
                     <el-button @click="clearConsumeList">挂单</el-button>
@@ -133,74 +102,26 @@
                 </div>
             </div>
         </div>
-        <!--<div>single1</div>-->
-        <el-dialog
-                class="single-dialog"
-                title="取单列表"
-                :visible.sync="singleDialogVisible"
-                width="70%"
-                :before-close="handleClose">
-            <div class="list">
-                <div class="item" v-for="item in worktableOrderList">
-                    <div class="name">{{item.shop_name}}</div>
-                    <div class="name">{{item.order_no}}</div>
-                    <div class="name">消费项目：{{item.order_name}}</div>
-                    <div class="name">下单时间：{{item.create_time}}</div>
-                    <div class="name">
-                        <span>￥{{item.total_price}}</span>
-                        <div>
-                            <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">收款</el-button>
-                            <el-button >取消</el-button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-            <el-button @click="singleDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="singleDialogVisible = false">确 定</el-button>
-        </span>
-        </el-dialog>
-        <el-dialog
-                class="staffTechnician-dialog"
-                title="选择技师"
-                :visible.sync="staffTechnicianDialogVisible"
-                width="400px"
-                :before-close="handleClose">
-            <div class="search" style="margin-bottom: 30px;">
-                <el-input v-model="staffTechnicianValue" @input="getStaffTechnicianSelect"></el-input>
-            </div>
-            <div class="list">
-                <div class="item">
-                    <el-checkbox-group v-model="currentStaffTechnicianSelectList">
-                        <el-checkbox v-for="item in staffTechnicianSelectList" :label="item.id">{{item.name}}</el-checkbox>
-                    </el-checkbox-group>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-            <el-button @click="staffTechnicianDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="setStaffTechnician">确 定</el-button>
-        </span>
-        </el-dialog>
         <el-dialog
                 class="service-dialog"
-                title="添加服务"
+                title="添加赠送"
                 :visible.sync="serviceDialogVisible"
                 width="800px">
-            <div class="search" style="margin-bottom: 30px;">
-                <el-select
-                        v-model="memberId1"
-                        placeholder="请选择"
-                        @change="getServiceSelectList1"
-                >
-                    <el-option
-                            v-for="item in serviceKindList"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id"
-                    >{{item.name}}
-                    </el-option>
-                </el-select>
-            </div>
+              <!--          <div class="search" style="margin-bottom: 30px;">
+                            <el-select
+                                    v-model="memberId1"
+                                    placeholder="请选择"
+                                    @change="getServiceSelectList1"
+                            >
+                                <el-option
+                                        v-for="item in serviceKindList"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id"
+                                >{{item.name}}
+                                </el-option>
+                            </el-select>
+                        </div>-->
             <el-table
                     ref="multipleTable"
                     :data="serviceSelectList"
@@ -211,11 +132,11 @@
                         width="55">
                 </el-table-column>
                 <el-table-column
-                        label="服务名称"
+                        label="卡名称"
                 >
                     <template slot-scope="scope">
                         <img :src="scope.row.img" width="40" height="40" alt="">
-                        {{ scope.row.name }}
+                        {{ scope.row.right_name }}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -248,8 +169,8 @@
         name: 'billing',
         data () {
             return {
-                memberId: '', // 选中用户ID
                 memberId1: '', // 选中用户ID
+                totalMoney: 0,
                 currentMemberInfo: {}, // 选中用户信息
                 tabOperation: '0',
                 tabOperation1: '0',
@@ -258,47 +179,49 @@
                 tabValue1: '',
                 consumeList: [],
                 addServiceList: [],
-                WorktableMemberAllRechargeCardList: [],
+                rechargeCardList: [],
                 commonServiceList: [],
-                commonBoxSelectList: [],
+                handleRechargeCardList: [],
+                commonRechargeCardList: [],
+                WorktableMemberAllRechargeCardList: [],
                 currentConsumeList: [],
-                serviceKindList: [],
                 serviceSelectList: [],
                 boxSelectList: [],
-                worktableOrderList: [],
-                worktableMemberInfoList: [],
                 worktableCommonServiceList: [],
                 staffTechnicianValue: '',
-                staffTechnicianSelectList: [],
-                itemStaffTechnicianSelectList: [],
-                currentStaffTechnicianSelectList: [],
                 singleDialogVisible: false,
                 serviceDialogVisible: false,
-                staffTechnicianDialogVisible: false,
             }
         },
         props: {
             memberId: ''
         },
         created () {
-            this.getServiceKind();
-            // this.getServiceSelectList();
-            this.getWorktableOrderList();
-            this.getWorktableMemberInfo();
-            this.getWorktableCommonService();
-            this.getStaffTechnicianSelect();
+            this.setRechargeRight();
             this.getWorktableMemberAllRechargeCard(this.memberId);
-            this.getboxSelectList(1);
+            // this.getServiceSelectList();
         },
         watch: {
-            commonServiceList () {
-                this.operationConsumeList();
+            rechargeCardList: {
+                handler (value) {
+                    this.setTotalMoney();
+                },
+                immediate: true,
+                deep: true
             },
-            commonBoxSelectList () {
+            handleRechargeCardList () {
                 this.operationConsumeList();
             },
         },
         methods: {
+            // 计算总额
+            setTotalMoney () {
+                this.totalMoney = 0;
+                this.rechargeCardList.forEach(m => {
+                    console.log(m.price1*1);
+                    this.totalMoney = this.totalMoney + m.price1*1 ;
+                })
+            },
             getCashier () {
                 this.$router.push('/cashier');
             },
@@ -310,14 +233,6 @@
                 // this.$router.push(`/${link}`);
                 this.$emit('getNum', index);
             },
-            // 获取包厢列表
-            async getboxSelectList (value) {
-                const { data } = await api.boxSelectList({ page_size: 10, page_no: value });
-                this.boxSelectList = data.data.map(m => {
-                    m.selectState = false;
-                    return m;
-                });
-            },
             getServiceSelectList (item, index) {
                 this.tabOperation2 = ('1' + index);
                 this.getServiceSelectList1(item);
@@ -327,40 +242,24 @@
                 const { data } = await api.serviceSelectList({ kind_id: item.id });
                 this.serviceSelectList = data;
             },
+            // 获取用户的所有充值卡
+            async getWorktableMemberAllRechargeCard (member_id) {
+                this.memberId = member_id;
+                const { data } = await api.worktableMemberAllRechargeCard({ member_id: member_id});
+                this.rechargeCardList = data.map(m => {
+                    m.selectState = false;
+                    m.price1 = 0;
+                    return m;
+                });
+            },
             async getWorktableMemberInfo (value) {
                 const { data } = await api.worktableMemberInfo({ keyword: value });
                 this.worktableMemberInfoList = data;
             },
-            async getServiceKind (value) {
-                const { data } = await api.serviceKind({ keyword: value });
-                this.serviceKindList = data.data;
-            },
-            async getWorktableCommonService (value) {
-                const { data } = await api.worktableCommonService({ keyword: value });
-                this.worktableCommonServiceList = data.map(m => {
-                    m.selectState = false;
-                    return m;
-                });
-            },
-            async getWorktableOrderList () {
-                const { data } = await api.worktableOrderList();
-                this.worktableOrderList = data.data;
-            },
-            // 获取用户的所有充值卡
-            async getWorktableMemberAllRechargeCard (member_id) {
-                const { data } = await api.worktableMemberAllRechargeCard({ member_id: member_id});
-                this.WorktableMemberAllRechargeCardList = data;
-                // this.currentMemberInfo = { ...this.worktableMemberInfoList.filter(m => m.id === this.memberId )[0], userCard: data};
-            },
-            // 获取技师下拉列表
-            async getStaffTechnicianSelect (value) {
-                const { data } = await api.staffTechnicianSelect(value);
-                this.staffTechnicianSelectList = data;
-            },
             // 获取用户消费时可选权益
-            async setWorktableRightSelect(id) {
-                const { data } = await api.worktableRightSelect({ id: id });
-                return data;
+            async setRechargeRight(id) {
+                const { data } = await api.rechargeRight({ id: id });
+                this.serviceSelectList = data;
             },
             handleChange () {
                 this.consumeList = [];
@@ -372,34 +271,19 @@
                 this.consumeList = [];
             },
             // 选中服务时操作
-            handleServiceList (item) {
+            handleRechargeCardListFn (item) {
                 item.selectState = !item.selectState;
-                this.handleWorktableCommonServiceList(item);
-            },
-            // 选中包厢时操作
-            handleBoxSelectList (item) {
-                item.selectState = !item.selectState;
-                this.commonBoxSelectList = this.boxSelectList.filter(m => {
+                this.commonRechargeCardList = this.rechargeCardList.filter(m => {
                     if(m.selectState) {
                         return m;
                     };
                 });
-            },
-            handleWorktableCommonServiceList (item) {
-                let rightSelect = {};
-                this.setWorktableRightSelect(item.id).then((res) => {
-                    rightSelect = res;
-                    this.commonServiceList = this.worktableCommonServiceList.filter(m => {
-                        if(m.selectState) {
-                            m.rightSelect = rightSelect;
-                            return m;
-                        };
-                    });
-                });
+                console.log(this.commonRechargeCardList);
+
             },
             // 包厢和服务选择时数组处理
             operationConsumeList () {
-                this.consumeList = this.commonServiceList.concat(this.commonBoxSelectList);
+                this.$set(this, 'consumeList', this.commonRechargeCardList);
             },
             reselectUser () {
                 this.currentMemberInfo = {};
@@ -413,28 +297,10 @@
                     }
                 });
                 this.worktableCommonServiceList.forEach((m) => {
-                    console.log(m);
-                    console.log(item);
                     if (item.id === m.id) {
                         item.selectState = false;
                     }
                 });
-            },
-            //显示技师弹窗
-            showStaffTechnicianDialogVisible () {
-                this.staffTechnicianDialogVisible = true;
-            },
-            // 设置明细需要技师
-            setStaffTechnician () {
-                this.staffTechnicianDialogVisible = false;
-                this.currentStaffTechnicianSelectList.forEach(m => {
-                    this.staffTechnicianSelectList.forEach(n => {
-                        if (m === n.id) {
-                            this.itemStaffTechnicianSelectList.push(n)
-                        }
-                    })
-                });
-                this.currentStaffTechnicianSelectList = [];
             },
             // 确认赠送服务
             serviceSelectListConfirm () {
@@ -612,6 +478,12 @@
     .billing .billing-content .info-box .consume-list .consume-item .row .name span{
         font-size: 18px;
     }
+    .billing .billing-content .info-box .consume-list .consume-item .row .item{
+        text-align: center;
+    }
+    .billing .billing-content .info-box .consume-list .consume-item .row .item p{
+        line-height: 30px;
+    }
     .billing .billing-content .info-box .consume-list .consume-item .row .price span{
         font-size: 18px;
         margin-right: 10px;
@@ -682,9 +554,14 @@
         border: 1px solid #409EFF;
         color: #fff;
     }
+    .billing .billing-tab-box-content-bottom .service-list .item .time{
+        margin-top: 10px;
+    }
     .billing .billing-tab-box-content-bottom .service-list .item .price{
         color: #F725B4;
         margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
     }
     .single-dialog .list {
         display: flex;

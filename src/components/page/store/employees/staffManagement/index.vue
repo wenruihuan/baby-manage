@@ -2,7 +2,7 @@
     <div>
         <div class="operation">
             <div class="handle-box">
-                <el-row>
+                <el-row :gutter="20">
                     <el-col :span="6">
                         <el-button
                                 type="primary"
@@ -19,21 +19,13 @@
                     <el-col :span="6">
                         <el-input placeholder="请输入系统账号、姓名"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
                     </el-col>
-                    <el-col :span="2">
-                        &nbsp;
-                        &nbsp;
-                        &nbsp;
-                        <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                    <el-col :span="2"><el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
                     </el-col>
                 </el-row>
 
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <span>选择门店 </span>
-                        <el-select v-model="query.address" placeholder="选择门店" class="handle-select mr10">
-                            <el-option key="1" label="广东省" value="广东省"></el-option>
-                            <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                        </el-select>
+                        <span>选择门店:多多亲子岁月一店</span>
                     </el-col>
                     <el-col :span="6">
                         <span>选择职位 </span>
@@ -56,13 +48,16 @@
         <div class="table">
             <el-table
                 :data="tableData"
-                border
                 style="width: 100%"
             >
                 <el-table-column
                     prop="name"
                     label="姓名"
                 >
+                    <template slot-scope="scope">
+                        <!--<img :src="scope.row.">-->
+                        {{scope.row.name}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="acount"
@@ -86,6 +81,7 @@
                 </el-table-column>
                 <el-table-column
                     prop="create_time"
+                    :formatter="dateFormate"
                     label="添加时间"
                 >
                 </el-table-column>
@@ -100,7 +96,7 @@
                 >
                     <template slot-scope="scope">
                         <el-button @click="handleClick('edit', scope)" type="text" size="small">详情</el-button>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <i style="padding: 0 10px;">|</i>
                         <el-dropdown>
                             <el-button type="text" size="small">更多</el-button>
                             <el-dropdown-menu slot="dropdown">
@@ -162,6 +158,7 @@
 <script>
 import * as api from '../../../../../api/index'
 import AddEmployees from './AddEmployees'
+import dayjs from 'dayjs'
 export default {
     name: '',
     components: {
@@ -189,6 +186,13 @@ export default {
         this.getPositionSelectList();
     },
     methods: {
+        dateFormate(row, column, cellValue, index) {
+            if (cellValue) {
+                return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
+            } else {
+                return ''
+            }
+        },
         async handleRelevance (scope) {
             this.isStaffSetDisable = true;
         },

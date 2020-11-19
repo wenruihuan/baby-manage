@@ -29,8 +29,8 @@
                             :key="item.no"
                             :label="item.title"
                             :value="item.no"
-                    >
-                    </el-option>
+                        >
+                        </el-option>
                     </el-select>
                 </div>
                 <div>
@@ -55,7 +55,7 @@
                 <div class="item">1月未消费</div>
                 <div class="item">2月未消费</div>
                 <div class="item">3月未消费</div>
-                <div class="item"><el-input class="width85"></el-input>月未消费</div>
+                <div class="item"><el-input class="width85"></el-input> 月未消费</div>
             </div>
             <div class="box box1">
                 <span>消费次数：</span>
@@ -63,7 +63,7 @@
                 <div class="item">1次以内</div>
                 <div class="item">2次以内</div>
                 <div class="item">3次以内</div>
-                <div class="item"><el-input class="width85"></el-input>次以内</div>
+                <div class="item"><el-input class="width85"></el-input> 次以内</div>
             </div>
             <div class="box box1">
                 <span>客户标签：</span>
@@ -233,67 +233,12 @@
             </el-pagination>
         </div>
         <el-dialog
-            :title="operationState"
+            title="新增会员"
             :visible.sync="memberdialogVisible"
             width="50%">
-            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" class="demo-ruleForm">
-                <el-form-item label="姓名：" prop="memeber_name" required>
-                    <el-input class="width200" v-model="ruleForm.memeber_name" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-                <el-form-item label="备注名：" prop="secondary_name">
-                    <el-input class="width200" v-model="ruleForm.secondary_name" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-                <el-form-item label="性别：" prop="region">
-                    <el-select  class="width200" v-model="ruleForm.region" placeholder="请选择活动区域" :disabled="operationState === '查看'">
-                        <el-option label="男" value="男"></el-option>
-                        <el-option label="女" value="女"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="手机号：" prop="memeber_phone" required>
-                    <el-input class="width200" v-model="ruleForm.memeber_phone" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-                <el-form-item prop="birthday" label="生日：">
-                    <el-date-picker class="width200" type="date" placeholder="选择日期" v-model="ruleForm.birthday" :disabled="operationState === '查看'"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="会员编号：" prop="memeber_no" required>
-                    <el-input class="width200" v-model="ruleForm.memeber_no" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-                <el-form-item label="会员来源：" prop="name" required>
-                    <el-input class="width200" v-model="ruleForm.name" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-                <el-form-item label="会员等级：" prop="level_name">
-                    <el-select class="width200" v-model="ruleForm.level_name" placeholder="请选择活动区域" :disabled="operationState === '查看'">
-                        <el-option label="男" value="男"></el-option>
-                        <el-option label="女" value="女"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="健康管理师：" prop="hm_name">
-                    <el-select class="width200" v-model="ruleForm.hm_name" placeholder="请选择活动区域" :disabled="operationState === '查看'">
-                        <el-option label="男" value="男"></el-option>
-                        <el-option label="女" value="女"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="归属门店：" prop="shop_name">
-                    <el-input class="width200" v-model="ruleForm.shop_name" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-                <el-form-item label="微信号：" prop="region">
-                    <el-input class="width200" v-model="ruleForm.name" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-                <el-form-item label="地址：" prop="desc">
-                    <el-select class="width200" v-model="ruleForm.region" placeholder="请选择活动区域" :disabled="operationState === '查看'">
-                        <el-option label="男" value="男"></el-option>
-                        <el-option label="女" value="女"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="详细地址：" prop="desc">
-                    <el-input type="textarea" v-model="ruleForm.desc" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-                <el-form-item label="备注：" prop="desc">
-                    <el-input type="textarea" v-model="ruleForm.desc" :disabled="operationState === '查看'"></el-input>
-                </el-form-item>
-            </el-form>
+            <user-info ref="ruleForm"></user-info>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="resetForm('ruleForm')">取消</el-button>
+                <el-button @click="cancelMemberdialogVisible">取消</el-button>
                 <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
             </span>
         </el-dialog>
@@ -301,39 +246,14 @@
 </template>
 
 <script>
+import userInfo from './common/userInfoDialog'
 import * as api from '../../../api/index'
-import { memberAllCard, memberLevelDetail } from '../../../api';
+import { memberAllCard } from '../../../api';
 export default {
     name: 'memberList',
     data () {
         return {
-            ruleForm: {
-            },
-            rules: {
-                name: [
-                    { required: true, message: '请输入活动名称', trigger: 'blur' },
-                    { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-                ],
-                region: [
-                    { required: true, message: '请选择活动区域', trigger: 'change' }
-                ],
-                date1: [
-                    { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-                ],
-                date2: [
-                    { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
-                ],
-                type: [
-                    { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-                ],
-                resource: [
-                    { required: true, message: '请选择活动资源', trigger: 'change' }
-                ],
-                desc: [
-                    { required: true, message: '请填写活动形式', trigger: 'blur' }
-                ]
-            },
-            operationState: '新增',
+            operationState: '添加会员',
             isShowAll: false,
             memberdialogVisible: false,
             memberAllCardList: [],
@@ -351,6 +271,9 @@ export default {
             aa: '',
             bb: ''
         }
+    },
+    components: {
+        userInfo
     },
     created() {
         this.getMemberLevelList();
@@ -386,12 +309,23 @@ export default {
         handleMemberDetails (scope) {
             this.operationState = '查看';
             this.ruleForm = scope.row;
-            this.memberdialogVisible = true;
+            // this.memberdialogVisible = true;
+            this.$router.push({ path: '/memberDetails', query: { id: '315728c141a1475680e6519d444a4314' }})
         },
         handleBilling (scope) {
             console.log(scope);
             // this.$router.push({ path: '/workbench', query: { id: scope.row.memeber_id }})
             this.$router.push({ path: '/workbench', query: { id: '315728c141a1475680e6519d444a4314' }})
+        },
+        // 新增会员
+        submitForm (value) {
+            this.$refs.ruleForm.submitFn(() => {
+                alert(123);
+            });
+        },
+        // 取消新增会员
+        cancelMemberdialogVisible (value) {
+            this.memberdialogVisible = false;
         }
     }
 };

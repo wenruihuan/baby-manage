@@ -12,11 +12,7 @@
 
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <span>选择门店 </span>
-                        <el-select v-model="query.address" placeholder="选择门店" class="handle-select mr10">
-                            <el-option key="1" label="广东省" value="广东省"></el-option>
-                            <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                        </el-select>
+                        <span>选择门店:多多亲子岁月一店</span>
                     </el-col>
                 </el-row>
             </div>
@@ -24,7 +20,6 @@
         <div class="table">
             <el-table
                 :data="tableData"
-                border
                 style="width: 100%"
             >
                 <el-table-column
@@ -45,6 +40,7 @@
                 <el-table-column
                     prop="create_time"
                     label="添加时间"
+                    :formatter="dateFormate"
                 >
                 </el-table-column>
                 <el-table-column
@@ -52,7 +48,7 @@
                     label="操作"
                 >
                     <template slot-scope="scope">
-                        <el-button @click="handleClick(scope)" type="text" size="small">详情</el-button>
+                        <el-button @click="handleClick(scope)" type="text" size="small">编辑</el-button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <el-popconfirm
                             @onConfirm="setPositionDelete(scope)"
@@ -98,6 +94,7 @@
 </template>
 
 <script>
+    import dayjs from 'dayjs'
     import * as api from '../../../../../api/index'
     import operationPosition from './operationPosition'
     export default {
@@ -121,6 +118,13 @@
             this.getFormData();
         },
         methods: {
+            dateFormate(row, column, cellValue, index) {
+                if (cellValue) {
+                    return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
+                } else {
+                    return ''
+                }
+            },
             async setPositionDelete (scope) {
                 api.positionDelete({ id: scope.row.id})
             },

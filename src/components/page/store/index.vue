@@ -9,23 +9,23 @@
                         <!--<el-input :disabled="disabled" v-model="ruleForm.name"></el-input>-->
                         {{ruleForm.name}}
                     </el-form-item>
-                    <el-form-item label="店铺logo">
+                    <el-form-item label="店铺logo" prop="name">
                         <img :src="ruleForm.logo" alt="">
                     </el-form-item>
-                    <el-form-item label="店铺照片">
+                    <el-form-item label="店铺照片" prop="name">
                         <div v-if="ruleForm.img">
                             <span v-for="item in ruleForm.img.split(',')"><img :src="item" alt=""></span>
                         </div>
                     </el-form-item>
-                    <el-form-item label="客服电话" prop="tel" :title="ruleForm.tel">
+                    <el-form-item label="客服电话" prop="name" :title="ruleForm.tel">
                         <!--<el-input :disabled="disabled" v-model="ruleForm.tel"></el-input>-->
                         {{ruleForm.tel}}
                     </el-form-item>
-                    <el-form-item label="营业时间" prop="service_time" :title="ruleForm.service_time">
+                    <el-form-item label="营业时间" prop="name" :title="ruleForm.service_time">
                         <!--<el-input :disabled="disabled" v-model="ruleForm.service_time"></el-input>-->
                         {{ruleForm.service_time}}
                     </el-form-item>
-                    <el-form-item label="店铺地址" prop="address" :title="ruleForm.address">
+                    <el-form-item label="店铺地址" prop="name" :title="ruleForm.address">
                         <!--<el-input type="textarea" :disabled="disabled" v-model="ruleForm.address"></el-input>-->
                         {{ruleForm.address}}
                     </el-form-item>
@@ -35,7 +35,6 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="$router.push({path: '/storeEdit'})">编辑信息</el-button>
-                        <!--<el-button @click="resetForm('ruleForm')">保存</el-button>-->
                     </el-form-item>
                 </el-form>
             </div>
