@@ -558,7 +558,7 @@ export default {
     padding: 10px;
 }
 .content-container .card-img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
     border-radius: 5px;
 }
