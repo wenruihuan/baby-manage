@@ -111,7 +111,7 @@ export default {
         {label: '最近消费', prop: 'last_buy'},
         {label: '消费次数', prop: 'buy_time'},
         {label: '累计消费', prop: 'total_buy'},
-        {label: '注册时间', prop: 'reg_time'},
+        {label: '注册时间', prop: 'reg_time', width: 220},
         {label: '归属门店', prop: 'shop_name'},
         {label: '健康管理师', prop: 'hm_name'},
         {label: '推广员', prop: 'secondary_name'}
