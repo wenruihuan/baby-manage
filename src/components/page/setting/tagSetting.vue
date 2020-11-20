@@ -9,7 +9,7 @@
                 <el-table-column prop="create_staff" label="创建人" align="center"></el-table-column>
                 <el-table-column prop="condition" label="自动打标签条件" align="center">
                     <template slot-scope="scope">
-                        <p v-for="(item, index) in scope.row.condition" :key="index">{{ item }}</p>
+                        <p v-for="(item, index) in scope.row.condition" :key="index">{{ (index + 1) + '. ' + item }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column prop="create_time" label="更新时间" align="center">
