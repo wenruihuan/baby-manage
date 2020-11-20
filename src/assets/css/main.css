@@ -236,6 +236,17 @@ a {
     width: 85px !important;
 }
 
+.clearfix,.content_div{
+    /*���� IE*/
+    zoom: 1;
+}
+.clearfix:after{
+    content: '';
+    display: block;
+    clear: both;
+    height: 0;
+    visibility: hidden;
+}
 /* 服务级联 */
 .service-cascader .el-cascader-panel .el-cascader-menu .el-cascader-menu__wrap .el-cascader-menu__list .el-cascader-node {
     height: auto;

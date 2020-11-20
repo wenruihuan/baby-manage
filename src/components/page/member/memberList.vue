@@ -6,7 +6,7 @@
                     <el-button type="primary" @click="memberdialogVisible = true; operationState = '新增'">添加会员</el-button>
                     <el-button>快速注册入口</el-button>
                     <el-button>等级设置</el-button>
-                    <el-dropdown trigger="click">
+                    <el-dropdown trigger="click" style="margin-left: 10px;">
                         <el-button>导出 <i class="el-icon-arrow-down"></i></el-button>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item>导出会员信息</el-dropdown-item>

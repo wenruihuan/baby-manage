@@ -336,3 +336,33 @@ export const memberDetail= query => {
     });
 };
 
+
+
+//9.2.1.3.添加（编辑）会员标签
+export const memberTagSave= query => {
+    return request({
+        url: IP + `/admin/memberTag/save`,
+        method: 'post',
+        params: query
+    });
+};
+
+
+//9.2.1.1.标签列表
+export const memberTagList= query => {
+    return request({
+        url: IP + `/admin/memberTag/list`,
+        method: 'get',
+        params: query
+    });
+};
+
+//6.8 获取预约列表未读状态
+export const bookingReadState = query => {
+    return request({
+        url: IP + `/admin/booking/readState`,
+        method: 'get',
+        params: query
+    });
+};
+
