@@ -7,19 +7,25 @@
                 <el-table-column prop="tag_name" label="标签名" align="center"> </el-table-column>
                 <el-table-column prop="count" label="会员数" align="center"> </el-table-column>
                 <el-table-column prop="create_staff" label="创建人" align="center"></el-table-column>
-                <el-table-column prop="condition" label="自动打标签条件" align="center"></el-table-column>
-                <el-table-column prop="create_time" label="更新时间" align="center">
+                <el-table-column prop="condition" label="自动打标签条件" align="center">
                     <template slot-scope="scope">
+                        <p v-for="(item, index) in scope.row.condition" :key="index">{{ item }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="create_time" label="更新时间" align="center">
+                    <!-- <template slot-scope="scope">
                         <div class="date_item" v-if="scope.row.create_time">
                             <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
                             <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
                         </div>
-                    </template>
+                    </template> -->
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="handleDetail(scope.row.tag_id)">编辑</el-button>
-                        <el-button type="text" @click="handleRemove(scope.row.tag_id)">删除</el-button>
+                        <div class="table_btn">
+                            <el-button type="text" @click="handleDetail(scope.row.tag_id)">编辑</el-button>
+                            <el-button class="no_border" type="text" @click="handleRemove(scope.row.tag_id)">删除</el-button>
+                        </div>
                     </template>
                 </el-table-column>
             </el-table>
@@ -269,5 +275,20 @@
     .tip {
         font-size: 12px;
         color: #d9d9d9;
+    }
+    .table_btn >>> .el-button {
+        position: relative;
+    }
+    .table_btn >>> .el-button::after {
+        content: '';
+        width: 1px;
+        height: 15px;
+        position: absolute;
+        top: 7.5px;
+        right: -6px;
+        background: #dddddd;
+    }
+    .no_border::after {
+        display: none;
     }
 </style>
