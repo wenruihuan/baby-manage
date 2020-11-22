@@ -428,10 +428,27 @@ export const archivesBase = query => {
         params: query
     });
 };
+// 4.1.1.2.获取宝宝档案基本信息
+export const archivesBabyBase = query => {
+    return request({
+        url: IP + `/admin/archives/babyBase`,
+        method: 'get',
+        params: query
+    });
+};
 // 4.1.2.4.获取妈妈档案记录
 export const archivesRecord = query => {
     return request({
         url: IP + `/admin/archives/record`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 4.1.1.1.获取宝宝档案记录
+export const archivesBabyRecord = query => {
+    return request({
+        url: IP + `/admin/archives/babyRecord`,
         method: 'get',
         params: query
     });
