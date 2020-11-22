@@ -9,7 +9,7 @@
                 </div>
             </div>
             <div class="operation">
-                <el-button>健康档案{{userInfo.id}}</el-button>
+                <el-button @click="getMemberProfile">健康档案</el-button>
                 <el-button>预约</el-button>
                 <el-button>开单</el-button>
             </div>
@@ -33,8 +33,15 @@
             <div class="item">
                 <div class="info-title">客户标签</div>
                 <div class="contentBox">
-                    <div class="addBox" @click="isShowCommonTag = true">
-                        <span class="el-icon-plus">编辑标签</span>
+                    <div :class="userInfo.tag && userInfo.tag.length < 1 ? 'addBox' : 'addBox active'">
+                        <span class="item"
+                          v-for="(item, index) in userInfo.tag"
+                          :key="index"
+                        >
+                            {{item.tag_name}}
+                        </span>
+                        <span v-if="userInfo.tag && userInfo.tag.length < 1" class="el-icon-plus" @click="isShowCommonTag = true">编辑标签</span>
+                        <span v-else class="addBtn el-icon-plus" @click="isShowCommonTag = true"></span>
                     </div>
                 </div>
             </div>
@@ -70,7 +77,7 @@
                         @click="box4State = 2"
                     >
                         <p>积分</p>
-                        <p>1111</p>
+                        <p>{{pointInfoDetails.total_point}}</p>
                     </div>
                 </div>
                 <div>
@@ -83,7 +90,10 @@
                         </el-select>
                     </div>
                     <div v-if="box4State === 1">
-                        <a href="#">查看全部 <i class="el-icon-arrow-right"></i></a>
+                        <router-link :to="{path: '/integralSubsidiary', query: { member_id: this.userId }}">查看全部<i class="el-icon-arrow-right"></i></router-link>
+                    </div>
+                    <div v-if="box4State === 2">
+                        <router-link :to="{path: '/integralDetails', query: {available_point: pointInfoDetails.available_point, total_point: pointInfoDetails.total_point}}">查看积分明细<i class="el-icon-arrow-right"></i></router-link>
                     </div>
                 </div>
             </div>
@@ -136,7 +146,7 @@
                     <div class="box">
                         <p>可使用积分</p>
                         <p>
-                            <span>1110</span>
+                            <span>{{pointInfoDetails.available_point}}</span>
                             <el-popover
                                     placement="bottom"
                                     width="400"
@@ -168,28 +178,28 @@
                     </div>
                     <div class="box">
                         <p>总积分</p>
-                        <p>3330</p>
+                        <p>{{pointInfoDetails.total_point}}</p>
                     </div>
                     <div class="box">
                         <p>已消耗积分</p>
-                        <p>3330</p>
+                        <p>{{pointInfoDetails.total_point - pointInfoDetails.available_point}}</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="box5">
-            <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+            <el-tabs v-model="activeName" type="card">
                 <el-tab-pane label="交易记录" name="交易记录">
                     <div class="row">
                         <div class="item">
                             <span>订单类型：</span>
                             <el-select v-model="currentOrderType">
                                 <el-option
-                                    v-for="(item, index) in orderType"
-                                    :key="index"
-                                    :label="item.label"
-                                    :value="item.value"
+                                        v-for="(item, index) in orderType"
+                                        :key="index"
+                                        :label="item.label"
+                                        :value="item.value"
                                 ></el-option>
                             </el-select>
                         </div>
@@ -197,10 +207,10 @@
                             <span>订单类型：</span>
                             <el-select v-model="currentOrderStatus">
                                 <el-option
-                                    v-for="(item, index) in orderStatus"
-                                    :key="index"
-                                    :label="item.label"
-                                    :value="item.value"
+                                        v-for="(item, index) in orderStatus"
+                                        :key="index"
+                                        :label="item.label"
+                                        :value="item.value"
                                 ></el-option>
                             </el-select>
                         </div>
@@ -208,23 +218,23 @@
                     <div class="table">
 
                         <el-table
-                            :data="orderTableData"
-                            style="width: 100%"
-                            ref="multipleTable"
+                                :data="orderTableData"
+                                style="width: 100%"
+                                ref="multipleTable"
                         >
                             <el-table-column
-                                prop="order_no"
-                                label="订单编号"
+                                    prop="order_no"
+                                    label="订单编号"
                             >
                             </el-table-column>
                             <el-table-column
-                                prop="create_time"
-                                label="下单时间"
+                                    prop="create_time"
+                                    label="下单时间"
                             >
                             </el-table-column>
                             <el-table-column
-                                prop="service"
-                                label="商品"
+                                    prop="service"
+                                    label="商品"
                             >
                                 <template slot-scope="scope">
                                     <div v-if="Array.isArray(scope.row.service)" class="item">
@@ -236,44 +246,44 @@
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="technician_name"
-                                label="技师"
+                                    prop="technician_name"
+                                    label="技师"
                             >
                             </el-table-column>
                             <el-table-column
-                                prop="pay_type_name"
-                                label="订单来源"
+                                    prop="pay_type_name"
+                                    label="订单来源"
                             >
                             </el-table-column>
                             <el-table-column
-                                prop="shop_name"
-                                label="下单门店"
+                                    prop="shop_name"
+                                    label="下单门店"
                             >
                             </el-table-column>
                             <el-table-column
-                                prop="price"
-                                label="单价（元）"
+                                    prop="price"
+                                    label="单价（元）"
                             >
                             </el-table-column>
                             <el-table-column
-                                prop="count"
-                                label="数量"
+                                    prop="count"
+                                    label="数量"
                             >
                             </el-table-column>
                             <el-table-column
-                                prop="total_price"
-                                label="订单金额（元）"
+                                    prop="total_price"
+                                    label="订单金额（元）"
                             >
                             </el-table-column>
                             <el-table-column
-                                prop="order_status"
-                                label="状态"
-                                :formatter="orderTypeFn"
+                                    prop="order_status"
+                                    label="状态"
+                                    :formatter="orderTypeFn"
                             >
                             </el-table-column>
                             <el-table-column
-                                fixed="right"
-                                label="操作"
+                                    fixed="right"
+                                    label="操作"
                             >
                                 <template slot-scope="scope">
                                     <el-button type="text">查看订单</el-button>
@@ -281,18 +291,75 @@
                             </el-table-column>
                         </el-table>
                         <el-pagination
-                                class="page-ctner"
+                                class="alignRight"
                                 :page-size="20"
                                 background
-                                layout="total, sizes, prev, pager, next, jumper"
+                                layout="total, prev, pager, next, jumper"
                                 :total="all_count1"
-                                :page-sizes="[20]"
                                 @current-change="handleCurChange"
                         ></el-pagination>
 
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="评价" name="评价">配置管理</el-tab-pane>
+                <el-tab-pane label="评价" name="评价">
+                    <div class="table">
+                        <el-table
+                                :data="memberRateList"
+                                style="width: 100%"
+                                ref="multipleTable"
+                        >
+                            <el-table-column
+                                    prop="service_name"
+                                    label="商品"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    prop="order_no"
+                                    label="订单编号"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    width="250"
+                                    prop="create_time"
+                                    label="评分"
+                            >
+                                <template slot-scope="scope">
+                                    <div class="item" style="display: flex"><el-rate v-model="valueDemo" disabled></el-rate></div>
+                                    <div class="item" style="display: flex">
+                                        <span>门店环境：</span><el-rate v-model="scope.row.shop_rate" disabled></el-rate>
+                                    </div>
+                                    <div class="item" style="display: flex">
+                                        <span>技师服务：</span><el-rate v-model="scope.row.service_rate" disabled></el-rate>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    prop="technician_name"
+                                    label="技师"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    prop="arrive_time"
+                                    label="下单时间"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    prop="buyer_name"
+                                    label="买家"
+                            >
+                            </el-table-column>
+                        </el-table>
+                        <el-pagination
+                                class="alignRight"
+                                :page-size="20"
+                                background
+                                layout="total, prev, pager, next, jumper"
+                                :total="all_count2"
+                                @current-change="handleCurChange1"
+                        ></el-pagination>
+
+                    </div>
+                </el-tab-pane>
             </el-tabs>
         </div>
 
@@ -302,13 +369,84 @@
         ></common-tag>
         <!--v-if="isShowCommonTag"-->
         <el-dialog
-                title="新增会员"
-                :visible.sync="memberdialogVisible"
-                width="50%">
-            <user-info ref="ruleForm"></user-info>
+            title="编辑会员"
+            :visible.sync="memberdialogVisible"
+            width="50%">
+            <div class="dialogMain">
+                <el-form :model="userInfoEdit" :rules="rules" ref="userInfoEdit" label-width="160px" class="demo-userInfoEdit">
+                    <el-form-item label="姓名：" prop="member_name" required>
+                        <el-input class="width200" v-model="userInfoEdit.member_name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="备注名：" prop="remark_name">
+                        <el-input class="width200" v-model="userInfoEdit.remark_name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="性别：" required prop="sex">
+                        <el-select  class="width200" v-model="userInfoEdit.sex" placeholder="请选择活动区域">
+                            <el-option label="男" value="男"></el-option>
+                            <el-option label="女" value="女"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="手机号：" prop="member_phone" required>
+                        <el-input class="width200" v-model="userInfoEdit.member_phone"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="birthday" label="生日：">
+                        <el-date-picker class="width200" type="date" placeholder="选择日期" v-model="userInfoEdit.birthday"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="会员编号：" prop="member_no" required>
+                        <el-input class="width200" v-model="userInfoEdit.member_no"></el-input>
+                    </el-form-item>
+                    <el-form-item label="会员来源：" prop="member_source" required>
+                        <el-select class="width200" v-model="userInfoEdit.member_source" placeholder="请选择会员来源">
+                            <el-option label="线下录入" value="线下录入"></el-option>
+                            <el-option label="线上注册" value="线上注册"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="会员等级：" prop="level_id" required>
+                        <el-select v-model="userInfoEdit.level_id" placeholder="选择会员等级">
+                            <el-option
+                                    v-for="(item, index) in memberLevelList"
+                                    :key="index"
+                                    :label="item.title"
+                                    :value="item.no"
+                            >
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="健康管理师：" prop="hm_id">
+                        <el-select v-model="userInfoEdit.hm_id" placeholder="选择健康管理师">
+                            <el-option
+                                    v-for="(item, index) in hmSelectList"
+                                    :key="index"
+                                    :label="item.hm_name"
+                                    :value="item.hm_id"
+                            >
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="归属门店：" prop="shop_name">
+                        多多亲子岁月一店
+                        <!--                    <el-input class="width200" v-model="userInfoEdit.shop_name"></el-input>-->
+                    </el-form-item>
+                    <el-form-item label="微信号：" prop="wx">
+                        <el-input class="width200" v-model="userInfoEdit.wx"></el-input>
+                    </el-form-item>
+                    <!--                <el-form-item label="地址：" prop="desc">-->
+                    <!--                    <el-select class="width200" v-model="userInfoEdit.sex" placeholder="请选择活动区域">-->
+                    <!--                        <el-option label="男" value="男"></el-option>-->
+                    <!--                        <el-option label="女" value="女"></el-option>-->
+                    <!--                    </el-select>-->
+                    <!--                </el-form-item>-->
+                    <el-form-item label="详细地址：">
+                        <el-input type="textarea" v-model="userInfoEdit.detail_address"></el-input>
+                    </el-form-item>
+                    <el-form-item label="备注：">
+                        <el-input type="textarea" v-model="userInfoEdit.remark"></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelMemberdialogVisible">取消</el-button>
-                <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+                <el-button type="primary" @click="submitForm('userInfo')">保存</el-button>
             </span>
         </el-dialog>
     </div>
@@ -322,7 +460,46 @@ export default {
     name: 'memberList',
     data () {
         return {
+            rules: {
+                member_name: [
+                    { required: true, message: '请输入会员名称', trigger: 'blur' }
+                ],
+                member_phone: [
+                    { required: true, message: '请输入手机号', trigger: 'blur' }
+                ],
+                member_no: [
+                    { required: true, message: '请输入会员编号', trigger: 'blur' }
+                ],
+                sex: [
+                    { required: true, message: '请选择性别', trigger: 'change' }
+                ],
+                member_source: [
+                    { required: true, message: '请选择会员来源', trigger: 'change' }
+                ],
+                level_id: [
+                    { required: true, message: '选择会员等级', trigger: 'change' }
+                ],
+                date1: [
+                    { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+                ],
+                date2: [
+                    { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+                ],
+                type: [
+                    { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
+                ],
+                resource: [
+                    { required: true, message: '请选择活动资源', trigger: 'change' }
+                ],
+                desc: [
+                    { required: true, message: '请填写活动形式', trigger: 'blur' }
+                ]
+            },
             radio: 1,
+            pointInfoDetails: {},
+            valueDemo: 5,
+            hmSelectList: [],
+            memberLevelList: [],
             activeName: '交易记录',
             currentOrderType: '',
             page_no1: 1,
@@ -401,7 +578,9 @@ export default {
             orderTableData: [],
             box4State: 2,
             userInfo: {},
+            userInfoEdit: {},
             memberCardList: [],
+            memberRateList: [],
             memberIntegral: {},
             memberGiveServiceList: [],
         }
@@ -416,9 +595,26 @@ export default {
         this.getMemberCard();
         this.getMemberGiveServiced();
         this.getMemberIntegralList();
+        this.getMemberPointInfo();
+        this.getMemberRate();
         this.getMemberOrder();
     },
     methods: {
+        // 获取健康师列表
+        async getHmSelectList () {
+            const  { data } = await api.hmSelectList();
+            this.hmSelectList = data;
+        },
+        // 分页方法
+        handleCurChange(page) {
+            this.page_no1 = page;
+            this.getMemberOrder();
+        },
+        // 分页方法
+        handleCurChange1(page) {
+            this.page_no2 = page;
+            this.getMemberOrder();
+        },
         orderTypeFn (item) {
             if (item.order_status === 0) {
                 return '待付款';
@@ -438,11 +634,24 @@ export default {
         async getUserInfoBox () {
             const { data } = await api.memberDetail({ id: this.userId});
             this.userInfo = data;
+            this.userInfo.member_name = data.name;
+            this.userInfo.member_phone = data.phone;
         },
         //4.3.4.会员详情-卡项列表
         async getMemberCard () {
             const { data } = await api.memberCard({ member_id: this.userId});
             this.memberCardList = data;
+        },
+        //4.3.4.会员详情-卡项列表
+        async getMemberPointInfo () {
+            const { data } = await api.memberPointInfo({ member_id: this.userId});
+            this.pointInfoDetails = data;
+        },
+        // 4.3.10.会员-评价记录
+        async getMemberRate () {
+            const { data } = await api.memberRate({ member_id: this.userId});
+            this.memberRateList = data.data;
+            this.all_count2 = data.all_count;
         },
         //4.3.9.会员-交易记录
         async getMemberOrder () {
@@ -467,6 +676,7 @@ export default {
             this.memberGiveServiceList = data;
         },
         showMemberdialogVisible() {
+            this.userInfoEdit = JSON.parse(JSON.stringify(this.userInfo));
             this.memberdialogVisible = true;
         },
         async getBookingReadState () {
@@ -474,12 +684,15 @@ export default {
         },
         // 新增会员
         submitForm (value) {
-            this.$refs.ruleForm.validate(async (valid) => {
+            this.$refs.userInfoEdit.validate(async (valid) => {
                 if (valid) {
-                    const { data } = await api.memberSave();
+                    const { data } = await api.memberSave(this.userInfoEdit);
                     this.memberdialogVisible = false;
                 }
             })
+        },
+        getMemberProfile () {
+            this.$router.push({path: '/memberProfile', query: { memberId: this.userId }});
         },
         // 取消新增会员
         cancelMemberdialogVisible (value) {
@@ -591,6 +804,27 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    padding: 10px;
+}
+.messageDetails .box2 .contentBox .addBox.active{
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+.messageDetails .box2 .contentBox .addBox .item{
+    padding: 5px 10px;
+    background: #F3F9FE;
+    border: 1px solid #ddd;
+    color: #333;
+    border-radius: 10px;
+    display: inline-block;
+    width: auto;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+.messageDetails .box2 .contentBox .addBox .addBtn{
+    border: 1px dashed #ddd;
+    padding: 5px;
+    margin-bottom: 10px;
 }
 .messageDetails .box3 {
     background: #fff;
@@ -708,11 +942,31 @@ export default {
     width: 33.3%;
     text-align: center;
 }
+.messageDetails .box4 .contentBox .item2>div p{
+    height: 30px;
+}
+.messageDetails .box4 .contentBox .item2>div p span,
+.messageDetails .box4 .contentBox .item2>div p{
+    font-size: 24px;
+}
+.messageDetails .box4 .contentBox .item2>div p:first-child{
+    color: #989898;
+    font-size: 14px;
+}
 .messageDetails .box4 .contentBox .item2>div:first-child{
     border-right: 1px solid #ccc;
 }
 .messageDetails .box5 {
     background: #fff;
     padding: 15px;
+}
+
+.messageDetails .box5 .row{
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+.messageDetails .box5 .row .item{
+    margin-right: 20px;
 }
 </style>

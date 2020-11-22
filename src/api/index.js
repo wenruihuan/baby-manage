@@ -366,3 +366,74 @@ export const bookingReadState = query => {
     });
 };
 
+//4.3.4.会员详情-卡项列表
+export const memberCard = query => {
+    return request({
+        url: IP + `/admin/member/card`,
+        method: 'get',
+        params: query
+    });
+};
+
+//4.3.1.会员详情-赠送权益
+export const memberGiveService = query => {
+    return request({
+        url: IP + `/admin/member/giveService`,
+        method: 'get',
+        params: query
+    });
+};
+
+//4.3.6.会员详情-积分明细
+export const memberIntegralList = query => {
+    return request({
+        url: IP + `/admin/member/integralList`,
+        method: 'get',
+        params: query
+    });
+};
+
+//4.3.9.会员-交易记录
+export const memberOrder = query => {
+    return request({
+        url: IP + `/admin/member/order`,
+        method: 'get',
+        params: query
+    });
+};
+
+//4.3.10.会员-评价记录
+export const memberRate = query => {
+    return request({
+        url: IP + `/admin/member/rate`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 4.3.14.会员详情-积分梗概
+export const memberPointInfo = query => {
+    return request({
+        url: IP + `/admin/member/pointInfo`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 4.1.2.3.获取妈妈档案基本信息
+export const archivesBase = query => {
+    return request({
+        url: IP + `/admin/archives/base`,
+        method: 'get',
+        params: query
+    });
+};
+// 4.1.2.4.获取妈妈档案记录
+export const archivesRecord = query => {
+    return request({
+        url: IP + `/admin/archives/record`,
+        method: 'get',
+        params: query
+    });
+};
+

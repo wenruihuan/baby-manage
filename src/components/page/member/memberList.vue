@@ -78,11 +78,11 @@
                 <div class="item">明天</div>
                 <div class="item">
                     <el-date-picker
-                            v-model="value1"
-                            type="daterange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期">
+                        v-model="value1"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期">
                     </el-date-picker>
                 </div>
             </div>
@@ -95,11 +95,11 @@
                 <div class="item">明天</div>
                 <div class="item">
                     <el-date-picker
-                            v-model="value2"
-                            type="daterange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期">
+                        v-model="value2"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期">
                     </el-date-picker>
                 </div>
             </div>
@@ -138,24 +138,24 @@
         </div>
         <div class="table">
             <el-table
-                    :data="memberList"
-                    border
-                    style="width: 100%"
-                    ref="multipleTable"
-                    @selection-change="handleSelectionChange"
+                :data="memberList"
+                style="width: 100%"
+                ref="multipleTable"
+                @selection-change="handleSelectionChange"
             >
                 <el-table-column
-                        type="selection"
-                        width="55">
+                    type="selection"
+                    width="55">
                 </el-table-column>
                 <el-table-column
-                        prop="date"
-                        label="会员信息"
+                    prop="date"
+                    label="会员信息"
+                    width="250px"
                 >
                     <template slot-scope="scope">
-                        <div class="item">
-                            <div class="pic">
-                                <img :src="scope.row.head_img" alt="">
+                        <div class="item" style="display: flex; align-items: center">
+                            <div class="pic" style="margin-right: 20px;">
+                                <img :src="scope.row.head_img" alt="" width="80">
                             </div>
                             <div class="info">
                                 <p>{{scope.row.memeber_name}}</p>
@@ -186,6 +186,7 @@
                 <el-table-column
                     prop="buy_time"
                     label="消费次数"
+                    width="100px"
                 >
                 </el-table-column>
                 <el-table-column
@@ -209,8 +210,9 @@
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="birthday"
-                        label="生日"
+                    prop="birthday"
+                    label="生日"
+                    width="100px"
                 >
                 </el-table-column>
                 <el-table-column
@@ -225,6 +227,11 @@
             </el-table>
         </div>
         <div class="page-box">
+            <div class="operation">
+                <el-button>添加标签</el-button>
+                <el-button>移除会员</el-button>
+                <el-button>更改健康管理师</el-button>
+            </div>
             <el-pagination
                     background
                     @current-change="handleCurrentChange"
@@ -236,7 +243,7 @@
             title="新增会员"
             :visible.sync="memberdialogVisible"
             width="50%">
-            <user-info ref="ruleForm"></user-info>
+            <user-info class="dialogMain" ref="ruleForm"></user-info>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelMemberdialogVisible">取消</el-button>
                 <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
@@ -384,5 +391,9 @@ export default {
 }
 .memberList .search.active{
     height: 565px;
+}
+.page-box{
+    display: flex;
+    justify-content: space-between;
 }
 </style>

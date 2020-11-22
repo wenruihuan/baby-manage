@@ -221,6 +221,18 @@ a {
     top: 15px;
     background-color: #409eff;
 }
+.dialogMain{
+    height: 50vh;
+    overflow-y: auto;
+}
+.alignRight{
+    text-align: right;
+    margin-top: 10px;
+}
+.alignLeft{
+    text-align: left;
+    margin-top: 10px;
+}
 
 .dialog-box .item {
     display: flex;
@@ -229,13 +241,30 @@ a {
 .dialog-box .item > span {
     line-height: 32px;
 }
+.width250 {
+    width: 200px !important;
+}
 .width200 {
     width: 200px !important;
 }
 .width85 {
     width: 85px !important;
 }
-
+.width60 {
+    width: 60px !important;
+}
+.width70 {
+    width: 70px !important;
+}
+.maginHeight20{
+    margin: 20px 0;
+}
+.mainColor {
+    color: #409EFF;
+}
+.editBtn {
+    cursor: pointer;
+}
 .clearfix,.content_div{
     /*���� IE*/
     zoom: 1;
