@@ -163,7 +163,7 @@
             </div>
             <div class="row" style="padding: 0 20px;">
                 <div class="fake" v-if="!isPermission">
-                    <div class="bg"><el-button @click="isPermission = true">点此授权查看</el-button></div>
+                    <div class="bg"><el-button @click="getPermissionState">点此授权查看</el-button></div>
                     <div class="item">
                         <span class="label">生产日期：</span>
                         <div class="contentBox">
@@ -287,7 +287,8 @@
                         <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
                     </div>
                     <div v-else>
-                        <el-table
+                        <div id="motherBodySize"></div>
+                   <!--     <el-table
                                 :data="body_size_measurement_data"
                                 style="width: 100%"
                                 ref="multipleTable"
@@ -336,7 +337,7 @@
                                     prop="right_calf"
                                     label="右小腿（cm）"
                             ></el-table-column>
-                        </el-table>
+                        </el-table>-->
                     </div>
                     <div style="margin: 50px auto">
                         <div class="alignRight">
@@ -354,7 +355,14 @@
                                 width="250"
                             >
                                 <template slot-scope="scope">
-                                    <el-date-picker class="width250" type="date" placeholder="选择日期" v-model="scope.row.date"></el-date-picker>
+                                    <el-date-picker
+                                        value-format="yyyy-MM-dd"
+                                        format="yyyy-MM-dd"
+                                        class="width250"
+                                        type="date"
+                                        placeholder="选择日期"
+                                        v-model="scope.row.date">
+                                    </el-date-picker>
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -449,7 +457,8 @@
                         <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
                     </div>
                     <div v-else>
-                        <el-table
+                        <div id="motherMeasurementSize"></div>
+                     <!--   <el-table
                             :data="body_measurement_data"
                             style="width: 100%"
                             ref="multipleTable"
@@ -478,7 +487,7 @@
                                 prop="health_index"
                                 label="健康指数"
                             ></el-table-column>
-                        </el-table>
+                        </el-table>-->
                     </div>
                     <div style="margin: 50px auto">
                         <div class="alignRight">
@@ -496,7 +505,14 @@
                                     width="250"
                             >
                                 <template slot-scope="scope">
-                                    <el-date-picker class="width250" type="date" placeholder="选择日期" v-model="scope.row.date"></el-date-picker>
+                                    <el-date-picker
+                                            value-format="yyyy-MM-dd"
+                                            format="yyyy-MM-dd"
+                                            class="width250"
+                                            type="date"
+                                            placeholder="选择日期"
+                                            v-model="scope.row.date">
+                                    </el-date-picker>
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -553,7 +569,7 @@
             </div>
             <div class="row" style="padding: 0 20px;">
                 <div class="fake" v-if="!isPermission">
-                    <div class="bg"><el-button @click="isPermission = true">点此授权查看</el-button></div>
+                    <div class="bg"><el-button @click="getPermissionState">点此授权查看</el-button></div>
                     <div class="item">
                         <span class="label">宝宝姓名：</span>
                         <div class="contentBox">
@@ -720,7 +736,14 @@
                                 width="250"
                             >
                                 <template slot-scope="scope">
-                                    <el-date-picker class="width250" type="date" placeholder="选择日期" v-model="scope.row.date"></el-date-picker>
+                                    <el-date-picker
+                                        value-format="yyyy-MM-dd"
+                                        format="yyyy-MM-dd"
+                                        class="width250"
+                                        type="date"
+                                        placeholder="选择日期"
+                                        v-model="scope.row.date">
+                                    </el-date-picker>
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -772,23 +795,24 @@ export default {
     name: 'memberProfile',
     data () {
         return {
+            width: 0,
             baseState: false, // 基础信息编辑状态
             imageUrl: '',
             member_id: '',
             userInfo: {},
             addBodySizeItem: [
                 {
-                    "date": "2020-10-12",
-                    "left_arm": "30cm",
-                    "right_arm": "30cm",
-                    "up_navel": "30cm",
-                    "middle_navel": "30cm",
-                    "down_navel": "30cm",
-                    "hipline": "30cm",
-                    "left_thigh": "30cm",
-                    "right_thigh": "30cm",
-                    "left_calf": "30cm",
-                    "right_calf": "30cm"
+                    date: '',
+                    left_arm: '',
+                    right_arm: '',
+                    up_navel: '',
+                    middle_navel: '',
+                    down_navel: '',
+                    hipline: '',
+                    left_thigh: '',
+                    right_thigh: '',
+                    left_calf: '',
+                    right_calf: ''
                 }
             ],
             addBodyMeasurementItem: [
@@ -803,14 +827,15 @@ export default {
             ],
             addBabyItem: [
                 {
-                    "date": "2020-10-23",
-                    "height": "50cm",
-                    "weight": "50kg",
-                    "bust": "36cm",
-                    "head_circumference": "36cm"
+                    date: '',
+                    height: '',
+                    weight: '',
+                    bust: '',
+                    head_circumference: ''
                 }
             ],
             isPermission: false,
+            isArchivesQueryAuth: false, //授权码状态，如果为false 则三秒后再次判断
             motherInfo: undefined,
             babyBaseInfo: undefined,
             hmSelectList: [],
@@ -823,12 +848,98 @@ export default {
         this.member_id = this.$route.query.memberId;
         this.getUserInfoBox();
         this.getHmSelectList();
-        this.getArchivesBase();
-        this.getArchivesBabyBase();
-        this.getArchivesRecord();
-        this.getArchivesBabyRecord();
+    },
+    mounted () {
+        this.width = document.getElementById('member_profile').style.width;
+        console.log(this.width);
     },
     methods: {
+        motherChart (data, Dom, legend) {
+            // 基于准备好的dom，初始化echarts实例
+            let myChart = this.$echarts.init(document.getElementById(Dom));
+            // 绘制图表
+            let option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                legend: {
+                    data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '邮件营销',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: [120, 132, 101, 134, 90, 230, 210]
+                    },
+                    {
+                        name: '联盟广告',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: [220, 182, 191, 234, 290, 330, 310]
+                    },
+                    {
+                        name: '视频广告',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: [150, 232, 201, 154, 190, 330, 410]
+                    },
+                    {
+                        name: '直接访问',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: [320, 332, 301, 334, 390, 330, 320]
+                    },
+                    {
+                        name: '搜索引擎',
+                        type: 'line',
+                        stack: '总量',
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'top'
+                            }
+                        },
+                        areaStyle: {},
+                        data: [820, 932, 901, 934, 1290, 1330, 1320]
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        },
         addBodySizeItemBtn () {
             this.body_size_measurement_data.push(JSON.parse(JSON.stringify(this.addBodySizeItem[0])));
         },
@@ -844,6 +955,9 @@ export default {
             const { data } = await api.archivesRecord({ member_id: this.member_id});
             this.body_size_measurement_data = data.body_size_measurement_data;
             this.body_measurement_data = data.body_measurement_data;
+            let legend = ['左手臂', '右手臂', '脐上', '脐中', '脐下', '臀围', '左大腿', '右大腿', '左小腿', '右小腿']
+            this.motherChart(this.body_size_measurement_data, 'motherBodySize', legend1);
+            this.motherChart(this.body_measurement_data, 'motherMeasurementSize');
         },
         //4.1.1.1.获取宝宝档案记录
         async getArchivesBabyRecord () {
@@ -860,6 +974,12 @@ export default {
             this.baseState = false;
             // const { data } = await
         },
+        getPermissionState () {
+            this.isPermission = true;
+            setTimeout(() => {
+                this.motherChart();
+            },300)
+        },
         beforeAvatarUpload () {},
         handleAvatarSuccess () {},
         //4.3.3.会员详情
@@ -868,6 +988,29 @@ export default {
             this.userInfo = data;
             this.userInfo.member_name = data.name;
             this.userInfo.member_phone = data.phone;
+            this.getArchivesQueryAuth();
+            this.motherChart();
+        },
+        // 4.1.1.查看档案查询扫码授权状态
+        async getArchivesQueryAuth () {
+            console.log(123123);
+            console.log(123123);
+            const { data } = await api.archivesQueryAuth();
+            this.isArchivesQueryAuth = data.result;
+
+            // 判断查看档案查询扫码授权状态，如果为false则显示扫码弹窗，否则调用宝宝和妈妈的数据
+            if (!this.isArchivesQueryAuth) {
+                setTimeout(() => {
+                    this.getArchivesQueryAuth();
+                }, 3000);
+            } else {
+                this.getArchivesBase();
+                this.getArchivesRecord();
+                this.userInfo.member_archives_baby_ids.forEach((m, index) => {
+                    this.getArchivesBabyBase(index);
+                    this.getArchivesBabyRecord(index);
+                })
+            }
         },
         // 4.1.2.3.获取妈妈档案基本信息
         async getArchivesBase () {
@@ -877,10 +1020,10 @@ export default {
             const { data } = await api.archivesBase(params);
             this.motherInfo = data;
         },
-        // 4.1.2.3.获取妈妈档案基本信息
-        async getArchivesBabyBase () {
+        // 4.1.1.2.获取宝宝档案基本信息
+        async getArchivesBabyBase (index) {
             let params = {
-                member_archives_baby_id: this.member_id
+                member_archives_baby_id: this.userInfo.member_archives_baby_ids[index]
             }
             const { data } = await api.archivesBabyBase(params);
             this.babyBaseInfo = data;
@@ -927,6 +1070,10 @@ export default {
     width: 60px;
     height: 60px;
     display: block;
+}
+#motherChart{
+    width: 100%;
+    height: 700px;
 }
 .member_profile .box1 {
     padding: 20px 0;

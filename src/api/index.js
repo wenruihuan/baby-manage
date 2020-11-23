@@ -373,15 +373,6 @@ export const memberCard = query => {
         params: query
     });
 };
-// 4.3.1.会员详情-赠送权益
-export const memberGiveService = query => {
-    return request({
-        url: IP + `/admin/member/giveService`,
-        method: 'get',
-        params: query
-    });
-};
-
 // 4.3.6.会员详情-积分明细
 export const memberIntegralList = query => {
     return request({
@@ -403,24 +394,6 @@ export const orderList = query => {
 
 
 
-// 4.3.9.会员-交易记录
-export const memberOrder = query => {
-    return request({
-        url: IP + `/admin/member/order`,
-        method: 'get',
-        params: query
-    });
-};
-
-//4.3.4.会员详情-卡项列表
-export const memberCard = query => {
-    return request({
-        url: IP + `/admin/member/card`,
-        method: 'get',
-        params: query
-    });
-};
-
 //4.3.1.会员详情-赠送权益
 export const memberGiveService = query => {
     return request({
@@ -430,14 +403,6 @@ export const memberGiveService = query => {
     });
 };
 
-//4.3.6.会员详情-积分明细
-export const memberIntegralList = query => {
-    return request({
-        url: IP + `/admin/member/integralList`,
-        method: 'get',
-        params: query
-    });
-};
 
 //4.3.9.会员-交易记录
 export const memberOrder = query => {
@@ -495,6 +460,16 @@ export const archivesRecord = query => {
 export const archivesBabyRecord = query => {
     return request({
         url: IP + `/admin/archives/babyRecord`,
+        method: 'get',
+        params: query
+    });
+};
+
+
+// 4.1.1.查看档案查询扫码授权状态
+    export const archivesQueryAuth = query => {
+    return request({
+        url: IP + `/admin/archives/queryAuth`,
         method: 'get',
         params: query
     });

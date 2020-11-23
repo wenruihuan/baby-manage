@@ -11,6 +11,8 @@ import './components/common/directives';
 import 'babel-polyfill';
 import mapData from './utils/map'
 import { formatDate } from './utils/utils'
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 import VueAMap from 'vue-amap';
 Vue.use(VueAMap);
 // 初始化vue-amap

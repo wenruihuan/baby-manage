@@ -21,6 +21,7 @@
             <div class="col"><span>客户编号：</span><i>123123</i></div>
             <div class="col"><span>健康管理师：</span><i>王亚亚</i></div>
         </div>
+
         <div class="box2">
             <div class="item">
                 <div class="info-title">消费数据</div>
@@ -187,7 +188,6 @@
                 </div>
             </div>
         </div>
-
         <div class="box5">
             <el-tabs v-model="activeName" type="card">
                 <el-tab-pane label="交易记录" name="交易记录">
@@ -430,12 +430,14 @@
                     <el-form-item label="微信号：" prop="wx">
                         <el-input class="width200" v-model="userInfoEdit.wx"></el-input>
                     </el-form-item>
-                    <!--                <el-form-item label="地址：" prop="desc">-->
-                    <!--                    <el-select class="width200" v-model="userInfoEdit.sex" placeholder="请选择活动区域">-->
-                    <!--                        <el-option label="男" value="男"></el-option>-->
-                    <!--                        <el-option label="女" value="女"></el-option>-->
-                    <!--                    </el-select>-->
-                    <!--                </el-form-item>-->
+                    <el-form-item label="地址：" prop="desc">
+                        <el-cascader
+                            size="large"
+                            :options="options"
+                            v-model="selectedOptions"
+                            @change="handleChange">
+                        </el-cascader>
+                    </el-form-item>
                     <el-form-item label="详细地址：">
                         <el-input type="textarea" v-model="userInfoEdit.detail_address"></el-input>
                     </el-form-item>
@@ -456,10 +458,13 @@
 import userInfo from './common/userInfoDialog'
 import commonTag from './common/commonTag'
 import * as api from '../../../api/index'
+import { regionDataPlus } from 'element-china-area-data'
 export default {
     name: 'memberList',
     data () {
         return {
+            options: regionDataPlus,
+            selectedOptions: [],
             rules: {
                 member_name: [
                     { required: true, message: '请输入会员名称', trigger: 'blur' }
@@ -598,6 +603,7 @@ export default {
         this.getMemberPointInfo();
         this.getMemberRate();
         this.getMemberOrder();
+        this.getArchivesQueryAuth();
     },
     methods: {
         // 获取健康师列表
