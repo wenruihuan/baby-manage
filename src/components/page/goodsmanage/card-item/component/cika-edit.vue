@@ -52,7 +52,7 @@
                     <el-form-item class="show-online" label="网店展示:" prop="is_show">
                         <el-radio-group v-model="form.is_show">
                             <el-radio :label="0">不展示</el-radio>
-                            <el-radio :label="1">展示</el-radio>
+                            <el-radio class="radio-label1" :label="1">展示</el-radio>
                         </el-radio-group>
                     </el-form-item>
                 </el-form>
@@ -324,6 +324,13 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.radio-label1 {
+    margin-left: 15px;
+}
+.content, .content1 {
+    padding: 10px 50px;
+    overflow: auto;
+}
 .card-start {
     margin-bottom: 10px;
     margin-left: 21px;

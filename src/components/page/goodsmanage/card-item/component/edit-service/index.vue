@@ -12,7 +12,7 @@
                 <el-table-column prop="time" label="次数">
                     <template slot-scope="scope">
                         <span v-if="unlimit && type !== 'send'">无限</span>
-                        <el-input style="width: 250px;" v-else v-model="scope.row.time"></el-input>
+                        <el-input style="width: 100px;" v-else v-model="scope.row.time"></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作">
