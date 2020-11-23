@@ -46,7 +46,7 @@
                     <el-form-item class="show-online" label="网店展示:" prop="is_show">
                         <el-radio-group v-model="form.is_show">
                             <el-radio :label="0">不展示</el-radio>
-                            <el-radio :label="1">展示</el-radio>
+                            <el-radio class="radio-label1" :label="1">展示</el-radio>
                         </el-radio-group>
                     </el-form-item>
                 </el-form>
@@ -97,7 +97,7 @@
                 trigger="click"
                 :popper-options="{ boundariesElement: 'viewport', removeOnDestroy: true }"
             >
-                <div id="SERVICE_QRCODE"></div>
+                <div id="SERVICE_QRCODE" class="service-card"></div>
                 <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
             </el-popover>
             <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
@@ -322,6 +322,13 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.radio-label1 {
+    margin-left: 15px;
+}
+.content {
+    padding: 10px 50px;
+    overflow: auto;
+}
 .card-start {
     margin-bottom: 10px;
     margin-left: 21px;
