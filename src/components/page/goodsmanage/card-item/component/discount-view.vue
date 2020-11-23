@@ -209,6 +209,13 @@
                 </div>
             </div>
             <div class="tab-container">
+                <div class="el-breadcrumb-container">
+                    <el-breadcrumb separator="/">
+                        <el-breadcrumb-item>卡项列表</el-breadcrumb-item>
+                        <el-breadcrumb-item>卡项详情</el-breadcrumb-item>
+                        <el-breadcrumb-item>{{ activeTab === '历史卡项' ? '历史卡项详情' : '已售卡项详情' }}</el-breadcrumb-item>
+                    </el-breadcrumb>
+                </div>
                 <el-tabs type="border-card" @tab-click="handleTabClick">
                     <el-tab-pane label="卡项权益">
                         <el-table
@@ -527,6 +534,12 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.el-breadcrumb-container {
+    margin: 10px 0;
+}
+/deep/ .el-breadcrumb__inner {
+    color: #BBBBBB!important;
+}
     .cika-view {
         background: white;
     }

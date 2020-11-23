@@ -98,11 +98,11 @@
                 ref="popover"
                 v-if="activeStep === 2"
                 placement="top"
-                width="128"
+                width="125"
                 trigger="click"
                 :popper-options="{ boundariesElement: 'viewport', removeOnDestroy: true }"
             >
-                <div id="SERVICE_QRCODE"></div>
+                <div id="SERVICE_QRCODE" class="service-card"></div>
                 <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
             </el-popover>
             <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
