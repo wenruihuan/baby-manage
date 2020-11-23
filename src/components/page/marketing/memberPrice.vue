@@ -21,14 +21,13 @@
           :prop="item.prop"
           :width="item.width"
           align="center"
-          :formatter="item.formatter"
         >
           <template slot-scope="scope">
             <div v-if="item.type === 'level'">
               <p>{{scope.row[item.prop].discount}}</p>
               <p>{{scope.row[item.prop].price}}</p>
             </div>
-            <span v-else>{{scope.row[item.prop]}}</span>
+            <span v-else>{{scope.row[item.prop]|discountFormatter}}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
@@ -92,7 +91,7 @@ export default {
       },
       columnCfg: [
         {label: '售价', prop: 'price'},
-        {label: '优惠方式', prop: 'type', formatter: this.discountFormatter}
+        {label: '优惠方式', prop: 'type'}
       ],
       tableData: [],
       total: 0,
@@ -173,14 +172,17 @@ export default {
     },
     handleCancel() {
       this.dialogShow = false
-    },
-    discountFormatter(row, column, cellValue, index) {
+    }
+  },
+  filters: {
+    discountFormatter(val) {
+      console.log('val', val)
       const textObj = {
         target_discount: '优惠折扣',
         target_price: '指定价格'
       }
-      if (cellValue) {
-        return textObj[cellValue]
+      if (val) {
+        return textObj[val]
       } else {
         return ''
       }

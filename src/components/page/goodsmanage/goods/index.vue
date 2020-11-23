@@ -5,7 +5,7 @@
                 <div class="btn-group">
                     <el-button type="primary" @click="addBox">添加商品</el-button>
                     <el-button @click="handleAddCategory">管理分类</el-button>
-                    <el-button @click="handleAddService">管理服务</el-button>
+                    <el-button @click="handleAddService">管理标签</el-button>
                 </div>
                 <div class="search-container">
                     <el-input

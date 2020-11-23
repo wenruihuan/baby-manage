@@ -49,7 +49,7 @@
                                         {{ scope.row.discount }}折
                                     </template>
                                 </el-table-column>
-                                <el-table-column prop="validity" label="有效期"></el-table-column>
+                                <el-table-column header-align="right" align="right" prop="validity" label="有效期"></el-table-column>
                             </el-table>
                         </el-tab-pane>
                         <el-tab-pane label="赠送权益" v-if="Array.isArray(quanlityList) && quanlityList.length > 0">
@@ -58,7 +58,7 @@
                             >
                                 <el-table-column prop="right_name" label="适用内容"></el-table-column>
                                 <el-table-column prop="typeName" label="卡项类别"></el-table-column>
-                                <el-table-column prop="validity" label="有效期"></el-table-column>
+                                <el-table-column header-align="right" align="right" prop="validity" label="有效期"></el-table-column>
                             </el-table>
                         </el-tab-pane>
                     </el-tabs>
@@ -528,6 +528,10 @@ export default {
     .cika-view {
         background: white;
     }
+    /deep/ .el-tabs {
+        box-shadow: none;
+        border: 0;
+    }
     .cika-view .top-container {
         width: 100%;
         margin: 5px auto;
@@ -543,7 +547,7 @@ export default {
         height: 100%;
     }
     .content-container .card-img {
-        max-width: 100%;
+        width: 100%;
         height: auto;
         border-radius: 5px;
     }

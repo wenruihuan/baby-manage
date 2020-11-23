@@ -351,6 +351,16 @@ export default new Router({
                     path: '/memberDetails',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/memberDetails.vue'),
                     meta: { title: '会员详情' }
+                },
+                {
+                    path: '/integralDetails',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/integralDetails.vue'),
+                    meta: { title: '积分详情' }
+                },
+                {
+                    path: '/memberProfile',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/memberProfile.vue'),
+                    meta: { title: '会员档案' }
                 }
             ]
         },

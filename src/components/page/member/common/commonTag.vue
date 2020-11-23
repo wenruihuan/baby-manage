@@ -12,6 +12,7 @@
                         placeholder="请勿超出8个字"
                         v-model="TagVal"
                     ></el-input>
+                    &nbsp;&nbsp;
                     <el-button @click="addTagFn">添加</el-button>
                 </div>
                 <div class="row">
@@ -21,8 +22,8 @@
                         </div>
                         <div class="list">
                             <div
-                                v-for="item in memberTagList"
-                                :key="item.tag_id"
+                                v-for="(item, index) in memberTagList"
+                                :key="index"
                                 :class="item.select ? 'item active' : 'item'"
                                 @click="currentTagVal(item)"
                             >
@@ -62,12 +63,19 @@ export default {
             });
         },
         async addTagFn () {
-            let params = {
-                tag_id: '',
-                tag_name: this.TagVal,
+            if (this.TagVal) {
+                let params = {
+                    tag_id: '',
+                    tag_name: this.TagVal,
+                }
+                const { data } = await api.memberTagSave(params);
+                this.TagVal = '';
+                this.$message.success('操作成功！');
+                this.getMemberTag();
+                console.log(data);
+            } else {
+                this.$message.error('标签不能为空！');
             }
-            const { data } = await api.memberTagSave(params);
-            console.log(data);
         },
         // 隐藏弹窗
         cancelTagVisible () {

@@ -49,7 +49,7 @@
                                         {{ scope.row.time }}次
                                     </template>
                                 </el-table-column>
-                                <el-table-column prop="validity" label="有效期">
+                                <el-table-column header-align="right" align="right" prop="validity" label="有效期">
                                     <template slot-scope="scope">
                                         {{ scope.row.validity }}天
                                     </template>
@@ -66,7 +66,7 @@
                                         {{ scope.row.time }}次
                                     </template>
                                 </el-table-column>
-                                <el-table-column prop="validity" label="有效期">
+                                <el-table-column header-align="right" align="right" prop="validity" label="有效期">
                                     <template slot-scope="scope">
                                         {{ scope.row.validity }}天
                                     </template>
@@ -558,7 +558,7 @@ export default {
     padding: 10px;
 }
 .content-container .card-img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
     border-radius: 5px;
 }
