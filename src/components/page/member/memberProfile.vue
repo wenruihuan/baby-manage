@@ -287,7 +287,6 @@
                         <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
                     </div>
                     <div v-else>
-                        <div id="motherBodySize"></div>
                    <!--     <el-table
                                 :data="body_size_measurement_data"
                                 style="width: 100%"
@@ -339,6 +338,7 @@
                             ></el-table-column>
                         </el-table>-->
                     </div>
+                    <div id="motherBodySize"></div>
                     <div style="margin: 50px auto">
                         <div class="alignRight">
                             <el-button @click="saveBodySizeItemBtn">保存记录</el-button>
@@ -849,12 +849,22 @@ export default {
         this.getUserInfoBox();
         this.getHmSelectList();
     },
-    mounted () {
-        this.width = document.getElementById('member_profile').style.width;
-        console.log(this.width);
-    },
     methods: {
         motherChart (data, Dom, legend) {
+            let xAxisData = data.map(m => { return m.date });
+            let seriesData = [];
+            seriesData[0] = '左手臂';
+            seriesData[1].name = '右手臂';
+            seriesData[2].name = '脐上';
+            seriesData[3].name = '脐中';
+            seriesData[4].name = '脐下';
+            seriesData[5].name = '臀围';
+            seriesData[6].name = '左大腿';
+            seriesData[7].name = '右大腿';
+            seriesData[8].name = '左小腿';
+            seriesData[9].name = '右小腿';
+            data.forEach(m => {
+            });
             // 基于准备好的dom，初始化echarts实例
             let myChart = this.$echarts.init(document.getElementById(Dom));
             // 绘制图表
@@ -869,7 +879,7 @@ export default {
                     }
                 },
                 legend: {
-                    data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
+                    data:  ['左手臂', '右手臂', '脐上', '脐中', '脐下', '臀围', '左大腿', '右大腿', '左小腿', '右小腿']
                 },
                 toolbox: {
                     feature: {
@@ -886,7 +896,7 @@ export default {
                     {
                         type: 'category',
                         boundaryGap: false,
-                        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+                        data: xAxisData
                     }
                 ],
                 yAxis: [
@@ -955,9 +965,6 @@ export default {
             const { data } = await api.archivesRecord({ member_id: this.member_id});
             this.body_size_measurement_data = data.body_size_measurement_data;
             this.body_measurement_data = data.body_measurement_data;
-            let legend = ['左手臂', '右手臂', '脐上', '脐中', '脐下', '臀围', '左大腿', '右大腿', '左小腿', '右小腿']
-            this.motherChart(this.body_size_measurement_data, 'motherBodySize', legend1);
-            this.motherChart(this.body_measurement_data, 'motherMeasurementSize');
         },
         //4.1.1.1.获取宝宝档案记录
         async getArchivesBabyRecord () {
@@ -977,7 +984,10 @@ export default {
         getPermissionState () {
             this.isPermission = true;
             setTimeout(() => {
-                this.motherChart();
+                let motherBodySizeLegend = ['左手臂', '右手臂', '脐上', '脐中', '脐下', '臀围', '左大腿', '右大腿', '左小腿', '右小腿'];
+
+                this.motherChart(this.body_size_measurement_data, 'motherBodySize', motherBodySizeLegend);
+                // this.motherChart(this.body_measurement_data, 'motherMeasurementSize');
             },300)
         },
         beforeAvatarUpload () {},
@@ -989,7 +999,6 @@ export default {
             this.userInfo.member_name = data.name;
             this.userInfo.member_phone = data.phone;
             this.getArchivesQueryAuth();
-            this.motherChart();
         },
         // 4.1.1.查看档案查询扫码授权状态
         async getArchivesQueryAuth () {
@@ -1071,7 +1080,7 @@ export default {
     height: 60px;
     display: block;
 }
-#motherChart{
+#motherBodySize{
     width: 100%;
     height: 700px;
 }
