@@ -157,11 +157,24 @@
                 </div>
             </div>
         </div>
+        <!--        妈妈档案-->
         <div class="box1">
             <div class="info-title">
                 健康档案
+                &nbsp;&nbsp;&nbsp;
+                <span
+                    class="mainColor editBtn"
+                    v-if="!motherInfoState && isArchivesQueryAuth"
+                    @click="motherInfoState = true"
+                >
+                    <i class="el-icon-edit"></i>编辑
+                </span>
             </div>
-            <div class="row" style="padding: 0 20px;">
+            <div class="row row1" style="padding: 0 20px;" v-if="!motherInfo">
+                <el-button @click="motherInfo = {}">创建档案</el-button>
+            </div>
+            <div v-else class="row" style="padding: 0 20px;" >
+                <!--假数据模块，单纯显示-->
                 <div class="fake" v-if="!isPermission">
                     <div class="bg"><el-button @click="getPermissionState">点此授权查看</el-button></div>
                     <div class="item">
@@ -223,349 +236,381 @@
                     <div class="item">
                         <span class="label">生产日期：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.production_date"></el-input>
+                            <el-date-picker
+                                v-if="motherInfoState"
+                                value-format="yyyy-MM-dd"
+                                format="yyyy-MM-dd"
+                                class="width250"
+                                type="date"
+                                placeholder="选择日期"
+                                v-model="motherInfo.production_date">
+                            </el-date-picker>
+                            <p v-else>{{motherInfo.production_date}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <span class="label">身高：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.height"></el-input>
+                            <el-input v-if="motherInfoState" class="width200" v-model="motherInfo.height"></el-input>
+                            <p v-else>{{motherInfo.height}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <span class="label">体重：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.weight"></el-input>
+                            <el-input v-if="motherInfoState" class="width200" v-model="motherInfo.weight"></el-input>
+                            <p v-else>{{motherInfo.weight}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <span class="label">BMI：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.BMI"></el-input>
+                            <el-input v-if="motherInfoState" class="width200" v-model="motherInfo.BMI"></el-input>
+                            <p v-else>{{motherInfo.BMI}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <span class="label">内脂指数：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.internal_fat_index"></el-input>
+                            <el-input v-if="motherInfoState" class="width200" v-model="motherInfo.internal_fat_index"></el-input>
+                            <p v-else>{{motherInfo.internal_fat_index}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <span class="label">健康指数：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.health_index"></el-input>
+                            <el-input v-if="motherInfoState" class="width200" v-model="motherInfo.health_index"></el-input>
+                            <p v-else>{{motherInfo.health_index}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <span class="label">脂肪率：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.fat_rate"></el-input>
+                            <el-input v-if="motherInfoState" class="width200" v-model="motherInfo.fat_rate"></el-input>
+                            <p v-else>{{motherInfo.fat_rate}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <span class="label">脂肪含量：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.fat_content"></el-input>
+                            <el-input v-if="motherInfoState" class="width200" v-model="motherInfo.fat_content"></el-input>
+                            <p v-else>{{motherInfo.fat_content}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <span class="label">基础代谢：</span>
                         <div class="contentBox">
-                            <el-input class="width200" v-model="motherInfo.basal_metabolism"></el-input>
+                            <el-input v-if="motherInfoState" class="width200" v-model="motherInfo.basal_metabolism"></el-input>
+                            <p v-else>{{motherInfo.basal_metabolism}}</p>
                         </div>
                     </div>
-                    <div class="operation" >
-                        <el-button @click="saveRecordFn">保存记录</el-button>
+                    <div class="operation" v-if="motherInfoState">
+                        <el-button @click="saveMotherBaseRecordFn">保存记录</el-button>
+                    </div>
+                    <div class="more" v-if="!motherInfoMore">
+                        <span class="mainColor" @click="getMotherInfoMore">查看更多<i class="el-icon-arrow-down"></i></span>
                     </div>
                 </div>
-                <div class="real" v-else>
-                    <el-button @click="motherInfo = {}">创建档案</el-button>
-                </div>
-                <div class="bodySize" v-if="isPermission && motherInfo">
-                    <div class="info-title" style="background: none;">身体尺寸测量数据</div>
-                    <div class="nodata" v-if="body_size_measurement_data.length < 1">
-                        <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
-                    </div>
-                    <div v-else>
-                   <!--     <el-table
-                                :data="body_size_measurement_data"
-                                style="width: 100%"
-                                ref="multipleTable"
-                        >
-                            <el-table-column
-                                    prop="date"
-                                    label="日期"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="left_arm"
-                                    label="左手臂（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="right_arm"
-                                    label="右手臂（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="up_navel"
-                                    label="脐上（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="middle_navel"
-                                    label="脐中（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="down_navel"
-                                    label="脐下（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="hipline"
-                                    label="臀围（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="left_thigh"
-                                    label="左大腿（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="right_thigh"
-                                    label="右大腿（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="left_calf"
-                                    label="左小腿（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="right_calf"
-                                    label="右小腿（cm）"
-                            ></el-table-column>
-                        </el-table>-->
-                    </div>
-                    <div id="motherBodySize"></div>
-                    <div style="margin: 50px auto">
-                        <div class="alignRight">
-                            <el-button @click="saveBodySizeItemBtn">保存记录</el-button>
+                <div class="motherInfoMore" v-if="motherInfoMore">
+                    <div class="bodySize" v-if="isPermission && motherInfo">
+                        <div class="info-title" style="background: none;">身体尺寸测量数据</div>
+                        <div class="nodata" v-if="body_size_measurement_data.length < 1">
+                            <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
                         </div>
-                        <el-table
-                            class="maginHeight20"
-                            :data="addBodySizeItem"
-                            style="width: 100%"
-                            ref="multipleTable"
-                        >
-                            <el-table-column
-                                prop="date"
-                                label="日期"
-                                width="250"
+                        <div v-else>
+                            <!--     <el-table
+                                         :data="body_size_measurement_data"
+                                         style="width: 100%"
+                                         ref="multipleTable"
+                                 >
+                                     <el-table-column
+                                             prop="date"
+                                             label="日期"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="left_arm"
+                                             label="左手臂（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="right_arm"
+                                             label="右手臂（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="up_navel"
+                                             label="脐上（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="middle_navel"
+                                             label="脐中（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="down_navel"
+                                             label="脐下（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="hipline"
+                                             label="臀围（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="left_thigh"
+                                             label="左大腿（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="right_thigh"
+                                             label="右大腿（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="left_calf"
+                                             label="左小腿（cm）"
+                                     ></el-table-column>
+                                     <el-table-column
+                                             prop="right_calf"
+                                             label="右小腿（cm）"
+                                     ></el-table-column>
+                                 </el-table>-->
+                        </div>
+                        <div id="motherBodySize"></div>
+                        <div style="margin: 50px auto">
+                            <div class="alignRight">
+                                <el-button @click="saveBodyMeasurementItemBtn">保存记录</el-button>
+                            </div>
+                            <el-table
+                                    class="maginHeight20"
+                                    :data="addBodySizeItem"
+                                    style="width: 100%"
+                                    ref="multipleTable"
                             >
-                                <template slot-scope="scope">
-                                    <el-date-picker
-                                        value-format="yyyy-MM-dd"
-                                        format="yyyy-MM-dd"
-                                        class="width250"
-                                        type="date"
-                                        placeholder="选择日期"
-                                        v-model="scope.row.date">
-                                    </el-date-picker>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                prop="left_arm"
-                                label="左手臂（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.left_arm"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="right_arm"
-                                    label="右手臂（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.right_arm"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="up_navel"
-                                    label="脐上（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.up_navel"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="middle_navel"
-                                    label="脐中（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.middle_navel"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="down_navel"
-                                    label="脐下（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.down_navel"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="hipline"
-                                    label="臀围（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.hipline"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="left_thigh"
-                                    label="左大腿（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.left_thigh"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="right_thigh"
-                                    label="右大腿（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.right_thigh"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="left_calf"
-                                    label="左小腿（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.left_calf"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="right_calf"
-                                    label="右小腿（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.right_calf"></el-input>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                        <div>
-                            <el-button @click="addBodySizeItemBtn">添加行</el-button>
+                                <el-table-column
+                                        prop="date"
+                                        label="日期"
+                                        width="250"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-date-picker
+                                                value-format="yyyy-MM-dd"
+                                                format="yyyy-MM-dd"
+                                                class="width250"
+                                                type="date"
+                                                placeholder="选择日期"
+                                                v-model="scope.row.date">
+                                        </el-date-picker>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="left_arm"
+                                        label="左手臂（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.left_arm"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="right_arm"
+                                        label="右手臂（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.right_arm"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="up_navel"
+                                        label="脐上（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.up_navel"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="middle_navel"
+                                        label="脐中（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.middle_navel"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="down_navel"
+                                        label="脐下（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.down_navel"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="hipline"
+                                        label="臀围（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.hipline"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="left_thigh"
+                                        label="左大腿（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.left_thigh"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="right_thigh"
+                                        label="右大腿（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.right_thigh"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="left_calf"
+                                        label="左小腿（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.left_calf"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="right_calf"
+                                        label="右小腿（cm）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width70" v-model="scope.row.right_calf"></el-input>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div>
+                                <el-button @click="addBodySizeItemBtn">添加行</el-button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="bodySize" v-if="isPermission && motherInfo">
-                    <div class="info-title" style="background: none;">身体指标测量数据</div>
-                    <div class="nodata" v-if="body_measurement_data.length < 1">
-                        <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
-                    </div>
-                    <div v-else>
-                        <div id="motherMeasurementSize"></div>
-                     <!--   <el-table
-                            :data="body_measurement_data"
-                            style="width: 100%"
-                            ref="multipleTable"
-                        >
-                            <el-table-column
-                                prop="date"
-                                label="日期"
-                            ></el-table-column>
-                            <el-table-column
-                                prop="weight"
-                                label="体重"
-                            ></el-table-column>
-                            <el-table-column
-                                prop="internal_fat_index"
-                                label="内脂指数"
-                            ></el-table-column>
-                            <el-table-column
-                                prop="fat_rate"
-                                label="脂肪率"
-                            ></el-table-column>
-                            <el-table-column
-                                prop="basal_metabolism"
-                                label="基础代谢（卡路里）"
-                            ></el-table-column>
-                            <el-table-column
-                                prop="health_index"
-                                label="健康指数"
-                            ></el-table-column>
-                        </el-table>-->
-                    </div>
-                    <div style="margin: 50px auto">
-                        <div class="alignRight">
-                            <el-button @click="saveBodyMeasurementItemBtn">保存记录</el-button>
+                    <div class="bodySize" v-if="isPermission && motherInfo">
+                        <div class="info-title" style="background: none;">身体指标测量数据</div>
+                        <div class="nodata" v-if="body_measurement_data.length < 1">
+                            <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
                         </div>
-                        <el-table
+                        <div v-else>
+                            <div id="motherMeasurementSize"></div>
+                            <!--   <el-table
+                                   :data="body_measurement_data"
+                                   style="width: 100%"
+                                   ref="multipleTable"
+                               >
+                                   <el-table-column
+                                       prop="date"
+                                       label="日期"
+                                   ></el-table-column>
+                                   <el-table-column
+                                       prop="weight"
+                                       label="体重"
+                                   ></el-table-column>
+                                   <el-table-column
+                                       prop="internal_fat_index"
+                                       label="内脂指数"
+                                   ></el-table-column>
+                                   <el-table-column
+                                       prop="fat_rate"
+                                       label="脂肪率"
+                                   ></el-table-column>
+                                   <el-table-column
+                                       prop="basal_metabolism"
+                                       label="基础代谢（卡路里）"
+                                   ></el-table-column>
+                                   <el-table-column
+                                       prop="health_index"
+                                       label="健康指数"
+                                   ></el-table-column>
+                               </el-table>-->
+                        </div>
+                        <div style="margin: 50px auto">
+                            <div class="alignRight">
+                                <el-button @click="saveBodyMeasurementItemBtn">保存记录</el-button>
+                            </div>
+                            <el-table
                                 class="maginHeight20"
                                 :data="addBodyMeasurementItem"
                                 style="width: 100%"
                                 ref="multipleTable"
-                        >
-                            <el-table-column
+                            >
+                                <el-table-column
                                     prop="date"
                                     label="日期"
                                     width="250"
-                            >
-                                <template slot-scope="scope">
-                                    <el-date-picker
+                                >
+                                    <template slot-scope="scope">
+                                        <el-date-picker
                                             value-format="yyyy-MM-dd"
                                             format="yyyy-MM-dd"
                                             class="width250"
                                             type="date"
                                             placeholder="选择日期"
                                             v-model="scope.row.date">
-                                    </el-date-picker>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
+                                        </el-date-picker>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     prop="weight"
                                     label="体重"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width200" v-model="scope.row.weight"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
+                                    width="100"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width85" v-model="scope.row.weight"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     prop="internal_fat_index"
                                     label="内脂指数"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width200" v-model="scope.row.internal_fat_index"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
+                                    width="100"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width85" v-model="scope.row.internal_fat_index"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     prop="fat_rate"
                                     label="脂肪率"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width200" v-model="scope.row.fat_rate"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="basal_metabolism"
-                                    label="基础代谢（卡路里）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width200" v-model="scope.row.basal_metabolism"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="health_index"
-                                    label="健康指数"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width200" v-model="scope.row.health_index"></el-input>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                        <div>
-                            <el-button @click="addBodyMeasurementItemBtn">添加行</el-button>
+                                    width="100"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width85" v-model="scope.row.fat_rate"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="basal_metabolism"
+                                        label="基础代谢（卡路里）"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input  v-model="scope.row.basal_metabolism"></el-input>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="health_index"
+                                        label="健康指数"
+                                        width="100"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-input class="width85" v-model="scope.row.health_index"></el-input>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div>
+                                <el-button @click="addBodyMeasurementItemBtn">添加行</el-button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="box1">
+        <!--        宝宝档案-->
+        <div v-if="motherInfo" class="box1">
             <div class="info-title">
                 宝宝档案
+                &nbsp;&nbsp;&nbsp;
+                <span
+                        class="mainColor editBtn"
+                        v-if="!babyInfoState && isArchivesQueryAuth"
+                        @click="babyInfoState = true"
+                >
+                    <i class="el-icon-edit"></i>编辑
+                </span>
             </div>
             <div class="row" style="padding: 0 20px;">
                 <div class="fake" v-if="!isPermission">
@@ -624,7 +669,7 @@
                             <el-input class="width200"></el-input>
                         </div>
                     </div>
-                </div>
+                </div>查看更多
                 <div class="real" v-if="isPermission && babyBaseInfo">
                     <div class="item">
                         <span class="label">宝宝姓名：</span>
@@ -683,9 +728,6 @@
                     <div class="operation" >
                         <el-button @click="saveRecordFn">保存记录</el-button>
                     </div>
-                </div>
-                <div class="real" v-else>
-                    <el-button @click="babyBaseInfo = {}">创建档案</el-button>
                 </div>
                 <div class="bodySize" v-if="isPermission && babyBaseInfo">
                     <div class="info-title" style="background: none;">身体尺寸测量数据</div>
@@ -786,6 +828,19 @@
                 </div>
             </div>
         </div>
+        <el-dialog
+            class="authQr-dialog"
+            title="扫码授权"
+            :visible.sync="authQrDialog"
+            width="400px"
+            height="400"
+        >
+                <div class="box">
+                    <img :src="authQrData.QR_url">
+                    <p>扫码授权</p>
+                    <p>{{countDown}}秒后刷新</p>
+                </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -795,11 +850,32 @@ export default {
     name: 'memberProfile',
     data () {
         return {
+            num: 0,
+            authQrDialog: false,
+            motherInfoState: false, //妈妈档案编辑状态
+            motherInfoMore: false, //妈妈档案查看更多
+            babyInfoState: false, //宝宝档案编辑状态
+            ArchivesQueryAuthCountDown: null, //获取权限倒计时
+            countDown: 3, //二维码更新倒计时时间
             width: 0,
             baseState: false, // 基础信息编辑状态
             imageUrl: '',
             member_id: '',
             userInfo: {},
+            authQrData: {}, // 扫码返回数据
+            addBodySizeObj:{
+                date: '',
+                left_arm: '',
+                right_arm: '',
+                up_navel: '',
+                middle_navel: '',
+                down_navel: '',
+                hipline: '',
+                left_thigh: '',
+                right_thigh: '',
+                left_calf: '',
+                right_calf: ''
+            },
             addBodySizeItem: [
                 {
                     date: '',
@@ -815,16 +891,25 @@ export default {
                     right_calf: ''
                 }
             ],
+            addBodyMeasurementObj:{
+                date: '',
+                weight: '',
+                internal_fat_index: '',
+                fat_rate: '',
+                basal_metabolism: '',
+                health_index: ''
+            },
             addBodyMeasurementItem: [
                 {
-                    "date": "2020-10-15",
-                    "weight": "72.5kg",
-                    "internal_fat_index": "内脂指数",
-                    "fat_rate": "脂肪率",
-                    "basal_metabolism": "基础代谢",
-                    "health_index": "22.5"
+                    date: '',
+                    weight: '',
+                    internal_fat_index: '',
+                    fat_rate: '',
+                    basal_metabolism: '',
+                    health_index: ''
                 }
             ],
+            archivesSaveRecordData: {}, //保存新增的麻麻数据
             addBabyItem: [
                 {
                     date: '',
@@ -850,20 +935,32 @@ export default {
         this.getHmSelectList();
     },
     methods: {
-        motherChart (data, Dom, legend) {
+        motherChart (data, Dom) {
             let xAxisData = data.map(m => { return m.date });
-            let seriesData = [];
-            seriesData[0] = '左手臂';
-            seriesData[1].name = '右手臂';
-            seriesData[2].name = '脐上';
-            seriesData[3].name = '脐中';
-            seriesData[4].name = '脐下';
-            seriesData[5].name = '臀围';
-            seriesData[6].name = '左大腿';
-            seriesData[7].name = '右大腿';
-            seriesData[8].name = '左小腿';
-            seriesData[9].name = '右小腿';
+            let seriesData = {
+                left_arm: [],
+                right_arm: [],
+                up_navel: [],
+                middle_navel: [],
+                down_navel: [],
+                hipline: [],
+                left_thigh: [],
+                right_thigh: [],
+                left_calf: [],
+                right_calf: []
+            }
+
             data.forEach(m => {
+                seriesData.left_arm.push(m.left_arm);
+                seriesData.right_arm.push(m.right_arm);
+                seriesData.up_navel.push(m.up_navel);
+                seriesData.middle_navel.push(m.middle_navel);
+                seriesData.down_navel.push(m.down_navel);
+                seriesData.hipline.push(m.hipline);
+                seriesData.left_thigh.push(m.left_thigh);
+                seriesData.right_thigh.push(m.right_thigh);
+                seriesData.left_calf.push(m.left_calf);
+                seriesData.right_calf.push(m.right_calf);
             });
             // 基于准备好的dom，初始化echarts实例
             let myChart = this.$echarts.init(document.getElementById(Dom));
@@ -906,61 +1003,189 @@ export default {
                 ],
                 series: [
                     {
-                        name: '邮件营销',
+                        name: '左手臂',
                         type: 'line',
                         stack: '总量',
                         areaStyle: {},
-                        data: [120, 132, 101, 134, 90, 230, 210]
+                        data: seriesData.left_arm
                     },
                     {
-                        name: '联盟广告',
+                        name: '右手臂',
                         type: 'line',
                         stack: '总量',
                         areaStyle: {},
-                        data: [220, 182, 191, 234, 290, 330, 310]
+                        data: seriesData.right_arm
                     },
                     {
-                        name: '视频广告',
+                        name: '脐上',
                         type: 'line',
                         stack: '总量',
                         areaStyle: {},
-                        data: [150, 232, 201, 154, 190, 330, 410]
+                        data: seriesData.up_navel
                     },
                     {
-                        name: '直接访问',
+                        name: '脐中',
                         type: 'line',
                         stack: '总量',
                         areaStyle: {},
-                        data: [320, 332, 301, 334, 390, 330, 320]
+                        data: seriesData.middle_navel
                     },
                     {
-                        name: '搜索引擎',
+                        name: '脐下',
                         type: 'line',
                         stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.down_navel
+                    },
+                    {
+                        name: '臀围',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.hipline
+                    },
+                    {
+                        name: '左大腿',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.left_thigh
+                    },
+                    {
+                        name: '右大腿',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.right_thigh
+                    },
+                    {
+                        name: '左小腿',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.left_calf
+                    },
+                    {
+                        name: '右小腿',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.right_calf
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        },
+        motherChart1 (data, Dom) {
+            let xAxisData = data.map(m => { return m.date });
+            let seriesData = {
+                weight: [],
+                internal_fat_index: [],
+                fat_rate: [],
+                basal_metabolism: [],
+                health_index: []
+            }
+
+            data.forEach(m => {
+                seriesData.weight.push(m.weight);
+                seriesData.internal_fat_index.push(m.internal_fat_index);
+                seriesData.fat_rate.push(m.fat_rate);
+                seriesData.basal_metabolism.push(m.basal_metabolism);
+                seriesData.health_index.push(m.health_index);
+            });
+            // 基于准备好的dom，初始化echarts实例
+            let myChart = this.$echarts.init(document.getElementById(Dom));
+            // 绘制图表
+            let option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
                         label: {
-                            normal: {
-                                show: true,
-                                position: 'top'
-                            }
-                        },
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                legend: {
+                    data:  ['体重', '脂肪率', '基础代谢（卡路里）', '健康指数']
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: xAxisData
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '体重',
+                        type: 'line',
+                        stack: '总量',
                         areaStyle: {},
-                        data: [820, 932, 901, 934, 1290, 1330, 1320]
+                        data: seriesData.weight
+                    },
+                    {
+                        name: '脂肪率',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.internal_fat_index
+                    },
+                    {
+                        name: '基础代谢（卡路里）',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.basal_metabolism
+                    },
+                    {
+                        name: '健康指数',
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: seriesData.health_index
                     }
                 ]
             };
             myChart.setOption(option);
         },
         addBodySizeItemBtn () {
-            this.body_size_measurement_data.push(JSON.parse(JSON.stringify(this.addBodySizeItem[0])));
+            this.addBodySizeItem.push(this.addBodySizeObj);
         },
-        saveBodySizeItemBtn () {},
+        async saveBodySizeItemBtn () {
+            // this.archivesSaveRecordData.body_size_measurement_data = this.addBodySizeItem;
+            // this.archivesSaveRecordData.body_measurement_data = this.addBodyMeasurementItem;
+            // const { data } = await api.archivesSaveRecord();
+        },
+
         addBodyMeasurementItemBtn () {
-            this.body_measurement_data.push(JSON.parse(JSON.stringify(this.addBodyMeasurementItem[0])));
+            this.addBodyMeasurementItem.push(this.addBodyMeasurementObj);
         },
         addBabyItemBtn () {
             this.babyRecordList.push(JSON.parse(JSON.stringify(this.addBabyItem[0])));
         },
-        saveBodyMeasurementItemBtn () {},
+        // 4.1.2.1.添加（编辑）妈妈档案记录
+        async saveBodyMeasurementItemBtn () {
+            this.archivesSaveRecordData.body_size_measurement_data = this.addBodySizeItem;
+            this.archivesSaveRecordData.body_measurement_data = this.addBodyMeasurementItem;
+            const { data } = await api.archivesSaveRecord(this.archivesSaveRecordData);
+        },
         async getArchivesRecord () {
             const { data } = await api.archivesRecord({ member_id: this.member_id});
             this.body_size_measurement_data = data.body_size_measurement_data;
@@ -981,14 +1206,44 @@ export default {
             this.baseState = false;
             // const { data } = await
         },
+        // 判断是否有权限阅览数据
         getPermissionState () {
-            this.isPermission = true;
+            if (this.isArchivesQueryAuth) {
+                this.isPermission = true;
+            } else {
+                this.authQrDialog = true;
+                this.authQrFn();
+            }
+        },
+        getMotherInfoMore () {
+            this.motherInfoMore = true;
             setTimeout(() => {
-                let motherBodySizeLegend = ['左手臂', '右手臂', '脐上', '脐中', '脐下', '臀围', '左大腿', '右大腿', '左小腿', '右小腿'];
-
-                this.motherChart(this.body_size_measurement_data, 'motherBodySize', motherBodySizeLegend);
+                this.motherChart(this.body_size_measurement_data, 'motherBodySize');
+                this.motherChart1(this.body_measurement_data, 'motherMeasurementSize');
                 // this.motherChart(this.body_measurement_data, 'motherMeasurementSize');
             },300)
+        },
+        // 4.1.2.获取授权二维码
+        async authQrFn () {
+            const { data } = await api.archivesAuthQr({ member_id: this.member_id });
+            this.authQrData = data;
+            let authQrCountDown = null;
+            if (this.isArchivesQueryAuth) {
+                this.$alert('测试授权流程，目前当进入第二次倒计时，前端直接设置成已获取权限');
+                clearInterval(authQrCountDown);
+                this.authQrDialog = false;
+                this.isArchivesQueryAuth = true;
+            } else {
+                authQrCountDown = setInterval(() => {
+                    this.countDown--;
+                    if (this.countDown === 0 || this.countDown < 0) {
+                        this.authQrFn();
+                        this.countDown = 3;
+                        clearInterval(authQrCountDown);
+                        this.isArchivesQueryAuth = true;
+                    };
+                }, 1000)
+            }
         },
         beforeAvatarUpload () {},
         handleAvatarSuccess () {},
@@ -998,15 +1253,19 @@ export default {
             this.userInfo = data;
             this.userInfo.member_name = data.name;
             this.userInfo.member_phone = data.phone;
-            this.getArchivesQueryAuth();
+            if (!this.isArchivesQueryAuth) {
+                this.getArchivesQueryAuth();
+            };
         },
         // 4.1.1.查看档案查询扫码授权状态
         async getArchivesQueryAuth () {
-            console.log(123123);
-            console.log(123123);
             const { data } = await api.archivesQueryAuth();
-            this.isArchivesQueryAuth = data.result;
-
+            // this.isArchivesQueryAuth = data.result;
+            //此判断仅用于测试，正式数据对接时请删除
+            if (this.num === 0) {
+                this.isArchivesQueryAuth = false;
+                this.num++;
+            }
             // 判断查看档案查询扫码授权状态，如果为false则显示扫码弹窗，否则调用宝宝和妈妈的数据
             if (!this.isArchivesQueryAuth) {
                 setTimeout(() => {
@@ -1037,14 +1296,11 @@ export default {
             const { data } = await api.archivesBabyBase(params);
             this.babyBaseInfo = data;
         },
-        async saveRecordFn () {
-            let params = {
-                member_id: this.memberId,
-                ...this.body_measurement_data,
-                ...this.body_size_measurement_data
-            }
-            const { data } = api.saveRecord();
+        async saveMotherBaseRecordFn () {
+            const data = await api.archivesSaveBase(this.motherInfo);
+            this.$message.success(data.msg);
         },
+        saveRecordFn () {},
         setMotherInfo () {
             // this.motherInfo = {};
         }
@@ -1082,10 +1338,20 @@ export default {
 }
 #motherBodySize{
     width: 100%;
-    height: 700px;
+    height: 500px;
+}
+#motherMeasurementSize{
+    width: 100%;
+    height: 500px;
 }
 .member_profile .box1 {
     padding: 20px 0;
+}
+.member_profile .row1 {
+    min-height: 300px;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
 }
 .member_profile .row {
     display: flex;
@@ -1096,6 +1362,9 @@ export default {
     align-items: center;
     width: 33.3%;
     padding: 10px 0;
+}
+.member_profile .motherInfoMore{
+    width: 100%;
 }
 .member_profile .row  .fake,
 .member_profile .row .real {
@@ -1130,7 +1399,13 @@ export default {
     margin-right: 20px;
     color: #D9D9D9;
 }
-.member_profile .row  .real .operation{
+.member_profile .row .real .more{
+    text-align: center;
+    width: 100%;
+    cursor: pointer;
+    margin: 50px auto;
+}
+.member_profile .row .real .operation{
     width: 100%;
     margin-top: 50px;
     margin-bottom: 50px;
@@ -1152,10 +1427,28 @@ export default {
     font-size: 100px;
     color: #E3E6EB;
 }
+.authQr-dialog{
+    text-align: center;
+    height: 530px;
+}
+.authQr-dialog{
+    display: flex;
+    padding: 30px;
+}
+.authQr-dialog img{
+    width: 150px;
+    height: 150px;
+}
+.authQr-dialog p{
+    line-height: 40px;
+}
 </style>
 <style>
     .member_profile .avatar .el-upload--text{
         width: 100%;
         height: 100%;
+    }
+    .authQr-dialog .el-dialog__body{
+        border-bottom: 0px solid #fff!important;
     }
 </style>
