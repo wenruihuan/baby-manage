@@ -7,9 +7,9 @@
                     trigger="click"
             >
                 <div class="btn-group">
-                    <el-button @click="addCard">次卡</el-button>
-                    <el-button @click="addCard">折扣卡</el-button>
-                    <el-button @click="addCard">充值卡</el-button>
+                    <el-button @click="addCard('time-card')">次卡</el-button>
+                    <el-button @click="addCard('discount-card')">折扣卡</el-button>
+                    <el-button @click="addCard('insert-card')">充值卡</el-button>
                 </div>
                 <el-button type="primary" slot="reference">添加卡项</el-button>
             </el-popover>
@@ -109,8 +109,12 @@ export default {
     },
     methods: {
         /* 添加卡项 */
-        addCard () {
-
+        addCard (type) {
+            switch (type) {
+                case 'time-card': { this.$router.push(`/cika-card`); break; }
+                case 'discount-card': { this.$router.push(`/discount-card`); break; }
+                case 'insert-card': { this.$router.push(`/insert-card`); break; }
+            }
         },
         handleSearch () {
             this.getList();
