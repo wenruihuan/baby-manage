@@ -4,8 +4,14 @@
             <div class="box ">
                 <div class="left">
                     <el-button type="primary" @click="memberdialogVisible = true; operationState = '新增'">添加会员</el-button>
-                    <el-button>快速注册入口</el-button>
-                    <el-button>等级设置</el-button>
+                    <el-popover
+                            style="margin-left: 10px;"
+                            placement="bottom"
+                            trigger="click">
+                        <div><img src="../../../assets/img/alipay.png" width="150" height="150" alt=""></div>
+                        <el-button slot="reference">快速注册入口</el-button>
+                    </el-popover>
+                    <el-button style="margin-left: 10px;" @click="$router.push('/MemberSetting')">等级设置</el-button>
                     <el-dropdown trigger="click" style="margin-left: 10px;">
                         <el-button>导出 <i class="el-icon-arrow-down"></i></el-button>
                         <el-dropdown-menu slot="dropdown">
@@ -15,20 +21,19 @@
                     </el-dropdown>
                 </div>
                 <div class="right">
-                    <el-input class="width200" placeholder="名字、手机号或会员编号" prefix-icon="el-icon-search">
-                    </el-input>
-                    <el-button>搜索</el-button>
+                    <el-input class="width200" v-model="search.keyword" placeholder="名字、手机号或会员编号" prefix-icon="el-icon-search"> </el-input>
+                    <el-button style="margin-left: 10px;" @click="getMemberList">搜索</el-button>
                 </div>
             </div>
             <div class="box ">
                 <div>
                     <span class="label">会员等级：</span>
-                    <el-select v-model="bb" placeholder="选择会员等级">
+                    <el-select v-model="search.level_id" placeholder="选择会员等级">
                         <el-option
-                            v-for="item in memberLevelList"
-                            :key="item.no"
-                            :label="item.title"
-                            :value="item.no"
+                            v-for="(item, index) in memberLevelList"
+                            :key="index"
+                            :label="item.name"
+                            :value="item.level_id"
                         >
                         </el-option>
                     </el-select>
@@ -40,8 +45,8 @@
                     持有卡项：
                     <el-select v-model="currentMemberCard" placeholder="选择会员等级">
                         <el-option
-                                v-for="item in memberAllCardList.valid"
-                                :key="item.no"
+                                v-for="(item, index) in memberAllCardList.valid"
+                                :key="index"
                                 :label="item.title"
                                 :value="item.no"
                         >
@@ -51,11 +56,15 @@
             </div>
             <div class="box box1">
                 <span>消费频次：</span>
-                <div class="item">全部</div>
-                <div class="item">1月未消费</div>
-                <div class="item">2月未消费</div>
-                <div class="item">3月未消费</div>
-                <div class="item"><el-input class="width85"></el-input> 月未消费</div>
+                <div class="item"
+                    v-for="(item, index) in last_buy"
+                    :key="index"
+                    @click="search.last_buy = item.value"
+                >
+                    {{item.label}}
+                </div>
+                <div class="item">
+                    <el-input class="width85" v-model="search.last_buy"></el-input> 月未消费</div>
             </div>
             <div class="box box1">
                 <span>消费次数：</span>
@@ -228,9 +237,9 @@
         </div>
         <div class="page-box">
             <div class="operation">
-                <el-button>添加标签</el-button>
-                <el-button>移除会员</el-button>
-                <el-button>更改健康管理师</el-button>
+                <el-button @click="isShowCommonTag = true">添加标签</el-button>
+                <el-button @click="deleteMemberFn">移除会员</el-button>
+                <el-button @click="hmdialogVisible = true">更改健康管理师</el-button>
             </div>
             <el-pagination
                     background
@@ -239,14 +248,57 @@
                     :total="page.total">
             </el-pagination>
         </div>
+        <common-tag
+            v-if="isShowCommonTag"
+            @change="changeTag">
+        </common-tag>
+        <user-info
+            class="dialogMain"
+            ref="ruleForm"
+            v-if="memberdialogVisible"
+            @submit="submitCallBack"
+            @cancel="(state) => this.memberdialogVisible = state"
+        ></user-info>
         <el-dialog
-            title="新增会员"
-            :visible.sync="memberdialogVisible"
-            width="50%">
-            <user-info class="dialogMain" ref="ruleForm"></user-info>
+            title="所属健康管理师"
+            :visible.sync="hmdialogVisible"
+            width="400px">
+            <p>
+                已选:{{hm_ids.length}}
+            </p>
+            <el-select  multiple v-model="hm_ids" placeholder="选择会员等级">
+                <el-option
+                        v-for="(item, index) in hmSelectList"
+                        :key="index"
+                        :label="item.hm_name"
+                        :value="item.hm_id"
+                >
+                </el-option>
+            </el-select>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelMemberdialogVisible">取消</el-button>
-                <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+                <el-button type="primary" @click="changeMemberBindHm('ruleForm')">保存</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog
+            title="移除会员"
+            :visible.sync="memberDeletldialogVisible"
+            width="400px">
+            <p>
+                已选:{{hm_ids.length}}
+            </p>
+            <el-select  multiple v-model="hm_ids" placeholder="选择会员等级">
+                <el-option
+                        v-for="(item, index) in hmSelectList"
+                        :key="index"
+                        :label="item.hm_name"
+                        :value="item.hm_id"
+                >
+                </el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="cancelMemberdialogVisible">取消</el-button>
+                <el-button type="primary" @click="changeMemberBindHm('ruleForm')">保存</el-button>
             </span>
         </el-dialog>
     </div>
@@ -254,15 +306,42 @@
 
 <script>
 import userInfo from './common/userInfoDialog'
+import commonTag from './common/commonTag'
 import * as api from '../../../api/index'
 import { memberAllCard } from '../../../api';
 export default {
     name: 'memberList',
     data () {
         return {
+            last_buy: [
+                {
+                    label: '全部',
+                    value: 'all'
+                },
+                {
+                    label: '1月未消费',
+                    value: '1'
+                },
+                {
+                    label: '2月未消费',
+                    value: '2'
+                },
+                {
+                    label: '3月未消费',
+                    value: '3'
+                }
+            ], //消费频次
+            search: {
+                keyword: '',
+            },
+            isShowCommonTag: false,
+            hm_ids: [], //健康管理师选中ID
+            memeberIds: [], //选中的用户ID
             operationState: '添加会员',
             isShowAll: false,
             memberdialogVisible: false,
+            memberDeletldialogVisible: false,
+            hmdialogVisible: false, // 更改健康管理师弹窗
             memberAllCardList: [],
             hmSelectList: [],
             memberList: [],
@@ -280,7 +359,8 @@ export default {
         }
     },
     components: {
-        userInfo
+        userInfo,
+        commonTag
     },
     created() {
         this.getMemberLevelList();
@@ -289,6 +369,43 @@ export default {
         this.getMemberList();
     },
     methods: {
+        // 新增会员提交后回调
+        submitCallBack () {
+            console.log('submitCallBack');
+            this.memberdialogVisible = false;
+        },
+        changeTag (item) {
+            console.log(item);
+            this.isShowCommonTag = false;
+        },
+        // 删除会员操作
+        deleteMemberFn () {
+            if (this.memeberIds.length > 0 ) {
+                this.$confirm('是否确认移除该会员？', '移除会员', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    const data = await api.memberDelete({ memeber_id_array: this.memeberIds });
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                });
+            } else {
+                this.$message({
+                    type: 'info',
+                    message: '未选择!'
+                });
+            }
+        },
+        async changeMemberBindHm () {
+            const data = await api.memberBindHm({ memeber_id: this.memeberIds[0], hm_id: this.hm_ids[0]});
+            this.$message.success(data.msg);
+            this.hmdialogVisible = false;
+            this.getMemberList();
+        },
         // 所有卡项
         async getMemberAllCard () {
             const  { data } = await memberAllCard();
@@ -297,7 +414,7 @@ export default {
         // 会员等级列表
         async getMemberLevelList () {
             const  { data } = await api.memberLevelList();
-            this.memberLevelList = data.data;
+            this.memberLevelList = data;
         },
         // 获取会员列表
         async getMemberList () {
@@ -305,14 +422,18 @@ export default {
             this.memberList = data.data;
             this.page.total = data.all_count;
         },
-        // 获取会员列表
+        // 获取健康管理师下来列表
         async getHmSelectList () {
             const  { data } = await api.hmSelectList();
             this.hmSelectList = data;
         },
         handleClose () {},
         handleCurrentChange () {},
-        handleSelectionChange () {},
+        // table勾选选中值
+        handleSelectionChange (item) {
+            this.memeberIds = item.map(m => { return m.memeber_id });
+            console.log(this.memeberIds);
+        },
         handleMemberDetails (scope) {
             this.operationState = '查看';
             this.ruleForm = scope.row;
@@ -323,12 +444,6 @@ export default {
             console.log(scope);
             // this.$router.push({ path: '/workbench', query: { id: scope.row.memeber_id }})
             this.$router.push({ path: '/workbench', query: { id: '315728c141a1475680e6519d444a4314' }})
-        },
-        // 新增会员
-        submitForm (value) {
-            this.$refs.ruleForm.submitFn(() => {
-                alert(123);
-            });
         },
         // 取消新增会员
         cancelMemberdialogVisible (value) {

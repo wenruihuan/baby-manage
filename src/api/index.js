@@ -501,3 +501,30 @@ export const archivesBabyRecord = query => {
     });
 };
 
+// 4.1.1.4.添加（编辑）宝宝档案
+    export const archivessaveBabyBase = query => {
+    return request({
+        url: `/admin/archives/saveBabyBase`,
+        method: 'post',
+        data: query
+    });
+};
+
+// 4.2.4.更改健康管理师
+    export const memberBindHm = query => {
+    return request({
+        url: `/admin/member/bindHm`,
+        method: 'post',
+        data: query
+    });
+};
+
+// 4.2.2.删除会员
+    export const memberDelete = query => {
+    return request({
+        url: `/admin/member/delete`,
+        method: 'post',
+        data: query
+    });
+};
+

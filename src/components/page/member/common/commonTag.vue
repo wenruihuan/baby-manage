@@ -79,10 +79,15 @@ export default {
         },
         // 隐藏弹窗
         cancelTagVisible () {
-            this.$parent.isShowCommonTag = false;
+            this.$emit('change', this.tagList)
         },
         currentTagVal (item) {
             item.select = !item.select;
+            this.memberTagList.map(m => {
+                if(m.select) {
+                    this.tagList.push(m.tag_id);
+                }
+            });
         },
     }
 };
