@@ -1,13 +1,11 @@
 import request from '@/utils/request';
 
-const IP = 'https://result.eolinker.com/BxxMFUV803ea48c63410d63327c3ad2f649e76860d89dfd?uri=';
-
 export const ERR_OK = 200;
 
 /* 获取上传token */
 export const getUploadToken = query => {
     return request({
-        url: `${IP}/admin/common/qiniuToken`,
+        url: `/admin/common/qiniuToken`,
         method: 'get',
         params: query
     });
@@ -16,7 +14,7 @@ export const getUploadToken = query => {
 /* 获取服务列表 */
 export const getBoxList = query => {
     return request({
-        url: `${IP}/admin/service/list`,
+        url: `/admin/service/list`,
         method: 'get',
         params: query
     });
@@ -25,7 +23,7 @@ export const getBoxList = query => {
 /* 删除服务分类 */
 export const removeBox = query => {
     return request({
-        url: `${IP}/admin/service/delete`,
+        url: `/admin/service/delete`,
         method: 'post',
         data: query
     });
@@ -34,7 +32,7 @@ export const removeBox = query => {
 /* 服务详情 */
 export const getDetail = query => {
     return request({
-        url: `${IP}/admin/service/detail`,
+        url: `/admin/service/detail`,
         method: 'get',
         params: query
     });
@@ -43,7 +41,7 @@ export const getDetail = query => {
 /* 添加/编辑服务 */
 export const addOrEditBox = query => {
     return request({
-        url: `${IP}/admin/service/save`,
+        url: `/admin/service/save`,
         method: 'post',
         data: query
     });
@@ -52,7 +50,7 @@ export const addOrEditBox = query => {
 /* 服务上下架 */
 export const setPublish = query => {
     return request({
-        url: `${IP}/admin/service/setPublish`,
+        url: `/admin/service/setPublish`,
         method: 'post',
         data: query
     });
@@ -61,7 +59,7 @@ export const setPublish = query => {
 /* 获取服务分类列表 */
 export const getCategoryList = query => {
     return request({
-        url: `${IP}/admin/service/kind`,
+        url: `/admin/service/kind`,
         method: 'get',
         params: query
     });
@@ -70,7 +68,7 @@ export const getCategoryList = query => {
 /* 获取服务标签列表 */
 export const getServiceTags = query => {
     return request({
-        url: `${IP}/admin/service/tag`,
+        url: `/admin/service/tag`,
         method: 'get',
         params: query
     });
@@ -79,7 +77,7 @@ export const getServiceTags = query => {
 /* 添加服务分类 */
 export const addCategory = query => {
     return request({
-        url: `${IP}/admin/service/saveKind`,
+        url: `/admin/service/saveKind`,
         method: 'post',
         data: query
     });
@@ -88,7 +86,7 @@ export const addCategory = query => {
 /* 删除服务分类 */
 export const removeCategory = query => {
     return request({
-        url: `${IP}/admin/service/deleteKind`,
+        url: `/admin/service/deleteKind`,
         method: 'post',
         data: query
     });
@@ -97,7 +95,7 @@ export const removeCategory = query => {
 /* 获取服务标签列表 */
 export const getTagList = query => {
     return request({
-        url: `${IP}/admin/service/tag`,
+        url: `/admin/service/tag`,
         method: 'get',
         params: query
     });
@@ -106,7 +104,7 @@ export const getTagList = query => {
 /* 保存服务标签 */
 export const saveTag = query => {
     return request({
-        url: `${IP}/admin/service/saveTag`,
+        url: `/admin/service/saveTag`,
         method: 'post',
         data: query
     });
@@ -115,7 +113,7 @@ export const saveTag = query => {
 /* 删除服务标签 */
 export const removeTag = query => {
     return request({
-        url: `${IP}/admin/service/deleteTag`,
+        url: `/admin/service/deleteTag`,
         method: 'post',
         data: query
     });
@@ -124,7 +122,7 @@ export const removeTag = query => {
 /* 服务是否展示 */
 export const setShow = query => {
     return request({
-        url: `${IP}/admin/service/setShow`,
+        url: `/admin/service/setShow`,
         method: 'post',
         data: query
     });
@@ -133,7 +131,7 @@ export const setShow = query => {
 /* 服务排序 */
 export const setSort = query => {
     return request({
-        url: `${IP}/admin/service/sort`,
+        url: `/admin/service/sort`,
         method: 'post',
         data: query
     });
@@ -142,7 +140,7 @@ export const setSort = query => {
 /* 二维码预览 */
 export const qrCodeView = query => {
     return request({
-        url: `${IP}/admin/service/previewQr`,
+        url: `/admin/service/previewQr`,
         method: 'post',
         data: query
     });

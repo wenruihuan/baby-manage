@@ -8,7 +8,7 @@
                             style="margin-left: 10px;"
                             placement="bottom"
                             trigger="click">
-                        <div><img src="../../../assets/img/alipay.png" width="150" height="150" alt=""></div>
+                        <div><img :src="QR_url" width="150" height="150" alt=""></div>
                         <el-button slot="reference">快速注册入口</el-button>
                     </el-popover>
                     <el-button style="margin-left: 10px;" @click="$router.push('/MemberSetting')">等级设置</el-button>
@@ -56,10 +56,11 @@
             </div>
             <div class="box box1">
                 <span>消费频次：</span>
-                <div class="item"
+                <div
                     v-for="(item, index) in last_buy"
                     :key="index"
-                    @click="search.last_buy = item.value"
+                     :class="search.last_buy === item.value ? ' active item' : 'item'"
+                    @click="searchValFn('last_buy', item.value)"
                 >
                     {{item.label}}
                 </div>
@@ -68,15 +69,27 @@
             </div>
             <div class="box box1">
                 <span>消费次数：</span>
-                <div class="item">全部</div>
-                <div class="item">1次以内</div>
-                <div class="item">2次以内</div>
-                <div class="item">3次以内</div>
-                <div class="item"><el-input class="width85"></el-input> 次以内</div>
+                <div
+                        v-for="(item, index) in buy_count"
+                        :key="index"
+                        :class="search.buy_count === item.value ? ' active item' : 'item'"
+                        @click="searchValFn('buy_count', item.value)"
+                >
+                    {{item.label}}
+                </div>
+                <div class="item"><el-input class="width85" v-model="search.buy_count"></el-input> 次以内</div>
             </div>
             <div class="box box1">
                 <span>客户标签：</span>
-                <div class="item">选择</div>
+                <div :class="search.tag_id === '' ? ' active item' : 'item'" @click="search.tag_id = ''">全部</div>
+                <div
+                    v-for="(item, index) in allTagList"
+                    :key="index"
+                    :class="search.tag_id === item.tag_id ? ' active item' : 'item'"
+                    @click="searchValFn('tag_id', item.tag_id)"
+                >
+                    {{item.tag_name}}
+                </div>
             </div>
             <div class="box box1">
                 <span>生日：</span>
@@ -87,8 +100,9 @@
                 <div class="item">明天</div>
                 <div class="item">
                     <el-date-picker
-                        v-model="value1"
+                        v-model="birthdayValue"
                         type="daterange"
+                        value-format="yyyy-MM-dd"
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期">
@@ -104,7 +118,8 @@
                 <div class="item">明天</div>
                 <div class="item">
                     <el-date-picker
-                        v-model="value2"
+                        v-model="regTimeValue"
+                        value-format="yyyy-MM-dd"
                         type="daterange"
                         range-separator="至"
                         start-placeholder="开始日期"
@@ -114,19 +129,23 @@
             </div>
             <div class="box box1">
                 <span>会员来源：</span>
-                <div class="item">全部</div>
-                <div class="item">线上注册</div>
-                <div class="item">线下录入</div>
+                <div
+                    v-for="(item, index) in sourceList"
+                    :key="index"
+                    :class="search.source === item.value ? ' active item' : 'item'"
+                    @click="searchValFn('source', item.value)"
+                >
+                    {{item.label}}
+                </div>
             </div>
             <div class="box box1">
                 <span>积分数量：</span>
                 <div class="item">全部</div>
                 <div class="item">
-                    <el-input class="width85" placeholder="自定义"></el-input>
+                    <el-input v-model="search.start_point" class="width85" placeholder="自定义"></el-input>
                     <span>-</span>
-                    <el-input class="width85" placeholder="自定义"></el-input>
+                    <el-input v-model="search.end_point" class="width85" placeholder="自定义"></el-input>
                 </div>
-                <div class="item">线下录入</div>
             </div>
             <div class="box box1">
                 <span>健康管理师：</span>
@@ -237,9 +256,9 @@
         </div>
         <div class="page-box">
             <div class="operation">
-                <el-button @click="isShowCommonTag = true">添加标签</el-button>
+                <el-button @click="isShowCommonTagFn">添加标签</el-button>
                 <el-button @click="deleteMemberFn">移除会员</el-button>
-                <el-button @click="hmdialogVisible = true">更改健康管理师</el-button>
+                <el-button @click="hmdialogVisibleFn">更改健康管理师</el-button>
             </div>
             <el-pagination
                     background
@@ -248,10 +267,14 @@
                     :total="page.total">
             </el-pagination>
         </div>
+        <!--标签操作弹窗-->
         <common-tag
+            :selectNum="memeberIds.length"
             v-if="isShowCommonTag"
             @change="changeTag">
         </common-tag>
+
+        <!--新增会员-->
         <user-info
             class="dialogMain"
             ref="ruleForm"
@@ -259,14 +282,13 @@
             @submit="submitCallBack"
             @cancel="(state) => this.memberdialogVisible = state"
         ></user-info>
+
+        <!--选择健康管理师-->
         <el-dialog
-            title="所属健康管理师"
+            :title="hmdialogTitle"
             :visible.sync="hmdialogVisible"
             width="400px">
-            <p>
-                已选:{{hm_ids.length}}
-            </p>
-            <el-select  multiple v-model="hm_ids" placeholder="选择会员等级">
+            <el-select v-model="hm_id" placeholder="选择健康管理师">
                 <el-option
                         v-for="(item, index) in hmSelectList"
                         :key="index"
@@ -276,18 +298,19 @@
                 </el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelMemberdialogVisible">取消</el-button>
+                <el-button @click="hmdialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="changeMemberBindHm('ruleForm')">保存</el-button>
             </span>
         </el-dialog>
+        <!--移除会员弹窗-->
         <el-dialog
             title="移除会员"
             :visible.sync="memberDeletldialogVisible"
             width="400px">
             <p>
-                已选:{{hm_ids.length}}
+                已选:{{hm_id.length}}
             </p>
-            <el-select  multiple v-model="hm_ids" placeholder="选择会员等级">
+            <el-select  multiple v-model="hm_id" placeholder="选择会员等级">
                 <el-option
                         v-for="(item, index) in hmSelectList"
                         :key="index"
@@ -313,29 +336,80 @@ export default {
     name: 'memberList',
     data () {
         return {
+            QR_url: '',
+            hmdialogTitle: '所属健康管理师',
+            allTagList: [],
             last_buy: [
                 {
                     label: '全部',
-                    value: 'all'
+                    value: 'all',
+                    state: false,
                 },
                 {
                     label: '1月未消费',
+                    state: false,
                     value: '1'
                 },
                 {
                     label: '2月未消费',
+                    state: false,
                     value: '2'
                 },
                 {
                     label: '3月未消费',
+                    state: false,
                     value: '3'
                 }
             ], //消费频次
+            buy_count: [
+                {
+                    label: '全部',
+                    value: 'all',
+                    state: false,
+                },
+                {
+                    label: '1次以内',
+                    state: false,
+                    value: '1'
+                },
+                {
+                    label: '2次以内',
+                    state: false,
+                    value: '2'
+                },
+                {
+                    label: '3次以内',
+                    state: false,
+                    value: '3'
+                }
+            ], //消费频次
+            page_no: 1,
+            sourceList: [
+                {
+                    label: '全部',
+                    value: '',
+                },
+                {
+                    label: '线上注册',
+                    value: 0
+                },
+                {
+                    label: '线下录入',
+                    state: false,
+                    value: 1
+                }
+            ], //消费频次
+            birthdayValue: [],
+            regTimeValue: [],
             search: {
                 keyword: '',
+                buy_count: '',
+                tag_id: '',
+                source: '',
+                last_buy: ''
             },
             isShowCommonTag: false,
-            hm_ids: [], //健康管理师选中ID
+            hm_id: [], //健康管理师选中ID
             memeberIds: [], //选中的用户ID
             operationState: '添加会员',
             isShowAll: false,
@@ -367,6 +441,8 @@ export default {
         this.getMemberAllCard();
         this.getHmSelectList();
         this.getMemberList();
+        this.getMemberAllTag();
+        this.getMemberRegQr();
     },
     methods: {
         // 新增会员提交后回调
@@ -374,9 +450,48 @@ export default {
             console.log('submitCallBack');
             this.memberdialogVisible = false;
         },
-        changeTag (item) {
+        async changeTag (item) {
             console.log(item);
-            this.isShowCommonTag = false;
+            if (item.length > 0 ) {
+                this.isShowCommonTag = false;
+                this.hmdialogTitle = '所属健康管理师 （已选'+ this.memeberIds.length +'）'
+                const data = await api.memberEditTag({ memeber_ids: this.memeberIds, tag_ids: item })
+                this.$message({
+                    type: 'success',
+                    message: data.msg
+                });
+            } else {
+                this.$message({
+                    type: 'info',
+                    message: '未选择!'
+                });
+            }
+        },
+        hmdialogVisibleFn () {
+            if (this.memeberIds.length > 0 ) {
+                this.hmdialogVisible = true;
+                this.hmdialogTitle = '所属健康管理师 （已选'+ this.memeberIds.length +'）'
+            } else {
+                this.$message({
+                    type: 'info',
+                    message: '未选择!'
+                });
+            }
+        },
+        isShowCommonTagFn () {
+            if (this.memeberIds.length > 0 ) {
+                this.isShowCommonTag = true;
+            } else {
+                this.$message({
+                    type: 'info',
+                    message: '未选择!'
+                });
+            }
+        },
+        // 4.3.12.会员标签-获取所有标签
+        async getMemberAllTag () {
+            const { data } = await api.memberAllTag();
+            this.allTagList = data;
         },
         // 删除会员操作
         deleteMemberFn () {
@@ -401,7 +516,7 @@ export default {
             }
         },
         async changeMemberBindHm () {
-            const data = await api.memberBindHm({ memeber_id: this.memeberIds[0], hm_id: this.hm_ids[0]});
+            const data = await api.memberBindHm({ memeber_ids: this.memeberIds, hm_id: this.hm_id });
             this.$message.success(data.msg);
             this.hmdialogVisible = false;
             this.getMemberList();
@@ -418,7 +533,16 @@ export default {
         },
         // 获取会员列表
         async getMemberList () {
-            const  { data } = await api.memberList();
+            this.search.start_birthday = this.birthdayValue[0];
+            this.search.end_birthday = this.birthdayValue[1];
+            this.search.reg_start_time = this.regTimeValue[0];
+            this.search.reg_end_time = this.regTimeValue[1];
+            let params = {
+                page_size: 20,
+                page_no: this.page_no,
+                ...this.search
+            };
+            const  { data } = await api.memberList(params);
             this.memberList = data.data;
             this.page.total = data.all_count;
         },
@@ -428,7 +552,15 @@ export default {
             this.hmSelectList = data;
         },
         handleClose () {},
-        handleCurrentChange () {},
+        // 4.3.8.获取快速注册二维码
+        async getMemberRegQr () {
+            const { data } = await api.memberRegQr();
+            this.QR_url = data.QR_url;
+        },
+        handleCurrentChange (value) {
+            this.page_no = value;
+            this.getMemberList();
+        },
         // table勾选选中值
         handleSelectionChange (item) {
             this.memeberIds = item.map(m => { return m.memeber_id });
@@ -448,6 +580,9 @@ export default {
         // 取消新增会员
         cancelMemberdialogVisible (value) {
             this.memberdialogVisible = false;
+        },
+        searchValFn (name, value) {
+            this.search[name] = value;
         }
     }
 };
@@ -499,6 +634,8 @@ export default {
     cursor: pointer;
     transition: 0.3s;
 }
+
+.memberList .search .box1 .item.active,
 .memberList .search .box1 .item1.active,
 .memberList .search .box1 .item1:hover{
     background: #409EFF;

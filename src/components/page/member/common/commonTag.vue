@@ -1,6 +1,6 @@
 <template>
     <el-dialog
-            title="添加标签"
+            :title="title"
             :visible.sync="isShow"
             width="510px">
             <div class="commonTag">
@@ -48,11 +48,18 @@ export default {
             isShow: true,
             TagVal: '',
             tagList: [],
-            memberTagList: []
+            memberTagList: [],
+            title: '添加标签'
         }
+    },
+    props: {
+        selectNum: 0
     },
     created () {
         this.getMemberTag();
+        if (this.selectNum > 0) {
+            this.title = '添加标签 (已选' + this.selectNum +')'
+        }
     },
     methods: {
         async getMemberTag () {

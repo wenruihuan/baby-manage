@@ -604,260 +604,243 @@
             </div>
         </div>
         <!--        宝宝档案-->
-        <div v-if="motherInfo" class="box1">
-            <div class="info-title">
-                宝宝档案
-                &nbsp;&nbsp;&nbsp;
-                <span
-                        class="mainColor editBtn"
-                        v-if="!babyInfoState && isArchivesQueryAuth"
-                        @click="babyInfoState = true"
-                >
+        <div>
+            <div
+                v-if="babyDataList && babyDataList.length > 0"
+                v-for="(babyDataItem, index) in babyDataList"
+                :key="index"
+                class="box1">
+                <div class="info-title">
+                    宝宝档案
+                    &nbsp;&nbsp;&nbsp;
+                    <span
+                            class="mainColor editBtn"
+                            v-if="!babyDataItem.babyInfoState && isArchivesQueryAuth"
+                            @click="babyDataItem.babyInfoState = true"
+                    >
                     <i class="el-icon-edit"></i>编辑
                 </span>
-            </div>
-            <div class="row" style="padding: 0 20px;">
-                <!--假数据模块，单纯显示-->
-                <div class="fake" v-if="!isPermission">
-                    <div class="bg"><el-button @click="getPermissionState">点此授权查看</el-button></div>
-                    <div class="item">
-                        <span class="label">宝宝姓名：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">宝宝生日：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">宝宝性别：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">生产方式：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">生产情况：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">出生身长：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">出生体重：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">出生胸围：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">出生头围：</span>
-                        <div class="contentBox">
-                            <el-input class="width200"></el-input>
-                        </div>
-                    </div>
                 </div>
+                    <div class="row" style="padding: 0 20px;"
+                    >
+                        <!--假数据模块，单纯显示-->
+                        <div class="fake" v-if="!isPermission">
+                            <div class="bg"><el-button @click="getPermissionState">点此授权查看</el-button></div>
+                            <div class="item">
+                                <span class="label">宝宝姓名：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">宝宝生日：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">宝宝性别：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">生产方式：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">生产情况：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">出生身长：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">出生体重：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">出生胸围：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">出生头围：</span>
+                                <div class="contentBox">
+                                    <el-input class="width200"></el-input>
+                                </div>
+                            </div>
+                        </div>
 
-                <!--宝宝的基本信息-->
-                <div class="real" v-if="isPermission && babyBaseInfo">
-                    <div class="item">
-                        <span class="label">宝宝姓名：</span>
-                        <div class="contentBox">
-                            <el-input v-if="babyInfoState" class="width200" v-model="babyBaseInfo.name"></el-input>
-                            <p v-else>{{babyBaseInfo.birthday}}</p>
+                        <!--宝宝的基本信息-->
+                        <div class="real" v-if="isPermission">
+                            <div class="item">
+                                <span class="label">宝宝姓名：</span>
+                                <div class="contentBox">
+                                    <el-input v-if="babyDataItem.babyInfoState" class="width200" v-model="babyDataItem.babyBaseInfo.name"></el-input>
+                                    <p v-else>{{babyDataItem.babyBaseInfo.name}}</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">宝宝生日：</span>
+                                <div class="contentBox">
+                                    <div class="contentBox">
+                                        <el-date-picker
+                                                v-if="babyDataItem.babyInfoState"
+                                                value-format="yyyy-MM-dd"
+                                                format="yyyy-MM-dd"
+                                                class="width250"
+                                                type="date"
+                                                placeholder="选择日期"
+                                                v-model="babyDataItem.babyBaseInfo.birthday">
+                                        </el-date-picker>
+                                        <p v-else>{{babyDataItem.babyBaseInfo.birthday}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">宝宝性别：</span>
+                                <div class="contentBox">
+                                    <el-select class="width200" v-if="babyDataItem.babyInfoState" v-model="babyDataItem.babyBaseInfo.sex" placeholder="请选择性别">
+                                        <el-option label="男" value="男"></el-option>
+                                        <el-option label="女" value="女"></el-option>
+                                    </el-select>
+                                    <p v-else>{{babyDataItem.babyBaseInfo.sex}}</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">生产方式：</span>
+                                <div class="contentBox">
+                                    <el-input v-if="babyDataItem.babyInfoState" class="width200" v-model="babyDataItem.babyBaseInfo.mode_of_production"></el-input>
+                                    <p v-else>{{babyDataItem.babyBaseInfo.mode_of_production}}</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">生产情况：</span>
+                                <div class="contentBox">
+                                    <el-input v-if="babyDataItem.babyInfoState" class="width200" v-model="babyDataItem.babyBaseInfo.production_situation"></el-input>
+                                    <p v-else>{{babyDataItem.babyBaseInfo.production_situation}}</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">出生身长：</span>
+                                <div class="contentBox">
+                                    <el-input v-if="babyDataItem.babyInfoState" class="width200" v-model="babyDataItem.babyBaseInfo.height"></el-input>
+                                    <p v-else>{{babyDataItem.babyBaseInfo.height}}</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">出生体重：</span>
+                                <div class="contentBox">
+                                    <el-input v-if="babyDataItem.babyInfoState" class="width200" v-model="babyDataItem.babyBaseInfo.weight"></el-input>
+                                    <p v-else>{{babyDataItem.babyBaseInfo.weight}}</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">出生胸围：</span>
+                                <div class="contentBox">
+                                    <el-input v-if="babyDataItem.babyInfoState" class="width200" v-model="babyDataItem.babyBaseInfo.bust"></el-input>
+                                    <p v-else>{{babyDataItem.babyBaseInfo.bust}}</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="label">出生头围：</span>
+                                <div class="contentBox">
+                                    <el-input v-if="babyDataItem.babyInfoState" class="width200" v-model="babyDataItem.babyBaseInfo.head_circumference"></el-input>
+                                    <p v-else>{{babyDataItem.babyBaseInfo.head_circumference}}</p>
+                                </div>
+                            </div>
+
+                            <div class="operation" v-if="babyDataItem.babyInfoState">
+                                <el-button @click="saveBabyBaseRecordFn">保存记录</el-button>
+                            </div>
+                            <div class="more" v-if="!babyDataItem.babyInfoMore">
+                                <span class="mainColor" @click="getBabyInfoMore(index)">查看更多<i class="el-icon-arrow-down"></i></span>
+                            </div>
+                        </div>
+
+                        <!--宝宝的其他信息-->
+                        <div class="bodySize" v-if="babyDataItem.babyInfoMore">
+                            <div class="info-title" style="background: none;">身体尺寸测量数据</div>
+                            <div class="nodata" v-if="babyDataItem.babyRecord.length < 1">
+                                <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
+                            </div>
+                            <div :class="babyDataItem ? 'babyBodySize babyBodySize' + index  : 'babyBodySize'">{{index}}</div>
+                            <div style="margin: 50px auto">
+                                <div class="alignRight">
+                                    <el-button @click="saveBodySizeItemBtn">保存记录</el-button>
+                                </div>
+                                <el-table
+                                    class="maginHeight20"
+                                    :data="addBabyItem[index]"
+                                    style="width: 100%"
+                                    ref="multipleTable"
+                                >
+                                    <el-table-column
+                                        prop="date"
+                                        label="日期"
+                                        width="250"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-date-picker
+                                                value-format="yyyy-MM-dd"
+                                                format="yyyy-MM-dd"
+                                                class="width250"
+                                                type="date"
+                                                placeholder="选择日期"
+                                                v-model="scope.row.date">
+                                            </el-date-picker>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="height"
+                                        label="身高（cm）"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-input class="width120" v-model="scope.row.height"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="weight"
+                                            label="体重（cm）"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-input class="width120" v-model="scope.row.weight"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="bust"
+                                            label="胸围（cm）"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-input class="width120" v-model="scope.row.bust"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="head_circumference"
+                                            label="头围（cm）"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-input class="width120" v-model="scope.row.head_circumference"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                                <div>
+                                    <el-button @click="addBabyItemBtn(index)">添加行</el-button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="item">
-                        <span class="label">宝宝生日：</span>
-                        <div class="contentBox">
-                            <el-date-picker
-                                    v-if="babyInfoState"
-                                    value-format="yyyy-MM-dd"
-                                    format="yyyy-MM-dd"
-                                    class="width250"
-                                    type="date"
-                                    placeholder="选择日期"
-                                    v-model="babyBaseInfo.birthday">
-                            </el-date-picker>
-                            <p v-else>{{babyBaseInfo.birthday}}</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">宝宝性别：</span>
-                        <div class="contentBox">
-                            <el-select v-if="babyInfoState" class="width200" v-model="babyBaseInfo.sex" placeholder="请选择活动区域">
-                                <el-option label="男" value="男"></el-option>
-                                <el-option label="女" value="女"></el-option>
-                            </el-select>
-                            <p v-else>{{babyBaseInfo.sex}}</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">生产方式：</span>
-                        <div class="contentBox">
-                            <el-input v-if="babyInfoState" class="width200" v-model="babyBaseInfo.sex"></el-input>
-                            <p v-else>{{babyBaseInfo.sex}}</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">生产情况：</span>
-                        <div class="contentBox">
-                            <el-input v-if="babyInfoState" class="width200" v-model="babyBaseInfo.production_situation"></el-input>
-                            <p v-else>{{babyBaseInfo.production_situation}}</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">出生身长：</span>
-                        <div class="contentBox">
-                            <el-input v-if="babyInfoState" class="width200" v-model="babyBaseInfo.height"></el-input>
-                            <p v-else>{{babyBaseInfo.height}}</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">出生体重：</span>
-                        <div class="contentBox">
-                            <el-input v-if="babyInfoState" class="width200" v-model="babyBaseInfo.weight"></el-input>
-                            <p v-else>{{babyBaseInfo.weight}}</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">出生胸围：</span>
-                        <div class="contentBox">
-                            <el-input v-if="babyInfoState" class="width200" v-model="babyBaseInfo.bust"></el-input>
-                            <p v-else>{{babyBaseInfo.bust}}</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="label">出生头围：</span>
-                        <div class="contentBox">
-                            <el-input v-if="babyInfoState" class="width200" v-model="babyBaseInfo.head_circumference"></el-input>
-                            <p v-else>{{babyBaseInfo.head_circumference}}</p>
-                        </div>
-                    </div>
-                    <div class="operation"  v-if="babyInfoState">
-                        <el-button @click="saveBabyBaseRecordFn">保存记录</el-button>
-                    </div>
-                    <div class="more" v-if="!babyInfoMore">
-                        <span class="mainColor" @click="getBabyInfoMore">查看更多<i class="el-icon-arrow-down"></i></span>
-                    </div>
-                </div>
-                {{babyDataList}}
-                <!--宝宝的其他信息-->
-                <div class="bodySize" v-if="isPermission && babyBaseInfo">
-                    <div class="info-title" style="background: none;">身体尺寸测量数据</div>
-                    <div class="nodata" v-if="babyRecordList.length < 1">
-                        <img src="../../../assets/img/nodata_icon.png" alt="" width="150">
-                    </div>
-                    <div v-else>
-                        <el-table
-                                :data="babyRecordList"
-                                style="width: 100%"
-                                ref="multipleTable"
-                        >
-                            <el-table-column
-                                    prop="date"
-                                    label="日期"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="height"
-                                    label="身高（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="weight"
-                                    label="体重（kg）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="bust"
-                                    label="胸围（cm）"
-                            ></el-table-column>
-                            <el-table-column
-                                    prop="head_circumference"
-                                    label="头围（cm）"
-                            ></el-table-column>
-                        </el-table>
-                    </div>
-                    <div style="margin: 50px auto">
-                        <div class="alignRight">
-                            <el-button @click="saveBodySizeItemBtn">保存记录</el-button>
-                        </div>
-                        <el-table
-                            class="maginHeight20"
-                            :data="addBabyItem"
-                            style="width: 100%"
-                            ref="multipleTable"
-                        >
-                            <el-table-column
-                                prop="date"
-                                label="日期"
-                                width="250"
-                            >
-                                <template slot-scope="scope">
-                                    <el-date-picker
-                                        value-format="yyyy-MM-dd"
-                                        format="yyyy-MM-dd"
-                                        class="width250"
-                                        type="date"
-                                        placeholder="选择日期"
-                                        v-model="scope.row.date">
-                                    </el-date-picker>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                prop="height"
-                                label="身高（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.height"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="weight"
-                                    label="体重（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.weight"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="bust"
-                                    label="胸围（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.bust"></el-input>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="head_circumference"
-                                    label="头围（cm）"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input class="width70" v-model="scope.row.head_circumference"></el-input>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                        <div>
-                            <el-button @click="addBabyItemBtn">添加行</el-button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <el-dialog
@@ -944,15 +927,14 @@ export default {
                 }
             ],
             archivesSaveRecordData: {}, //保存新增的麻麻数据
-            addBabyItem: [
-                {
-                    date: '',
-                    height: '',
-                    weight: '',
-                    bust: '',
-                    head_circumference: ''
-                }
-            ],
+            addBabyObj: {
+                date: '',
+                height: '',
+                weight: '',
+                bust: '',
+                head_circumference: ''
+            },
+            addBabyItem: {},
             isPermission: false,
             isArchivesQueryAuth: false, //授权码状态，如果为false 则三秒后再次判断
             motherInfo: undefined,
@@ -1199,146 +1181,99 @@ export default {
             };
             myChart.setOption(option);
         },
-        babyChart (data, Dom) {
+        babyChart (data, index) {
             let xAxisData = data.map(m => { return m.date });
             let seriesData = {
-                left_arm: [],
-                right_arm: [],
-                up_navel: [],
-                middle_navel: [],
-                down_navel: [],
-                hipline: [],
-                left_thigh: [],
-                right_thigh: [],
-                left_calf: [],
-                right_calf: []
+                height: [],
+                weight: [],
+                bust: [],
+                head_circumference: []
             }
 
             data.forEach(m => {
-                seriesData.left_arm.push(m.left_arm);
-                seriesData.right_arm.push(m.right_arm);
-                seriesData.up_navel.push(m.up_navel);
-                seriesData.middle_navel.push(m.middle_navel);
-                seriesData.down_navel.push(m.down_navel);
-                seriesData.hipline.push(m.hipline);
-                seriesData.left_thigh.push(m.left_thigh);
-                seriesData.right_thigh.push(m.right_thigh);
-                seriesData.left_calf.push(m.left_calf);
-                seriesData.right_calf.push(m.right_calf);
+                seriesData.height.push(m.height);
+                seriesData.weight.push(m.weight);
+                seriesData.bust.push(m.bust);
+                seriesData.head_circumference.push(m.head_circumference);
             });
             // 基于准备好的dom，初始化echarts实例
-            let myChart = this.$echarts.init(document.getElementById(Dom));
-            // 绘制图表
-            let option = {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'cross',
-                        label: {
-                            backgroundColor: '#6a7985'
+            let paramDiv = document.getElementsByClassName('babyBodySize' + index)[0];
+            paramDiv.style.width = '100%';
+            paramDiv.style.height = '500';
+            let idDom = '<div style="width: 100%; height: 100%;" id="babyBodySize'+ index +'"></div>';
+            paramDiv.innerHTML = idDom;
+            setTimeout(() => {
+                let myChart = this.$echarts.init(document.getElementById('babyBodySize' + index));
+                // 绘制图表
+                let option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            label: {
+                                backgroundColor: '#6a7985'
+                            }
                         }
-                    }
-                },
-                legend: {
-                    data:  ['左手臂', '右手臂', '脐上', '脐中', '脐下', '臀围', '左大腿', '右大腿', '左小腿', '右小腿']
-                },
-                toolbox: {
-                    feature: {
-                        saveAsImage: {}
-                    }
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
-                },
-                xAxis: [
-                    {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: xAxisData
-                    }
-                ],
-                yAxis: [
-                    {
-                        type: 'value'
-                    }
-                ],
-                series: [
-                    {
-                        name: '左手臂',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.left_arm
                     },
-                    {
-                        name: '右手臂',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.right_arm
+                    legend: {
+                        data:  ['身高', '体重', '胸围', '头围']
                     },
-                    {
-                        name: '脐上',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.up_navel
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
                     },
-                    {
-                        name: '脐中',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.middle_navel
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
                     },
-                    {
-                        name: '脐下',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.down_navel
-                    },
-                    {
-                        name: '臀围',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.hipline
-                    },
-                    {
-                        name: '左大腿',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.left_thigh
-                    },
-                    {
-                        name: '右大腿',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.right_thigh
-                    },
-                    {
-                        name: '左小腿',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.left_calf
-                    },
-                    {
-                        name: '右小腿',
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: seriesData.right_calf
-                    }
-                ]
-            };
-            myChart.setOption(option);
+                    xAxis: [
+                        {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: xAxisData
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '左手臂',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: seriesData.height
+                        },
+                        {
+                            name: '右手臂',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: seriesData.weight
+                        },
+                        {
+                            name: '脐上',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: seriesData.bust
+                        },
+                        {
+                            name: '脐中',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: seriesData.head_circumference
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            }, 300)
         },
         addBodySizeItemBtn () {
             this.addBodySizeItem.push(this.addBodySizeObj);
@@ -1351,8 +1286,11 @@ export default {
         addBodyMeasurementItemBtn () {
             this.addBodyMeasurementItem.push(this.addBodyMeasurementObj);
         },
-        addBabyItemBtn () {
-            this.babyRecordList.push(JSON.parse(JSON.stringify(this.addBabyItem[0])));
+        addBabyItemBtn (index) {
+            this.addBabyItem[index].push(this.addBabyObj);
+            console.log(this.addBabyItem);
+            console.log(this.addBabyItem);
+            console.log(this.addBabyItem);
         },
         // 4.1.2.1.添加（编辑）妈妈档案记录
         async saveBodyMeasurementItemBtn () {
@@ -1365,14 +1303,6 @@ export default {
             const { data } = await api.archivesRecord({ member_id: this.member_id});
             this.body_size_measurement_data = data.body_size_measurement_data;
             this.body_measurement_data = data.body_measurement_data;
-        },
-        //4.1.1.1.获取宝宝档案记录
-        async getArchivesBabyRecord (index) {
-            const { data } = await api.archivesBabyRecord({ baby_id: this.userInfo.member_archives_baby_ids[index]});
-            // this.babyRecordList = data;
-            console.log(data);
-            // this.babyDataList[index].babyRecordList = data;
-            // console.log(this.babyDataList);
         },
         // 基本信息编辑保存
         async baseInfoSave () {
@@ -1393,14 +1323,13 @@ export default {
             setTimeout(() => {
                 this.motherChart(this.body_size_measurement_data, 'motherBodySize');
                 this.motherChart1(this.body_measurement_data, 'motherMeasurementSize');
-                // this.motherChart(this.body_measurement_data, 'motherMeasurementSize');
             },300)
         },
-        getBabyInfoMore () {
-            this.motherInfoMore = true;
+        getBabyInfoMore (index) {
+            this.babyDataList[index].babyInfoMore = true;
             setTimeout(() => {
-                this.babyChart(this.body_size_measurement_data, 'motherBodySize');
-            },300)
+                this.babyChart(this.babyDataList[index].babyRecord, index);
+            },300);
         },
         //4.3.3.会员详情
         async getUserInfoBox () {
@@ -1430,8 +1359,7 @@ export default {
                 this.getArchivesBase();
                 this.getArchivesRecord();
                 this.userInfo.member_archives_baby_ids.forEach((m, index) => {
-                    this.getArchivesBabyBase(index);
-                    this.getArchivesBabyRecord(index);
+                    this.getAllBabyArchives();
                 })
             }
         },
@@ -1443,14 +1371,21 @@ export default {
             const { data } = await api.archivesBase(params);
             this.motherInfo = data;
         },
-        // 4.1.1.2.获取宝宝档案基本信息
-        async getArchivesBabyBase (index) {
+        // 4.1.1.5 获取所有宝宝的档案信息和档案记录
+        async getAllBabyArchives () {
             let params = {
-                member_archives_baby_id: this.userInfo.member_archives_baby_ids[index]
-            };
-            const { data } = await api.archivesBabyBase(params);
-            console.log(data);
-            this.babyDataList[index].babyBaseInfo = data;
+                member_id: this.member_id
+            }
+            const { data } = await api.allBabyArchives(params);
+            this.babyDataList = data.map(m => {
+                m.babyInfoState = false;
+                m.babyInfoMore = false;
+                return m;
+            });
+            data.forEach((index) => {
+                this.addBabyItem[index] = [];
+            })
+            console.log(this.addBabyItem);
         },
         async saveMotherBaseRecordFn () {
             const data = await api.archivesSaveBase(this.motherInfo);
@@ -1521,7 +1456,12 @@ export default {
     height: 60px;
     display: block;
 }
-#motherBodySize{
+#motherBodySize,
+#babyBodySize{
+    width: 100%;
+    height: 500px;
+}
+.babyBodySize{
     width: 100%;
     height: 500px;
 }

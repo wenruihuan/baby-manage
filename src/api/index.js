@@ -528,3 +528,42 @@ export const archivesBabyRecord = query => {
     });
 };
 
+
+// 4.3.15 设置会员的标签（可批量）
+    export const memberEditTag = query => {
+    return request({
+        url: `/admin/member/editTag`,
+        method: 'post',
+        data: query
+    });
+};
+
+
+// 4.3.12.会员标签-获取所有标签
+    export const memberAllTag = query => {
+    return request({
+        url: `/admin/member/allTag`,
+        method: 'get',
+        params: query
+    });
+};
+
+
+// 4.3.8.获取快速注册二维码
+    export const memberRegQr= query => {
+    return request({
+        url: `/admin/member/regQr`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 4.1.1.5 获取所有宝宝的档案信息和档案记录
+    export const allBabyArchives= query => {
+    return request({
+        url: `/admin/archives/allBabyArchives`,
+        method: 'get',
+        params: query
+    });
+};
+
