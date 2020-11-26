@@ -778,7 +778,7 @@
                             <div :class="babyDataItem ? 'babyBodySize babyBodySize' + index  : 'babyBodySize'">{{index}}</div>
                             <div style="margin: 50px auto">
                                 <div class="alignRight">
-                                    <el-button @click="saveBodySizeItemBtn">保存记录</el-button>
+                                    <el-button @click="saveBodySizeItemBtn(babyDataItem)">保存记录</el-button>
                                 </div>
                                 <el-table
                                     class="maginHeight20"
@@ -1278,7 +1278,8 @@ export default {
         addBodySizeItemBtn () {
             this.addBodySizeItem.push(this.addBodySizeObj);
         },
-        async saveBodySizeItemBtn () {
+        async saveBodySizeItemBtn (babyDataItem) {
+            console.log(babyDataItem);
             // this.archivesSaveRecordData.body_size_measurement_data = this.addBodySizeItem;
             // this.archivesSaveRecordData.body_measurement_data = this.addBodyMeasurementItem;
             // const { data } = await api.archivesSaveRecord();
@@ -1367,7 +1368,7 @@ export default {
         async getArchivesBase () {
             let params = {
                 member_id: this.member_id
-            }
+            };
             const { data } = await api.archivesBase(params);
             this.motherInfo = data;
         },
@@ -1375,16 +1376,17 @@ export default {
         async getAllBabyArchives () {
             let params = {
                 member_id: this.member_id
-            }
+            };
             const { data } = await api.allBabyArchives(params);
             this.babyDataList = data.map(m => {
                 m.babyInfoState = false;
                 m.babyInfoMore = false;
                 return m;
             });
-            data.forEach((index) => {
+            data.forEach((item, index) => {
+                // console.log(index);
                 this.addBabyItem[index] = [];
-            })
+            });
             console.log(this.addBabyItem);
         },
         async saveMotherBaseRecordFn () {

@@ -567,3 +567,22 @@ export const archivesBabyRecord = query => {
     });
 };
 
+// 11.1.获取班次列表
+    export const worktimeSelectList= query => {
+    return request({
+        url: `/admin/worktime/selectList`,
+        method: 'get',
+        params: query
+    });
+};
+
+
+// 2.4.6.调整员工某一天班次
+    export const worktimeStaffChange= query => {
+    return request({
+        url: `/admin/worktime/staffChange`,
+        method: 'post',
+        data: query
+    });
+};
+
