@@ -159,16 +159,24 @@
         </div>
         <!--        妈妈档案-->
         <div class="box1">
-            <div class="info-title">
-                健康档案
-                &nbsp;&nbsp;&nbsp;
-                <span
-                    class="mainColor editBtn"
-                    v-if="!motherInfoState && isArchivesQueryAuth"
-                    @click="motherInfoState = true"
-                >
-                    <i class="el-icon-edit"></i>编辑
-                </span>
+
+            <div class="info-title" style="justify-content: space-between">
+                <div style="display: flex">
+                    <span>健康档案</span>
+                    &nbsp;&nbsp;&nbsp;
+                    <div>
+                        <span
+                                class="mainColor editBtn"
+                                v-if="!motherInfoState && isArchivesQueryAuth"
+                                @click="motherInfoState = true"
+                        >
+                        </span>
+                        <i class="el-icon-edit"></i>编辑
+                    </div>
+                </div>
+                <div style="margin-right: 10px;">
+                    <el-button @click="getLink">打印健康档案</el-button>
+                </div>
             </div>
             <div class="row row1" style="padding: 0 20px;" v-if="!motherInfo">
                 <el-button @click="motherInfo = {}">创建档案</el-button>
@@ -610,16 +618,23 @@
                 v-for="(babyDataItem, index) in babyDataList"
                 :key="index"
                 class="box1">
-                <div class="info-title">
-                    宝宝档案
-                    &nbsp;&nbsp;&nbsp;
-                    <span
-                            class="mainColor editBtn"
-                            v-if="!babyDataItem.babyInfoState && isArchivesQueryAuth"
-                            @click="babyDataItem.babyInfoState = true"
-                    >
-                    <i class="el-icon-edit"></i>编辑
-                </span>
+                <div class="info-title" style="justify-content: space-between">
+                    <div style="display: flex">
+                        <span>宝宝档案</span>
+                        &nbsp;&nbsp;&nbsp;
+                        <div>
+                        <span
+                                class="mainColor editBtn"
+                                v-if="!babyDataItem.babyInfoState && isArchivesQueryAuth"
+                                @click="babyDataItem.babyInfoState = true"
+                        >
+                        </span>
+                            <i class="el-icon-edit"></i>编辑
+                        </div>
+                    </div>
+                    <div v-if="index === 0" style="margin-right: 10px;">
+                        <el-button @click="addBabyBlock" icon="el-icon-plus">增加宝宝</el-button>
+                    </div>
                 </div>
                     <div class="row" style="padding: 0 20px;"
                     >
@@ -778,7 +793,7 @@
                             <div :class="babyDataItem ? 'babyBodySize babyBodySize' + index  : 'babyBodySize'">{{index}}</div>
                             <div style="margin: 50px auto">
                                 <div class="alignRight">
-                                    <el-button @click="saveBodySizeItemBtn(babyDataItem)">保存记录</el-button>
+                                    <el-button @click="saveBodySizeItemBtn(babyDataItem, index)">保存记录</el-button>
                                 </div>
                                 <el-table
                                     class="maginHeight20"
@@ -1278,8 +1293,13 @@ export default {
         addBodySizeItemBtn () {
             this.addBodySizeItem.push(this.addBodySizeObj);
         },
-        async saveBodySizeItemBtn (babyDataItem) {
-            console.log(babyDataItem);
+        async saveBodySizeItemBtn (babyDataItem, index) {
+            console.log(babyDataItem.babyBaseInfo.member_archives_baby_id);
+            let params = {
+                baby_id: babyDataItem.babyBaseInfo.member_archives_baby_id,
+                babyRecord: this.addBabyItem[index]
+            }
+            const data = await api.archivesSaveBabyRecord(params);
             // this.archivesSaveRecordData.body_size_measurement_data = this.addBodySizeItem;
             // this.archivesSaveRecordData.body_measurement_data = this.addBodyMeasurementItem;
             // const { data } = await api.archivesSaveRecord();
@@ -1288,10 +1308,7 @@ export default {
             this.addBodyMeasurementItem.push(this.addBodyMeasurementObj);
         },
         addBabyItemBtn (index) {
-            this.addBabyItem[index].push(this.addBabyObj);
-            console.log(this.addBabyItem);
-            console.log(this.addBabyItem);
-            console.log(this.addBabyItem);
+            this.addBabyItem[index].push(JSON.parse(JSON.stringify(this.addBabyObj)));
         },
         // 4.1.2.1.添加（编辑）妈妈档案记录
         async saveBodyMeasurementItemBtn () {
@@ -1426,6 +1443,15 @@ export default {
             const  { data } = await api.hmSelectList();
             this.hmSelectList = data;
         },
+        addBabyBlock () {
+            this.babyDataList.push({
+                babyBaseInfo: {},
+                babyRecord: []}
+            );
+        },
+        getLink () {
+            this.$router.push({path: '/printInfo', query: {member_id: this.member_id }});
+        }
     }
 };
 </script>

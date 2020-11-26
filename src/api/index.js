@@ -586,3 +586,13 @@ export const archivesBabyRecord = query => {
     });
 };
 
+
+// 4.1.1.3.添加（编辑）宝宝档案记录
+    export const archivesSaveBabyRecord= query => {
+    return request({
+        url: `/admin/archives/saveBabyRecord`,
+        method: 'post',
+        data: query
+    });
+};
+

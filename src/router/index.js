@@ -361,6 +361,11 @@ export default new Router({
                     path: '/memberProfile',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/memberProfile.vue'),
                     meta: { title: '会员档案' }
+                },
+                {
+                    path: '/printInfo',
+                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/printInfo.vue'),
+                    meta: { title: '会员档案打印' }
                 }
             ]
         },
