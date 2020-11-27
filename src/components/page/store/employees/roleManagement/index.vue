@@ -12,11 +12,7 @@
 
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <span>选择门店 </span>
-                        <el-select v-model="query.address" placeholder="选择门店" class="handle-select mr10">
-                            <el-option key="1" label="广东省" value="广东省"></el-option>
-                            <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                        </el-select>
+                        <span>选择门店:多多亲子岁月一店</span>
                     </el-col>
                 </el-row>
             </div>
@@ -24,12 +20,11 @@
         <div class="table">
             <el-table
                 :data="tableData"
-                border
                 style="width: 100%"
             >
                 <el-table-column
                     prop="name"
-                    label="职位名称"
+                    label="角色名称"
                 >
                 </el-table-column>
                 <el-table-column
@@ -45,6 +40,8 @@
                 <el-table-column
                     prop="create_time"
                     label="添加时间"
+                    width="200"
+                    :formatter="dateFormate"
                 >
                 </el-table-column>
                 <el-table-column
@@ -52,18 +49,20 @@
                         label="操作"
                 >
                     <template slot-scope="scope">
-                        <el-button @click="handleClick()" type="text" size="small">详情</el-button>
-                        <el-button type="text" size="small">更多</el-button>
+                        <el-button @click="handleClick('edit', scope.row.id)"  type="text" size="small">编辑</el-button>
+                        <span style="color: #dddddd; margin: 0 5px">|</span>
+                        <el-button @click="handleClick('view', scope.row.id)" type="text" size="small">详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
         <div class="page-box">
             <el-pagination
-                    background
-                    @current-change="handleCurrentChange"
-                    layout="total, prev, pager, next, jumper"
-                    :total="page.total">
+                background
+                @current-change="handleCurrentChange"
+                :page-size="20"
+                layout="total, prev, pager, next, jumper"
+                :total="total">
             </el-pagination>
         </div>
         <el-dialog
@@ -92,6 +91,7 @@
 <script>
     import * as api from '../../../../../api/index'
     import operationPosition from './operationPosition'
+    import dayjs from 'dayjs'
     export default {
         name: '',
         components: {
@@ -113,6 +113,13 @@
             this.getFormData();
         },
         methods: {
+            dateFormate(row, column, cellValue, index) {
+                if (cellValue) {
+                    return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
+                } else {
+                    return ''
+                }
+            },
             addRole () {
                 this.$router.push({ path: '/roleManagement/addRole'});
             },
@@ -121,8 +128,12 @@
             },
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
+                this.pageNo = val;
+                this.getFormData();
             },
-            handleClick () {},
+            handleClick (state, id) {
+                this.$router.push({ path: '/roleManagement/addRole', query: { state: state, id: id }});
+            },
             handleClose () {
                 this.isAddEmployees = false;
             },

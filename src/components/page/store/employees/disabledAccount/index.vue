@@ -2,66 +2,66 @@
     <div>
         <div class="operation">
             <div class="handle-box">
-                <el-row>
-                    <el-button
-                        type="primary"
-                        icon="el-icon-delete"
-                        class="handle-del mr10"
-                        @click="isAddEmployees = true"
-                    >已禁用账号</el-button>
-                </el-row>
-
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <span>选择门店 </span>
-                        <el-select v-model="query.address" placeholder="选择门店" class="handle-select mr10">
-                            <el-option key="1" label="广东省" value="广东省"></el-option>
-                            <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                        </el-select>
+                        <span>选择门店:多多亲子岁月一店</span>
                     </el-col>
                     <el-col :span="6">
-                        <el-input placeholder="请输入系统账号、姓名"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+                        <el-input v-model="keyword" placeholder="请输入系统账号、姓名"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
                     </el-col>
                     <el-col :span="6">
-                        <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="getFormData">搜索</el-button>
                     </el-col>
                 </el-row>
             </div>
         </div>
         <div class="table">
             <el-table
-                    :data="tableData"
-                    border
-                    style="width: 100%"
+                :data="tableData"
+                style="width: 100%"
             >
                 <el-table-column
-                        prop="date"
-                        label="姓名"
+                prop="name"
+                label="姓名"
+                >
+                    <template slot-scope="scope">
+                        <div class="displayCenter">
+                            <div class="pic" style="margin-right: 20px;"><img :src="scope.row.head_img" alt="" width="80" height="80"></div>
+                            <div class="name">{{scope.row.name}}</div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                    prop="acount"
+                    label="系统账号"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="系统账号"
+                    prop="shop_name"
+                    label="门店"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="province"
-                        label="省份"
+                    prop="position_name"
+                    label="职位"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="city"
-                        label="市区"
+                    prop="role_names"
+                    label="关联角色"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="address"
-                        label="地址"
+                    prop="create_time"
+                    :formatter="dateFormate"
+                    width="200"
+                    label="添加时间"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="zip"
-                        label="邮编"
+                    prop="tel"
+                    width="200"
+                    label="联系方式"
                 >
                 </el-table-column>
                 <el-table-column
@@ -69,8 +69,7 @@
                         label="操作"
                 >
                     <template slot-scope="scope">
-                        <el-button @click="handleClick()" type="text" size="small">详情</el-button>
-                        <el-button type="text" size="small">更多</el-button>
+                        <el-button @click="handleClick(scope.row.id)" type="text" size="small">恢复</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -79,8 +78,9 @@
             <el-pagination
                     background
                     @current-change="handleCurrentChange"
+                    :page-size="20"
                     layout="total, prev, pager, next, jumper"
-                    :total="page.total">
+                    :total="total">
             </el-pagination>
         </div>
         <el-dialog
@@ -109,6 +109,7 @@
 <script>
 import * as api from '../../../../../api/index'
 import AddEmployees from '../staffManagement/AddEmployees'
+import dayjs from 'dayjs'
 export default {
     name: '',
     components: {
@@ -116,60 +117,57 @@ export default {
     },
     data () {
         return {
-            page: {
-                total: 30
-            },
+            total: 0,
+            pageNo: 1,
             query: {},
+            keyword: '',
             dialogVisible: false,
             // 是否显示新增
             isAddEmployees: false,
-            tableData: [{
-                date: '2016-05-02',
-                name: '王小虎',
-                province: '上海',
-                city: '普陀区',
-                address: '上海市普陀区金沙江路 1518 弄',
-                zip: 200333
-            }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                province: '上海',
-                city: '普陀区',
-                address: '上海市普陀区金沙江路 1517 弄',
-                zip: 200333
-            }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                province: '上海',
-                city: '普陀区',
-                address: '上海市普陀区金沙江路 1519 弄',
-                zip: 200333
-            }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                province: '上海',
-                city: '普陀区',
-                address: '上海市普陀区金沙江路 1516 弄',
-                zip: 200333
-            }],
+            tableData: [],
         }
     },
     created () {
         this.getFormData();
     },
     methods: {
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
+        dateFormate(row, column, cellValue, index) {
+            if (cellValue) {
+                return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
+            } else {
+                return ''
+            }
         },
         handleCurrentChange(val) {
             console.log(`当前页: ${val}`);
+            this.pageNo = val;
+            this.getFormData();
         },
-        handleClick () {},
+        handleClick (id) {
+            this.$confirm('是否恢复员工账号？', '', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(async () => {
+                const data = await api.staffSetDisable({ id: id, is_disable: 1 });
+                this.$message({
+                    type: 'success',
+                    message: '操作成功!'
+                });
+            }).catch(() => {
+            });
+        },
         handleClose () {
             this.isAddEmployees = false;
         },
         async getFormData () {
-            await api.staffList();
+            let params = {
+                keyword: this.keyword,
+                pageNo: this.pageNo
+            };
+            const { data } = await api.staffDisableList(params);
+            this.tableData = data.data;
+            this.total = data.allCount;
         }
     }
 };

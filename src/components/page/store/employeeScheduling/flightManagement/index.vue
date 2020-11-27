@@ -11,11 +11,7 @@
                         >添加班次</el-button>
                     </el-col>
                     <el-col :span="6">
-                        <span>选择门店 </span>
-                        <el-select v-model="query.address" placeholder="选择门店" class="handle-select mr10">
-                            <el-option key="1" label="广东省" value="广东省"></el-option>
-                            <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                        </el-select>
+                        <span>选择门店:多多亲子岁月一店</span>
                     </el-col>
                 </el-row>
             </div>
