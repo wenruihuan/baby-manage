@@ -69,7 +69,7 @@ export default {
             this.visible = true;
             try {
                 const { data } = await getCategoryList({ page_no: this.curPage, page_size: 10000000 });
-                this.boxCategoryData = data.data;
+                this.boxCategoryData = data;
             } catch (e) {
                 console.log(`service getCategoryList error: ${e}`);
             }
