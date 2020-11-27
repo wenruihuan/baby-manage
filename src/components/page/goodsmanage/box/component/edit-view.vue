@@ -40,7 +40,9 @@
                 <ul class="img-list">
                     <li v-for="(item, index) in files"
                         :key="index"
+                        class="img-item"
                     >
+                        <sapn class="el-icon-circle-close remove-icon" @click="removeImg(index)"></sapn>
                         <img :src="item" alt=''>
                     </li>
                 </ul>
@@ -234,6 +236,9 @@ export default {
             } catch (e) {
                 console.log(`handleRemove error: ${e}`);
             }
+        },
+        removeImg (index) {
+            this.files.splice(index, 1);
         }
     }
 };
@@ -280,6 +285,13 @@ export default {
     border-radius: 5px;
     padding: 2px;
     box-sizing: border-box;
+    position: relative;
+}
+.img-list .remove-icon {
+    position: absolute;
+    right: -5px;
+    top: 0;
+    cursor: pointer;
 }
 .img-list li img {
     max-width: 100px;
