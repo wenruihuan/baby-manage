@@ -230,8 +230,9 @@ export default {
                 try {
                     const data = await getDetail({ id });
                     if (data.code === ERR_OK) {
+                        const form = data.data;
+                        form.tag_ids = form.tag_ids ? form.tag_ids.split(',') : [];
                         this.form = data.data;
-                        this.form.tag_ids = this.form.tag_ids ? this.form.tag_ids.split(',') : [];
                         this.files = this.form.img && this.form.img.split(',');
                         if (Array.isArray(this.form.sku)) {
                             this.sizeGroup = this.form.sku.map(item => {
