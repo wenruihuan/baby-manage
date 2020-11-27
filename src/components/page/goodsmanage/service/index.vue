@@ -241,7 +241,7 @@ export default {
             try {
                 const data = await getCategoryList({ page_no: 1, page_size: 1000000 });
                 if (data.code === ERR_OK) {
-                    this.categoryList = data.data.data;
+                    this.categoryList = data.data;
                     this.categoryList.unshift({ id: 'all', name: '全部分类' });
                 }
             } catch (e) {
