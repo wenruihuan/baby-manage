@@ -51,6 +51,23 @@ export const staffList = query => {
         params: query
     });
 };
+// 2.3.5.获取禁用账号列表
+export const staffDisableList = query => {
+    return request({
+        url: `/admin/staff/disableList`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 2.3.5.获取禁用账号列表
+export const staffSetDisable = query => {
+    return request({
+        url: `/admin/staff/setDisable`,
+        method: 'post',
+        data: query
+    });
+};
 
 
 // 2.1.2.添加（编辑）职位
@@ -71,15 +88,6 @@ export const staffSave = query => {
     });
 };
 
-
-// 禁用（恢复）员工账号
-export const staffSetDisable = query => {
-    return request({
-        url: `/admin/staff/setDisable`,
-        method: 'post',
-        data: query
-    });
-};
 // 获取职位列表
 export const positionList = query => {
     return request({
@@ -110,6 +118,23 @@ export const roleAathList = query => {
         url: `/admin/role/authList`,
         method: 'get',
         params: query
+    });
+};
+// 2.2.4.获取角色详情
+export const roleDetail = query => {
+    return request({
+        url: `/admin/role/detail`,
+        method: 'get',
+        params: query
+    });
+};
+
+// 2.2.2.添加（编辑）角色
+export const roleSave = query => {
+    return request({
+        url: `/admin/role/save`,
+        method: 'post',
+        data: query
     });
 };
 

@@ -225,6 +225,11 @@ a {
     height: 50vh;
     overflow-y: auto;
 }
+textarea{
+    width: 100%;
+    height: 100%;
+    resize: none !important;
+}
 .alignRight{
     text-align: right;
     margin-top: 10px;
@@ -233,7 +238,10 @@ a {
     text-align: left;
     margin-top: 10px;
 }
-
+.displayCenter {
+    display: flex;
+    align-items: center;
+}
 .dialog-box .item {
     display: flex;
     margin-bottom: 20px;
@@ -242,10 +250,13 @@ a {
     line-height: 32px;
 }
 .width250 {
-    width: 200px !important;
+    width: 250px !important;
 }
 .width200 {
     width: 200px !important;
+}
+.width150 {
+    width: 150px !important;
 }
 .width120 {
     width: 120px !important;
@@ -258,6 +269,9 @@ a {
 }
 .width70 {
     width: 70px !important;
+}
+.height150 {
+    height: 150px !important;
 }
 .maginHeight20{
     margin: 20px 0;
