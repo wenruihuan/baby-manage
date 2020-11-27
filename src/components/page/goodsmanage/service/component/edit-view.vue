@@ -23,7 +23,7 @@
                 <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理服务分类</el-button>
             </el-form-item>
             <el-form-item label="标签:" prop="box_no">
-                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择服务标签">
+                <el-select style="width: 300px;" v-if="isEdit" multiple class="category-select" v-model="form.tag_ids" placeholder="选择服务标签">
                     <el-option
                         v-for="item in tagList"
                         :key="item.id"
@@ -55,7 +55,7 @@
                         :key="index"
                         class="img-item"
                     >
-                        <sapn class="el-icon-circle-close remove-icon" @click="removeImg(index)"></sapn>
+                        <span class="el-icon-circle-close remove-icon" @click="removeImg(index)"></span>
                         <img :src="item" alt=''>
                     </li>
                 </ul>
@@ -256,7 +256,9 @@ export default {
                 try {
                     const data = await getDetail({ id });
                     if (data.code === ERR_OK) {
-                        this.form = data.data;
+                        const form = data.data;
+                        form.tag_ids = (form.tag_ids || '').split(',');
+                        this.form = form;
                         this.files = this.form.img.split(',');
                         this.sizeGroup = (this.form.sku || []).map(item => ({
                             ...item,

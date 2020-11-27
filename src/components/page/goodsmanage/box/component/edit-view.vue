@@ -42,7 +42,7 @@
                         :key="index"
                         class="img-item"
                     >
-                        <sapn class="el-icon-circle-close remove-icon" @click="removeImg(index)"></sapn>
+                        <span class="el-icon-circle-close remove-icon" @click="removeImg(index)"></span>
                         <img :src="item" alt=''>
                     </li>
                 </ul>
