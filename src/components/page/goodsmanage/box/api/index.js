@@ -59,7 +59,7 @@ export const setPublish = query => {
 /* 获取商品分类列表 */
 export const getCategoryList = query => {
     return request({
-        url: `/admin/goods/kind`,
+        url: `/admin/box/kind`,
         method: 'get',
         params: query
     });

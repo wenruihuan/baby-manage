@@ -193,7 +193,9 @@ export default {
                     page_no: this.curPage,
                     kind_id: this.selected === 'all' ? '' : this.selected
                 });
-                this.tableData = data.data;
+                if (data.data) {
+                    this.tableData = data.data.data || [];
+                }
             } catch (e) {
                 console.log(`box getList error: ${e}`);
             }

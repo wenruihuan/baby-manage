@@ -68,6 +68,14 @@
                     <!--                        <el-option label="女" value="女"></el-option>-->
                     <!--                    </el-select>-->
                     <!--                </el-form-item>-->
+                    <el-form-item label="地址：" prop="desc">
+                        <el-cascader
+                            size="large"
+                            :options="options"
+                            v-model="region"
+                            @change="regionHandleChange">
+                        </el-cascader>
+                    </el-form-item>
                     <el-form-item label="详细地址：">
                         <el-input type="textarea" v-model="userInfoEdit.detail_address"></el-input>
                     </el-form-item>
@@ -86,10 +94,14 @@
 
 <script>
 import * as api from '../../../../api';
+// 地址选择器
+import { regionDataPlus, CodeToText } from 'element-china-area-data'
 export default {
     name: 'userInfoEditDialog',
     data () {
         return {
+            region: '',
+            options: regionDataPlus,
             title: '新增会员',
             ruleForm: {
             },
@@ -174,6 +186,14 @@ export default {
         },
         cancelMemberdialogVisible () {
             this.$emit('cancel', false);
+        },
+        regionHandleChange (value, value1) {
+            this.userInfoEdit.region = '';
+            console.log(value);
+            console.log(CodeToText[value[0]]);
+            value.forEach(m => {
+                this.userInfoEdit.region = this.userInfoEdit.region + CodeToText[m];
+            })
         }
     }
 };

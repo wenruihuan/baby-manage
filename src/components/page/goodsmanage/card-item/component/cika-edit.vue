@@ -98,7 +98,7 @@
                 ref="popover"
                 v-if="activeStep === 2"
                 placement="top"
-                width="125"
+                width="128"
                 trigger="click"
                 :popper-options="{ boundariesElement: 'viewport', removeOnDestroy: true }"
             >
@@ -445,5 +445,11 @@ export default {
 }
 .content1 .img-container img {
     max-width: 400px;
+}
+</style>
+
+<style>
+.service-card img {
+    margin: 0 auto;
 }
 </style>

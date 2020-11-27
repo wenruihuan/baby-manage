@@ -140,11 +140,14 @@
             <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
             <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
             <el-popover
+                ref="popover"
+                width="128"
                 placement="top-start"
                 trigger="click"
                 v-if="activeStep === 2"
+                :popper-options="{ boundariesElement: 'viewport', removeOnDestroy: true }"
             >
-                <div id="SERVICE_QRCODE"></div>
+                <div id="SERVICE_QRCODE" class="service-card"></div>
                 <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
             </el-popover>
             <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
@@ -390,6 +393,10 @@ export default {
                 obj.img_list = obj.img;
                 obj.intr = this.$refs.editWechat.content;
                 const data = await qrCodeView(obj);
+                const dom = document.getElementById("SERVICE_QRCODE");
+                if (dom) {
+                    dom.innerHTML = '';
+                }
                 if (data.code === ERR_OK) {
                     if (document.getElementById('SERVICE_QRCODE')) {
                         document.getElementById('SERVICE_QRCODE').innerHTML = '';
@@ -402,6 +409,7 @@ export default {
                         colorLight : "#ffffff",
                         correctLevel : QRCode.CorrectLevel.L
                     });
+                    this.$refs.popover.updatePopper();
                 }
             } catch (e) {
                 console.log(`src/components/page/goodsmanage/service/component/edit-view.vue handleView error: ${e}`);
@@ -507,5 +515,11 @@ export default {
     position: absolute;
     left: 317px;
     top: 0;
+}
+</style>
+
+<style>
+.service-card img {
+    margin: 0 auto;
 }
 </style>

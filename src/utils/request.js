@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {Message}  from 'element-ui';
 
 const service = axios.create({
     // process.env.NODE_ENV === 'development' 来判断是否开发环境
@@ -21,8 +22,14 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     response => {
         if (response.status === 200) {
+            if (response.data.code === 200) {
+                // Message.success('操作成功！');
+            } else {
+                Message.error('请求失败！');
+            };
             return response.data;
         } else {
+            Message.error('请求失败！');
             Promise.reject();
         }
     },

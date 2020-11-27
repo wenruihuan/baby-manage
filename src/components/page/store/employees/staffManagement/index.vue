@@ -55,8 +55,10 @@
                     label="姓名"
                 >
                     <template slot-scope="scope">
-                        <!--<img :src="scope.row.">-->
-                        {{scope.row.name}}
+                        <div class="item">
+                            <img :src="scope.row.head_img" width="80" height="80">
+                            {{scope.row.name}}
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -81,6 +83,7 @@
                 </el-table-column>
                 <el-table-column
                     prop="create_time"
+                    width="150"
                     :formatter="dateFormate"
                     label="添加时间"
                 >
@@ -96,7 +99,7 @@
                 >
                     <template slot-scope="scope">
                         <el-button @click="handleClick('edit', scope)" type="text" size="small">详情</el-button>
-                        <i style="padding: 0 10px;">|</i>
+                        <i style="padding: 0 10px; color: #ddd">|</i>
                         <el-dropdown>
                             <el-button type="text" size="small">更多</el-button>
                             <el-dropdown-menu slot="dropdown">
@@ -250,4 +253,11 @@ export default {
 .operation .el-row:first-child{
     margin-top: 0;
 }
+    .item{
+        display: flex;
+        align-items: center;
+    }
+    .item img{
+        margin-right: 10px;
+    }
 </style>

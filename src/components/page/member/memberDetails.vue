@@ -434,8 +434,8 @@
                         <el-cascader
                             size="large"
                             :options="options"
-                            v-model="selectedOptions"
-                            @change="handleChange">
+                            v-model="region"
+                            @change="regionHandleChange">
                         </el-cascader>
                     </el-form-item>
                     <el-form-item label="详细地址：">
@@ -458,7 +458,8 @@
 import userInfo from './common/userInfoDialog'
 import commonTag from './common/commonTag'
 import * as api from '../../../api/index'
-import { regionDataPlus } from 'element-china-area-data'
+// 地址选择器
+import { regionDataPlus, CodeToText } from 'element-china-area-data'
 export default {
     name: 'memberList',
     data () {
@@ -699,6 +700,14 @@ export default {
         },
         getMemberProfile () {
             this.$router.push({path: '/memberProfile', query: { memberId: this.userId }});
+        },
+        regionHandleChange (value, value1) {
+            this.userInfoEdit.region = '';
+            console.log(value);
+            console.log(CodeToText[value[0]]);
+            value.forEach(m => {
+                this.userInfoEdit.region = this.userInfoEdit.region + CodeToText[m];
+            })
         },
         // 取消新增会员
         cancelMemberdialogVisible (value) {
