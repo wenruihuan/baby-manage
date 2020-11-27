@@ -7,16 +7,12 @@
                         type="primary"
                         class="handle-del mr10"
                         @click="addRole"
-                    >添加职位</el-button>
+                    >添加角色</el-button>
                 </el-row>
 
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <span>选择门店 </span>
-                        <el-select v-model="query.address" placeholder="选择门店" class="handle-select mr10">
-                            <el-option key="1" label="广东省" value="广东省"></el-option>
-                            <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                        </el-select>
+                        <span>选择门店 :多多亲子岁月一店</span>
                     </el-col>
                 </el-row>
             </div>
@@ -24,7 +20,6 @@
         <div class="table">
             <el-table
                 :data="tableData"
-                border
                 style="width: 100%"
             >
                 <el-table-column
@@ -53,6 +48,7 @@
                 >
                     <template slot-scope="scope">
                         <el-button @click="handleClick()" type="text" size="small">详情</el-button>
+                        <i style="padding: 0 10px; color: #ddd">|</i>
                         <el-button type="text" size="small">更多</el-button>
                     </template>
                 </el-table-column>

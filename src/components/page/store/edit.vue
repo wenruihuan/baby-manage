@@ -57,6 +57,14 @@
                         </el-time-picker>
                     </el-form-item>-->
                     <el-form-item label="店铺地址" prop="name">
+                        <div class="item">
+                            <el-cascader
+                                    size="large"
+                                    :options="options"
+                                    v-model="region"
+                                    @change="regionHandleChange">
+                            </el-cascader>
+                        </div>
                         <!--<el-select></el-select>-->
                         <el-input class="width200" v-model="ruleForm.longitude"></el-input>
                         <el-input class="width200" v-model="ruleForm.latitude"></el-input>
@@ -82,6 +90,8 @@
 <script>
 import * as api from '../../../api/index'
 import breadcrumb from '../../common/address'
+// 地址选择器
+import { regionDataPlus, CodeToText } from 'element-china-area-data'
 export default {
     name: 'index',
     components: {
@@ -89,6 +99,7 @@ export default {
     },
     data () {
         return {
+            options: regionDataPlus,
             searchOption: {
                 city: '上海',
                 citylimit: true
@@ -176,6 +187,14 @@ export default {
         async shopSave () {
             await api.shopSave(this.ruleForm);
             this.getShopInfo();
+        },
+        regionHandleChange (value, value1) {
+            this.userInfoEdit.region = '';
+            console.log(value);
+            console.log(CodeToText[value[0]]);
+            value.forEach(m => {
+                this.userInfoEdit.region = this.userInfoEdit.region + CodeToText[m];
+            })
         }
     }
 };

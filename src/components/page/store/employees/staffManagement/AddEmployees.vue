@@ -42,11 +42,23 @@
                     ></el-option>
                 </el-select>
             </el-form-item>
+            <el-upload
+                    class="avatar-uploader"
+                    action="http://up-z0.qiniu.com"
+                    :data="uploadBody"
+                    :before-upload="beforeUpload"
+                    :on-success="(res) => handleUploadSuccess(res, index)"
+                    :show-file-list="false"
+            >
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
             <el-form-item label="头像:">
                 <el-upload
                         class="avatar-uploader"
                         action="https://jsonplaceholder.typicode.com/posts/"
                         :show-file-list="false"
+                        accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.JPG,.JPEG,.PBG,.GIF"
                         :on-success="handleAvatarSuccess"
                         :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -122,16 +134,24 @@ export default {
             this.imageUrl = URL.createObjectURL(file.raw);
         },
         beforeAvatarUpload(file) {
-            const isJPG = file.type === 'image/jpeg';
-            const isLt2M = file.size / 1024 / 1024 < 2;
-
-            if (!isJPG) {
-                this.$message.error('上传头像图片只能是 JPG 格式!');
-            }
-            if (!isLt2M) {
-                this.$message.error('上传头像图片大小不能超过 2MB!');
-            }
-            return isJPG && isLt2M;
+            // const isJPG = file.type === 'image/jpeg';
+            // const isLt2M = file.size / 1024 / 1024 < 2;
+            //
+            // if (!isJPG) {
+            //     this.$message.error('上传头像图片只能是 JPG 格式!');
+            // }
+            // if (!isLt2M) {
+            //     this.$message.error('上传头像图片大小不能超过 2MB!');
+            // }
+            // return isJPG && isLt2M;
+        },
+        /* 成功上传 */
+        async handleUploadSuccess(res, index) {
+            this.tableList.forEach((m, i) => {
+                if (i === index) {
+                    this.$set(m, 'img', `${this.baseUrl}/${res.key}`);
+                }
+            });
         }
     }
 }
