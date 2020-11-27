@@ -23,7 +23,7 @@
                 <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理商品分类</el-button>
             </el-form-item>
             <el-form-item label="标签:" prop="tag_ids">
-                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.tag_ids" placeholder="选择商品标签">
+                <el-select style="width: 300px;" v-if="isEdit" multiple class="category-select" v-model="form.tag_ids" placeholder="选择商品标签">
                     <el-option
                         v-for="item in tagList"
                         :key="item.id"
@@ -231,6 +231,7 @@ export default {
                     const data = await getDetail({ id });
                     if (data.code === ERR_OK) {
                         this.form = data.data;
+                        this.form.tag_ids = this.form.tag_ids ? this.form.tag_ids.split(',') : [];
                         this.files = this.form.img && this.form.img.split(',');
                         if (Array.isArray(this.form.sku)) {
                             this.sizeGroup = this.form.sku.map(item => {
@@ -302,6 +303,7 @@ export default {
                             value: item.values.map(i => i.value)
                         }));
                         obj.img_list = obj.img;
+                        obj.tag_ids = Array.isArray(obj.tag_ids) && obj.tag_ids.length > 0 ? obj.tag_ids.join(',') : '';
                         obj.intr = this.$refs.editWechat.content;
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {

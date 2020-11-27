@@ -257,7 +257,7 @@ export default {
                     const data = await getDetail({ id });
                     if (data.code === ERR_OK) {
                         const form = data.data;
-                        form.tag_ids = (form.tag_ids || '').split(',');
+                        form.tag_ids = form.tag_ids ? form.tag_ids.split(',') : [];
                         this.form = form;
                         this.files = this.form.img.split(',');
                         this.sizeGroup = (this.form.sku || []).map(item => ({
@@ -326,6 +326,7 @@ export default {
                             name: item.name,
                             value: item.value.map(i => i.value)
                         }));
+                        obj.tag_ids = Array.isArray(obj.tag_ids) && obj.tag_ids.length > 0 ? obj.tag_ids.join(',') : '';
                         const data = await addOrEditBox(obj);
                         if (data.code === ERR_OK) {
                             this.$message({
