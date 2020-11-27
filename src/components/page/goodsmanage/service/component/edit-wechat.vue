@@ -25,6 +25,17 @@ export default {
     components: {
         quillEditor
     },
+    props: {
+        intr: String
+    },
+    watch: {
+        intr: {
+            handler (newVal, oldVal) {
+                this.content = newVal;
+            },
+            immediate: true
+        }
+    },
     data () {
         return {
             content: '',

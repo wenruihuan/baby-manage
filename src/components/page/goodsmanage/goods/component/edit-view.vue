@@ -114,7 +114,7 @@
                 <span v-else>￥{{ form.price }}</span>
             </el-form-item>
         </el-form>
-        <edit-wechat ref="editWechat" v-show="activeStep === 2" />
+        <edit-wechat ref="editWechat" v-show="activeStep === 2" :intr="form.intr" />
         <div class="btn-group" v-if="isEdit">
             <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
             <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>

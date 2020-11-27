@@ -136,7 +136,7 @@
                 <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
             </el-form-item>
         </el-form>
-        <edit-wechat v-show="activeStep === 2" ref="editWechat" />
+        <edit-wechat v-show="activeStep === 2" ref="editWechat" :intr="form.intr" />
         <div class="btn-group" v-if="isEdit">
             <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
             <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
