@@ -9,7 +9,7 @@
                 <div class="upload-list">
                     <div class="upload-list-item" v-for="(item, index) in tableList" :key="index">
                         <el-upload
-                            class="avatar-uploader"
+                            class="lzp-avatar-uploader"
                             action="http://up-z0.qiniu.com"
                             :disabled="item.disabled"
                             :data="uploadBody"
@@ -24,7 +24,7 @@
                                 :src="item.img"
                                 fit="contain"
                             ></el-image>
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            <i v-else class="el-icon-plus lzp-avatar-uploader-icon"></i>
                         </el-upload>
                         <div class="action-btn">
                             <el-button :class="index + 1 <= showDeleteIndex ? 'no_border' : ''" type="text" @click="handleEdit(index)"
@@ -550,17 +550,17 @@
         display: none;
     }
 
-    .avatar-uploader .el-upload {
+    .lzp-avatar-uploader .el-upload {
         border: 1px dashed #d9d9d9;
         border-radius: 6px;
         cursor: pointer;
         position: relative;
         overflow: hidden;
     }
-    .avatar-uploader .el-upload:hover {
+    .lzp-avatar-uploader .el-upload:hover {
         border-color: #409eff;
     }
-    .avatar-uploader-icon {
+    .lzp-avatar-uploader-icon {
         font-size: 28px;
         color: #8c939d;
         width: 178px;
