@@ -66,6 +66,10 @@
               :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
+              <template slot-scope="scope">
+                <span v-if="item.prop === 'order_info.create_time'">{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]] | dateFormatter}}</span>
+                <span v-else>{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -113,6 +117,10 @@
               :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
+              <template slot-scope="scope">
+                <span v-if="item.prop === 'order_info.create_time'">{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]] | dateFormatter}}</span>
+                <span v-else>{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -160,6 +168,10 @@
               :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
+              <template slot-scope="scope">
+                <span v-if="item.prop === 'order_info.create_time'">{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]] | dateFormatter}}</span>
+                <span v-else>{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -264,7 +276,7 @@ export default {
       },
       columnCfg: [
         {label: '商品订单编号', prop: 'order_info.order_no', width: 220},
-        {label: '订购时间', prop: 'order_info.create_time'},
+        {label: '订购时间', prop: 'order_info.create_time', width: 180},
         {label: '订购门店', prop: 'order_info.shop_name'},
         {label: '商品', prop: 'goods_info.name', showOverflowTooltip: true},
         {label: '数量', prop: 'goods_info.count'},
@@ -420,6 +432,15 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    }
+  },
+  filters: {
+    dateFormatter(val) {
+      if (val) {
+        return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
     }
   }
 }

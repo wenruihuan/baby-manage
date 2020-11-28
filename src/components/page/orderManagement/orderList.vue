@@ -276,8 +276,8 @@ export default {
         order_status: ''
       },
       columnCfg: [
-        {label: '订单编号', prop: 'order_no', width: 200},
-        {label: '下单时间', prop: 'create_time', width: 200},
+        {label: '订单编号', prop: 'order_no', width: 180},
+        {label: '下单时间', prop: 'create_time', width: 180},
         {label: '购买项目', prop: 'order_name', width: 200},
         {label: '技师', prop: 'technician_name'},
         {label: '单价（元）', prop: 'price'},

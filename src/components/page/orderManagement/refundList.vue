@@ -118,9 +118,9 @@ export default {
         page_no: 0
       },
       columnCfg: [
-        {label: '退单编号', prop: 'refund_no'},
-        {label: '操作时间', prop: 'create_time'},
-        {label: '订单编号', prop: 'order_no', width: 220},
+        {label: '退单编号', prop: 'refund_no', width: 180},
+        {label: '操作时间', prop: 'create_time', width: 180},
+        {label: '订单编号', prop: 'order_no', width: 200},
         {label: '退款门店', prop: 'shop_name'},
         {label: '订单金额（元）', prop: 'order_price'},
         {label: '退款金额（元）', prop: 'refund_price'},
