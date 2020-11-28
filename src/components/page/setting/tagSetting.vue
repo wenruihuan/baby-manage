@@ -52,7 +52,7 @@
                     <el-input v-model="formData.tag_name" placeholder="请填写标签名称"></el-input>
                 </el-form-item>
                 <el-form-item label="自动打标签条件：">
-                    <el-checkbox-group v-model="checkList">
+                    <el-checkbox-group v-model="checkList" :disabled="dialogType === 'edit'">
                         <el-checkbox label="1">
                             <div class="check-box-item">
                                 累计消费超过<el-input
