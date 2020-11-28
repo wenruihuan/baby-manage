@@ -39,10 +39,10 @@
             </el-form-item>
             <el-form-item>
               <div class="btn-list">
-                <el-button @click="handleClickDate('all')">全部</el-button>
-                <el-button @click="handleClickDate(0)">今天</el-button>
-                <el-button @click="handleClickDate(3)">近3天</el-button>
-                <el-button @click="handleClickDate(7)">近7天</el-button>
+                <el-button :type="buttonTypes['all']? 'primary': ''" plain @click="handleClickDate('all')">全部</el-button>
+                <el-button :type="buttonTypes[0]? 'primary': ''" plain @click="handleClickDate(0)">今天</el-button>
+                <el-button :type="buttonTypes[3]? 'primary': ''" plain @click="handleClickDate(3)">近3天</el-button>
+                <el-button :type="buttonTypes[7]? 'primary': ''" plain @click="handleClickDate(7)">近7天</el-button>
               </div>
             </el-form-item>
           </el-row>
@@ -212,7 +212,9 @@
             filterable
             allow-create
             default-first-option
-          ></el-select>
+          >
+            <el-option v-for="item in expressComList" :key="item.id" :value="item.name" :label="item.name"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="快递单号：" prop="express_no">
           <div style="width: 300px;">
@@ -232,7 +234,7 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
-import { getProductOrderList, deliveryGoods, exportGoodsOrder } from '@/api/orderManagement'
+import { getProductOrderList, deliveryGoods, exportGoodsOrder, getExpressComList } from '@/api/orderManagement'
 const tabDataCfg = {
   all: { data: 'dataAll', total: 'totalAll', orderStatus: '' },
   toSend: { data: 'dataToSend', total: 'totalToSend', orderStatus: 1 },
@@ -291,14 +293,27 @@ export default {
         express_no: [
           { required: true, message: '请输入快递单号', trigger: 'blur'}
         ]
+      },
+      expressComList: [],
+      buttonTypes: {
+        'all': false,
+        0: false,
+        3: false,
+        7: false
       }
     }
   },
   created() {
-    this.getTableData(0)
+    this.getExpressComList()
+    this.getTableData(1)
   },
   methods: {
     handleClickDate(num) {
+      Object.keys(this.buttonTypes).forEach(item => {
+        this.buttonTypes[item] = false
+      })
+      this.buttonTypes[num] = true
+
       const now = dayjs().format(dateFormatStr)
       switch(num) {
         case 'all':
@@ -328,8 +343,14 @@ export default {
         this[tabDataCfg[this.activeTab].data] = data
       })
     },
+    getExpressComList() {
+      getExpressComList().then(res => {
+        const { data } = res
+        this.expressComList = data
+      })
+    },
     handleSearch() {
-      this.getTableData(0)
+      this.getTableData(1)
     },
     handleDateChange(val) {
       this.form.start_time = val[0]
@@ -337,7 +358,7 @@ export default {
     },
     handleTabClick() {
       if (this[tabDataCfg[this.activeTab].data].length === 0) {
-        this.getTableData(0)
+        this.getTableData(1)
       }
     },
     jumpToOrderDetail(id) {

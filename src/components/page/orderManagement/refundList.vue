@@ -31,10 +31,10 @@
             </el-form-item>
             <el-form-item>
               <div class="btn-list">
-                <el-button @click="handleClickDate('all')">全部</el-button>
-                <el-button @click="handleClickDate(0)">今天</el-button>
-                <el-button @click="handleClickDate(3)">近3天</el-button>
-                <el-button @click="handleClickDate(7)">近7天</el-button>
+                <el-button :type="buttonTypes['all']? 'primary': ''" plain @click="handleClickDate('all')">全部</el-button>
+                <el-button :type="buttonTypes[0]? 'primary': ''" plain @click="handleClickDate(0)">今天</el-button>
+                <el-button :type="buttonTypes[3]? 'primary': ''" plain @click="handleClickDate(3)">近3天</el-button>
+                <el-button :type="buttonTypes[7]? 'primary': ''" plain @click="handleClickDate(7)">近7天</el-button>
               </div>
             </el-form-item>
           </el-row>
@@ -128,7 +128,13 @@ export default {
       ],
       tableData: [],
       total: 0,
-      dateArr: []
+      dateArr: [],
+      buttonTypes: {
+        'all': false,
+        0: false,
+        3: false,
+        7: false
+      }
     }
   },
   created() {
@@ -136,6 +142,11 @@ export default {
   },
   methods: {
     handleClickDate(num) {
+      Object.keys(this.buttonTypes).forEach(item => {
+        this.buttonTypes[item] = false
+      })
+      this.buttonTypes[num] = true
+
       const now = dayjs().format(dateFormatStr)
       switch(num) {
         case 'all':

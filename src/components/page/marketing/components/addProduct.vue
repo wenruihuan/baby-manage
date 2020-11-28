@@ -8,7 +8,7 @@
         class="form-row"
       >
         <el-form-item>
-          <el-select v-model="form.kind_id" @change="getGoodsList(1)">
+          <el-select v-model="form.kind_id" @change="getTableData(1)">
             <el-option
               v-for="item in goodsOptions"
               :label="item.name"
@@ -18,12 +18,12 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-input v-model="form.keyword" @change="getGoodsList(1)" prefix-icon="el-icon-search"></el-input>
+          <el-input v-model="form.keyword" @input="getTableData(1)" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
       </el-form>
       <div class="main-body">
         <el-table
-          :data="data"
+          :data="tableData"
           border
           style="width:100%"
           @selection-change="handleSelectChange"
@@ -40,7 +40,7 @@
           </el-table-column>
           <el-table-column label="售价" prop="price" align="center"></el-table-column>
           <el-table-column label="分类" prop="kind_name" align="center"></el-table-column>
-          <el-table-column label="创建时间" prop="" align="center"></el-table-column>
+          <el-table-column label="创建时间" prop="create_time" width="220" align="center" :formatter="timeFormatter"></el-table-column>
         </el-table>
         <el-pagination
           class="page-ctner"
@@ -63,6 +63,7 @@
 <script>
 import { getBoxList } from '@/components/page/goodsmanage/goods/api'
 import { addMemberProducts, getGoodsCateOptions, getGoodsList } from '@/api/marketing'
+import dayjs from 'dayjs'
 export default {
   data() {
     return {
@@ -72,13 +73,14 @@ export default {
         page_size: 10,
         keyword: ''
       },
-      data: [],
+      tableData: [],
       total: 0,
       goods_id: [],
       goodsOptions: []
     }
   },
   created() {
+    this.getGoodsCateOptions()
     this.getTableData(1)
   },
   methods: {
@@ -93,9 +95,10 @@ export default {
     getTableData(page) {
       this.form.page_no = page
       getGoodsList(this.form).then(res => {
-        const { all_count, data } = res.data
+        const { all_count, data } = res
         this.total = all_count
-        this.data = data
+        this.tableData = data
+        console.log('data', this.tableData)
       }).catch(err => {
         console.log(err)
       })
@@ -121,6 +124,9 @@ export default {
       this.goods_id = data.map(item => {
         return item.id
       })
+    },
+    timeFormatter(row, column, cellValue, index) {
+      return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
     }
   }
 }
