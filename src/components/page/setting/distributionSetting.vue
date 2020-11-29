@@ -119,7 +119,7 @@
                 this[type === '0' ? 'noDistributionList' : 'distributionList'].splice(index, 1, item);
             },
             handleAddDistribution() {
-                this.distributionList.push(this.defaultItem);
+                this.distributionList.push(JSON.parse(JSON.stringify(this.defaultItem)));
             },
             handleRemove(index) {
                 this.distributionList.splice(index, 1);

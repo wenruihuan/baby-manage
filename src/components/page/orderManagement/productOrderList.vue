@@ -39,10 +39,10 @@
             </el-form-item>
             <el-form-item>
               <div class="btn-list">
-                <el-button @click="handleClickDate('all')">全部</el-button>
-                <el-button @click="handleClickDate(0)">今天</el-button>
-                <el-button @click="handleClickDate(3)">近3天</el-button>
-                <el-button @click="handleClickDate(7)">近7天</el-button>
+                <el-button :type="buttonTypes['all']? 'primary': ''" plain @click="handleClickDate('all')">全部</el-button>
+                <el-button :type="buttonTypes[0]? 'primary': ''" plain @click="handleClickDate(0)">今天</el-button>
+                <el-button :type="buttonTypes[3]? 'primary': ''" plain @click="handleClickDate(3)">近3天</el-button>
+                <el-button :type="buttonTypes[7]? 'primary': ''" plain @click="handleClickDate(7)">近7天</el-button>
               </div>
             </el-form-item>
           </el-row>
@@ -66,6 +66,10 @@
               :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
+              <template slot-scope="scope">
+                <span v-if="item.prop === 'order_info.create_time'">{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]] | dateFormatter}}</span>
+                <span v-else>{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -113,6 +117,10 @@
               :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
+              <template slot-scope="scope">
+                <span v-if="item.prop === 'order_info.create_time'">{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]] | dateFormatter}}</span>
+                <span v-else>{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -160,6 +168,10 @@
               :show-overflow-tooltip="item.showOverflowTooltip"
               align="center"
             >
+              <template slot-scope="scope">
+                <span v-if="item.prop === 'order_info.create_time'">{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]] | dateFormatter}}</span>
+                <span v-else>{{scope.row[item.prop.split('.')[0]][item.prop.split('.')[1]]}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
@@ -212,7 +224,9 @@
             filterable
             allow-create
             default-first-option
-          ></el-select>
+          >
+            <el-option v-for="item in expressComList" :key="item.id" :value="item.name" :label="item.name"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="快递单号：" prop="express_no">
           <div style="width: 300px;">
@@ -232,7 +246,7 @@
 <script>
 import breadcrumb from '@/components/common/address'
 import dayjs from 'dayjs'
-import { getProductOrderList, deliveryGoods, exportGoodsOrder } from '@/api/orderManagement'
+import { getProductOrderList, deliveryGoods, exportGoodsOrder, getExpressComList } from '@/api/orderManagement'
 const tabDataCfg = {
   all: { data: 'dataAll', total: 'totalAll', orderStatus: '' },
   toSend: { data: 'dataToSend', total: 'totalToSend', orderStatus: 1 },
@@ -262,7 +276,7 @@ export default {
       },
       columnCfg: [
         {label: '商品订单编号', prop: 'order_info.order_no', width: 220},
-        {label: '订购时间', prop: 'order_info.create_time'},
+        {label: '订购时间', prop: 'order_info.create_time', width: 180},
         {label: '订购门店', prop: 'order_info.shop_name'},
         {label: '商品', prop: 'goods_info.name', showOverflowTooltip: true},
         {label: '数量', prop: 'goods_info.count'},
@@ -291,14 +305,27 @@ export default {
         express_no: [
           { required: true, message: '请输入快递单号', trigger: 'blur'}
         ]
+      },
+      expressComList: [],
+      buttonTypes: {
+        'all': false,
+        0: false,
+        3: false,
+        7: false
       }
     }
   },
   created() {
-    this.getTableData(0)
+    this.getExpressComList()
+    this.getTableData(1)
   },
   methods: {
     handleClickDate(num) {
+      Object.keys(this.buttonTypes).forEach(item => {
+        this.buttonTypes[item] = false
+      })
+      this.buttonTypes[num] = true
+
       const now = dayjs().format(dateFormatStr)
       switch(num) {
         case 'all':
@@ -328,8 +355,14 @@ export default {
         this[tabDataCfg[this.activeTab].data] = data
       })
     },
+    getExpressComList() {
+      getExpressComList().then(res => {
+        const { data } = res
+        this.expressComList = data
+      })
+    },
     handleSearch() {
-      this.getTableData(0)
+      this.getTableData(1)
     },
     handleDateChange(val) {
       this.form.start_time = val[0]
@@ -337,7 +370,7 @@ export default {
     },
     handleTabClick() {
       if (this[tabDataCfg[this.activeTab].data].length === 0) {
-        this.getTableData(0)
+        this.getTableData(1)
       }
     },
     jumpToOrderDetail(id) {
@@ -399,6 +432,15 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    }
+  },
+  filters: {
+    dateFormatter(val) {
+      if (val) {
+        return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
     }
   }
 }

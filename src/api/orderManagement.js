@@ -145,6 +145,14 @@ export const getProductOrderDetail = query => {
     params: query
   })
 }
+// 获取快递公司下拉列表
+export const getExpressComList = query => {
+  return request({
+    url: `/admin/express/selectList`,
+    method: 'get',
+    params: query
+  })
+}
 // 商品发货
 export const deliveryGoods = query => {
   return request({

@@ -52,7 +52,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="downloadCode(scope.row.name)">下载邀请码</el-button>
+            <el-button type="text" @click="downloadCode(scope.row.QR_url)">下载邀请码</el-button>
             <span v-if="scope.row.member_count === 0" style="color: #DDDDDD;margin: 0 5px;">|</span>
             <el-button type="text" v-if="scope.row.member_count === 0" @click="handleRemove(scope.row.id)"> 清退</el-button>
           </template>

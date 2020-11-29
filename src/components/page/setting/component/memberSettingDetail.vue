@@ -288,8 +288,8 @@
                     const formData = res.data;
                     // 转换颜色字段
                     const colors = res.data.color.split(',');
-                    this.colorLeft = colors[0];
-                    this.colorRight = colors[1] || colors[0];
+                    this.colorLeft = res.data.start_color || '';
+                    this.colorRight = res.data.end_color || '';
                     // 转换条件字段
                     this.conditionType = formData.condition.type;
                     if (formData.condition.type === '1') {
@@ -334,8 +334,9 @@
                     if (valid) {
                         const formData = JSON.parse(JSON.stringify(this.formData));
                         // 组装颜色参数
-                        const colors = [this.colorLeft || '', this.colorRight || ''];
-                        formData.color = colors.join(',');
+                        // const colors = [this.colorLeft || '', this.colorRight || ''];
+                        formData.start_color = this.colorLeft || '';
+                        formData.end_color = this.colorRight || '';
                         // 组装条件参数
                         const condition = {
                             type: this.conditionType,

@@ -27,7 +27,8 @@
               <p>{{scope.row[item.prop].discount}}</p>
               <p>{{scope.row[item.prop].price}}</p>
             </div>
-            <span v-else>{{scope.row[item.prop]|discountFormatter}}</span>
+            <span v-else-if="item.type === 'type'">{{scope.row[item.prop]|discountFormatter}}</span>
+            <span v-else>{{scope.row[item.prop]}}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">

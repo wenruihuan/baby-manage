@@ -39,10 +39,10 @@
             </el-form-item>
             <el-form-item>
               <div class="btn-list">
-                <el-button @click="handleClickDate('all')">全部</el-button>
-                <el-button @click="handleClickDate(0)">今天</el-button>
-                <el-button @click="handleClickDate(3)">近3天</el-button>
-                <el-button @click="handleClickDate(7)">近7天</el-button>
+                <el-button :type="buttonTypes['all']? 'primary': ''" plain @click="handleClickDate('all')">全部</el-button>
+                <el-button :type="buttonTypes[0]? 'primary': ''" plain @click="handleClickDate(0)">今天</el-button>
+                <el-button :type="buttonTypes[3]? 'primary': ''" plain @click="handleClickDate(3)">近3天</el-button>
+                <el-button :type="buttonTypes[7]? 'primary': ''" plain @click="handleClickDate(7)">近7天</el-button>
               </div>
             </el-form-item>
           </el-row>
@@ -276,8 +276,8 @@ export default {
         order_status: ''
       },
       columnCfg: [
-        {label: '订单编号', prop: 'order_no', width: 200},
-        {label: '下单时间', prop: 'create_time', width: 200},
+        {label: '订单编号', prop: 'order_no', width: 180},
+        {label: '下单时间', prop: 'create_time', width: 180},
         {label: '购买项目', prop: 'order_name', width: 200},
         {label: '技师', prop: 'technician_name'},
         {label: '单价（元）', prop: 'price'},
@@ -295,7 +295,13 @@ export default {
       totalAll: 0,
       totalUnPay: 0,
       totalDone: 0,
-      totalCancel: 0
+      totalCancel: 0,
+      buttonTypes: {
+        'all': false,
+        0: false,
+        3: false,
+        7: false
+      }
     }
   },
   created() {
@@ -342,6 +348,10 @@ export default {
       this.getTableData(page)
     },
     handleClickDate(num) {
+      Object.keys(this.buttonTypes).forEach(item => {
+        this.buttonTypes[item] = false
+      })
+      this.buttonTypes[num] = true
       const now = dayjs().format(dateFormatStr)
       switch(num) {
         case 'all':
