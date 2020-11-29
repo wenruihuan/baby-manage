@@ -46,11 +46,17 @@
                 </div>
                 <div class="footer-btn">
                     <el-button type="primary" @click="handleSave">保存</el-button>
+                    <el-button type="primary" @click="handlePreview">预览</el-button>
                 </div>
             </div>
-            <div class="container-right">
-                <iframe src="https://m.toutiao.com/?W2atIF=1" frameborder="0"></iframe>
-            </div>
+            <el-dialog title="扫码预览" :visible.sync="showPreview" width="400px">
+                <div style="text-align: center">
+                    <el-image fit="cover" :src="previewUrl" style="width: 250px; height: 250px" alt="" />
+                </div>
+            </el-dialog>
+            <!-- <div class="container-right"> -->
+            <!-- <iframe src="https://m.toutiao.com/?W2atIF=1" frameborder="0"></iframe> -->
+            <!-- </div> -->
         </div>
         <el-dialog
             v-if="dialogVisibleServer"
@@ -169,7 +175,10 @@
         getRecommendGoods,
         getGoodsClassification,
         getGoodsList,
-        saveGoods
+        saveGoods,
+        previewBanner,
+        previewService,
+        previewGoods
     } from '@/api/setting';
     export default {
         name: 'IndexSetting',
@@ -220,7 +229,9 @@
                 goodsTableData: [],
                 goodsLoading: false,
                 selectRows: [],
-                editIndex: -1
+                editIndex: -1,
+                showPreview: false,
+                previewUrl: ''
             };
         },
         computed: {
@@ -424,6 +435,36 @@
                     this.getTableList();
                 }
             },
+            async handlePreview() {
+                let apiFn = '';
+                let params = '';
+                if (this.activeName === '1') {
+                    apiFn = previewBanner;
+                    const imgs = this.tableList.map((m) => m.img);
+                    params = {
+                        banners: imgs.join(',') || ''
+                    };
+                }
+                if (this.activeName === '2') {
+                    apiFn = previewService;
+                    const ids = this.tableList.map((m) => m.id);
+                    params = {
+                        ids: ids.join(',') || ''
+                    };
+                }
+                if (this.activeName === '3') {
+                    apiFn = previewGoods;
+                    const ids = this.tableList.map((m) => m.id);
+                    params = {
+                        ids: ids.join(',') || ''
+                    };
+                }
+                const res = await apiFn(params);
+                if (res.code === 200) {
+                    this.showPreview = true;
+                    this.previewUrl = res.data;
+                }
+            },
             handleDelete(index) {
                 this.tableList.splice(index, 1);
             },
@@ -488,8 +529,8 @@
     }
 
     .container-left {
-        width: calc(100% - 500px);
-        margin-right: 20px;
+        width: 100%;
+        /* margin-right: 20px; */
         height: calc(100% - 40px);
     }
 

@@ -63,6 +63,33 @@ export const saveBanner = params => {
   })
 }
 
+// 预览banner
+export const previewBanner = params => {
+    return request({
+        url: `/admin/mp/previewBanner`,
+        method: 'post',
+        data: params
+    })
+}
+
+// 预览推荐服务
+export const previewService = params => {
+    return request({
+        url: `/admin/mp/previewRecommendService`,
+        method: 'post',
+        data: params
+    })
+}
+
+// 预览推荐商品
+export const previewGoods = params => {
+    return request({
+        url: `/admin/mp/previewRecommendGoods`,
+        method: 'post',
+        data: params
+    })
+}
+
 // 获取推荐服务
 export const getRecommendService = query => {
   return request({
