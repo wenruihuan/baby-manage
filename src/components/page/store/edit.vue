@@ -66,8 +66,16 @@
                             </el-cascader>
                         </div>
                         <!--<el-select></el-select>-->
-                        <el-input class="width200" v-model="ruleForm.longitude"></el-input>
-                        <el-input class="width200" v-model="ruleForm.latitude"></el-input>
+                        <div class="displayCenter">
+                            <div>
+                                <span>经度：</span>
+                                <el-input class="width100" v-model="ruleForm.longitude"></el-input>
+                            </div>
+                            <div>
+                                <span>纬度：</span>
+                                <el-input class="width100" v-model="ruleForm.latitude"></el-input>
+                            </div>
+                        </div>
                         <div class="amap-page-container">
                             <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
                             <el-amap vid="amapDemo" :zoom="zoom" :center="center" class="amap-demo mapBox" :events="events">
@@ -76,7 +84,7 @@
                         </div>
                     </el-form-item>
                     <el-form-item label="店铺介绍">
-                        <el-input type="textarea" :disabled="disabled" v-model="ruleForm.intr"></el-input>
+                        <el-input class="height150" type="textarea" :disabled="disabled" v-model="ruleForm.intr"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="shopSave">保存</el-button>
@@ -101,7 +109,7 @@ export default {
         return {
             options: regionDataPlus,
             searchOption: {
-                city: '上海',
+                city: '',
                 citylimit: true
             },
             events: {
@@ -226,7 +234,10 @@ export default {
 .storeDetails .inline-tips{
     color: #d9d9d9;
 }
-
+.displayCenter> div{
+    margin-right: 20px;
+    padding: 10px 0;
+}
 .amap-demo {
     width: 100%;
     height: 300px;
@@ -239,7 +250,7 @@ export default {
 }
 
 .amap-page-container {
-    padding: 50px 0;
+    padding: 20px 0;
     position: relative;
 }
 </style>

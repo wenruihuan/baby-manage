@@ -140,7 +140,7 @@
             </div>
             <div class="box box1">
                 <span>积分数量：</span>
-                <div class="item">全部</div>
+                <div @click="pointFn" :class="search.start_point === '' && search.end_point === '' ? ' active item' : 'item'">全部</div>
                 <div class="item">
                     <el-input v-model="search.start_point" class="width85" placeholder="自定义"></el-input>
                     <span>-</span>
@@ -184,11 +184,12 @@
                         <div class="item" style="display: flex; align-items: center">
                             <div class="pic" style="margin-right: 20px;">
                                 <img :src="scope.row.head_img" alt="" width="80">
+                                <p>{{scope.row.level_name}}</p>
                             </div>
                             <div class="info">
                                 <p>{{scope.row.memeber_name}}</p>
                                 <p>{{scope.row.memeber_phone}}</p>
-                                <p>{{scope.row.memeber_no}}</p>
+                                <p>编号：{{scope.row.memeber_no}}</p>
                             </div>
                         </div>
                     </template>
@@ -310,8 +311,9 @@
             <p>
                 已选:{{hm_id.length}}
             </p>
-            <el-select  multiple v-model="hm_id" placeholder="选择会员等级">
+            <el-select  multiple v-model="hm_id" class="d9d9d9" placeholder="选择会员等级">
                 <el-option
+                        class="d9d9d9"
                         v-for="(item, index) in hmSelectList"
                         :key="index"
                         :label="item.hm_name"
@@ -342,7 +344,7 @@ export default {
             last_buy: [
                 {
                     label: '全部',
-                    value: 'all',
+                    value: '',
                     state: false,
                 },
                 {
@@ -364,7 +366,7 @@ export default {
             buy_count: [
                 {
                     label: '全部',
-                    value: 'all',
+                    value: '',
                     state: false,
                 },
                 {
@@ -402,6 +404,8 @@ export default {
             birthdayValue: [],
             regTimeValue: [],
             search: {
+                start_point: '',
+                end_point: '',
                 keyword: '',
                 buy_count: '',
                 tag_id: '',
@@ -445,6 +449,10 @@ export default {
         this.getMemberRegQr();
     },
     methods: {
+        pointFn () {
+            this.search.start_point = '';
+            this.search.end_point = '';
+        },
         // 新增会员提交后回调
         submitCallBack () {
             console.log('submitCallBack');
@@ -525,6 +533,10 @@ export default {
         async getMemberAllCard () {
             const  { data } = await memberAllCard();
             this.memberAllCardList = data;
+            this.memberAllCardList.valid.unshift({
+                title: '全部',
+                no: ''
+            })
         },
         // 会员等级列表
         async getMemberLevelList () {
@@ -550,6 +562,10 @@ export default {
         async getHmSelectList () {
             const  { data } = await api.hmSelectList();
             this.hmSelectList = data;
+            this.hmSelectList.unshift({
+                hm_name: '全部',
+                hm_id: ''
+            })
         },
         handleClose () {},
         // 4.3.8.获取快速注册二维码

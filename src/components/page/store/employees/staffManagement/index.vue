@@ -17,9 +17,9 @@
                         &nbsp;
                     </el-col>
                     <el-col :span="6">
-                        <el-input placeholder="请输入系统账号、姓名"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+                        <el-input placeholder="请输入系统账号、姓名" v-model="keyword"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
                     </el-col>
-                    <el-col :span="2"><el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                    <el-col :span="2"><el-button type="primary" icon="el-icon-search" @click="getFormData">搜索</el-button>
                     </el-col>
                 </el-row>
 
@@ -30,7 +30,7 @@
                     <el-col :span="6">
                         <span>选择职位 </span>
                         <el-select
-                                v-model="query.address"
+                                v-model="position_id"
                                 placeholder="选择职位"
                                 class="handle-select mr10"
                         >
@@ -118,7 +118,7 @@
                     background
                     @current-change="handleCurrentChange"
                     layout="total, prev, pager, next, jumper"
-                    :total="page.total">
+                    :total="total">
             </el-pagination>
         </div>
         <el-dialog
@@ -169,11 +169,12 @@ export default {
     },
     data () {
         return {
-            page: {
-                total: 30
-            },
+            total: 0,
+            page_no: 1,
             query: {},
             positionSelectList: [],
+            keyword: '',
+            position_id: '',
             employeesTitle: '',
             dialogVisible: false,
             isStaffSetDisable: false,
@@ -203,39 +204,39 @@ export default {
             const { data } = api.staffSetDisable({ id: scope.row.id, is_disable: scope.row.is_disable});
             this.isStaffSetDisable = false;
         },
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
-        },
         handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
+            this.page_no = val;
+            this.getFormData();
         },
         async getPositionSelectList () {
             const { data } = await api.positionSelectList();
             this.positionSelectList = data.data;
-            console.log(data.data);
         },
         handleClick (state, val) {
             this.employeesId = '';
             this.employeesTitle = '新增员工';
+            this.isAddEmployees = true;
             if (state === 'edit') {
                 this.employeesTitle = '编辑员工';
                 this.employeesId = val.row.id;
+                this.$nextTick(() => {
+                    this.$refs.AddEmployees.getInfoData(val);
+                });
             }
-            this.isAddEmployees = true;
-            this.$nextTick(() => {
-                this.$refs.AddEmployees.getInfoData(val);
-            });
         },
         handleClose () {
             this.isAddEmployees = false;
             this.isRelevance = false;
         },
-        handleSearch () {
-            this.isAddEmployees = false;
-        },
         async getFormData () {
-            const { data } = await api.staffList();
+            let params = {
+                position_id: this.position_id,
+                keyword: this.keyword,
+                page_no: this.page_no
+            }
+            const { data } = await api.staffList(params);
             this.tableData = data.data;
+            this.total = data.allCount;
         }
     }
 };

@@ -67,7 +67,7 @@
                     background
                     @current-change="handleCurrentChange"
                     layout="total, prev, pager, next, jumper"
-                    :total="page.total">
+                    :total="total">
             </el-pagination>
         </div>
         <el-dialog
@@ -104,9 +104,8 @@
         },
         data () {
             return {
-                page: {
-                    total: 30
-                },
+                total: 0,
+                page_no: 1,
                 query: {},
                 dialogVisible: false,
                 // 是否显示新增
@@ -129,15 +128,17 @@
                 api.positionDelete({ id: scope.row.id})
             },
             async getFormData () {
-                const { data } = await api.positionList();
+                let params = {
+                    page_no: this.page_no,
+                    page_size: 20
+                };
+                const { data } = await api.positionList(params);
                 this.tableData = data.data;
-                this.page.total = data.all_count;
-            },
-            handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
+                this.total = data.all_count;
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
+                this.page_no = val;
+                this.getFormData();
             },
             handleClick (val) {
                 console.log(val);

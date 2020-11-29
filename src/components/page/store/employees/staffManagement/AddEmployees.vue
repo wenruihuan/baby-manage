@@ -3,7 +3,7 @@
         <el-form ref="form" :model="form" :rules="formRules" label-width="100px">
             <div class="dialogMain">
                 <el-form-item label="归属门店:" prop="shop_name">
-                    <el-input class="width150" v-model="form.shop_name"></el-input>
+                    多多亲子岁月一店
                 </el-form-item>
                 <el-form-item label="姓名:" prop="name">
                     <el-input class="width150" v-model="form.name"></el-input>
@@ -131,16 +131,16 @@ export default {
             this.imageUrl = URL.createObjectURL(file.raw);
         },
         beforeAvatarUpload(file) {
-            const isJPG = file.type === 'image/jpeg';
-            const isLt2M = file.size / 1024 / 1024 < 2;
-
-            if (!isJPG) {
-                this.$message.error('上传头像图片只能是 JPG 格式!');
-            }
-            if (!isLt2M) {
-                this.$message.error('上传头像图片大小不能超过 2MB!');
-            }
-            return isJPG && isLt2M;
+            // const isJPG = file.type === 'image/jpeg';
+            // const isLt2M = file.size / 1024 / 1024 < 2;
+            //
+            // if (!isJPG) {
+            //     this.$message.error('上传头像图片只能是 JPG 格式!');
+            // }
+            // if (!isLt2M) {
+            //     this.$message.error('上传头像图片大小不能超过 2MB!');
+            // }
+            // return isJPG && isLt2M;
         }
     }
 }

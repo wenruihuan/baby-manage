@@ -19,7 +19,7 @@
                     </el-form>
                 </div>
             </div>
-            <div class="info-title">配置权限{{checkAll}}</div>
+            <div class="info-title">配置权限</div>
             <div class="info-item">
                 <div v-for="(item, index) in roleAathList" :key="item.id">
                     <el-collapse accordion>
@@ -89,7 +89,7 @@
             if (this.id !== '') {
                 this.getUserInfo();
             }
-            if (this.state === 'edit') {
+            if (this.state === 'view') {
                 this.disabled = true;
             }
             this.getRoleAthList();

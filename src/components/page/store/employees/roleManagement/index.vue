@@ -7,7 +7,7 @@
                         type="primary"
                         class="handle-del mr10"
                         @click="addRole"
-                    >添加职位</el-button>
+                    >添加角色</el-button>
                 </el-row>
 
                 <el-row :gutter="20">
@@ -99,9 +99,8 @@
         },
         data () {
             return {
-                page: {
-                    total: 30
-                },
+                page_no: 1,
+                total: 0,
                 query: {},
                 dialogVisible: false,
                 // 是否显示新增
@@ -123,12 +122,9 @@
             addRole () {
                 this.$router.push({ path: '/roleManagement/addRole'});
             },
-            handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
-            },
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
-                this.pageNo = val;
+                this.page_no = val;
                 this.getFormData();
             },
             handleClick (state, id) {
@@ -138,9 +134,13 @@
                 this.isAddEmployees = false;
             },
             async getFormData () {
-                const { data } = await api.roleList();
+                let params = {
+                    page_no: this.page_no,
+                    page_size: 20
+                }
+                const { data } = await api.roleList(params);
                 this.tableData = data.data;
-                this.page.total = data.all_count;
+                this.total = data.all_count;
             }
         }
     };
