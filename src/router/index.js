@@ -40,8 +40,8 @@ export default new Router({
                     meta: { title: '员工班排' }
                 },
                 {
-                    path: '/roleManagement/addRole',
-                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/store/employees/roleManagement/addRole.vue'),
+                    path: '/addRole',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/store/addRole.vue'),
                     meta: { title: '员工列表' }
                 },
                 {

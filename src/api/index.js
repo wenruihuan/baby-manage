@@ -603,7 +603,7 @@ export const archivesBabyRecord = query => {
 
 
 // 2.4.6.调整员工某一天班次
-    export const worktimeStaffChange= query => {
+    export const worktimeStaffChange = query => {
     return request({
         url: `/admin/worktime/staffChange`,
         method: 'post',
@@ -613,9 +613,32 @@ export const archivesBabyRecord = query => {
 
 
 // 4.1.1.3.添加（编辑）宝宝档案记录
-    export const archivesSaveBabyRecord= query => {
+    export const archivesSaveBabyRecord = query => {
     return request({
         url: `/admin/archives/saveBabyRecord`,
+        method: 'post',
+        data: query
+    });
+};
+
+
+
+// 2.3.6.获取绑定微信二维码
+    export const staffBind= query => {
+    return request({
+        url: `/admin/staff/bind`,
+        method: 'post',
+        data: query
+    });
+};
+
+
+
+
+// 2.4.4.设置排班
+    export const worktimeStaffEdit= query => {
+    return request({
+        url: `/admin/worktime/staffEdit`,
         method: 'post',
         data: query
     });

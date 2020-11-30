@@ -5,10 +5,10 @@
                 <el-row :gutter="20">
                     <el-col :span="6">
                         <el-button
-                                type="primary"
-                                icon="el-icon-delete"
-                                class="handle-del mr10"
-                                @click="handleClick('add')"
+                            type="primary"
+                            icon="el-icon-delete"
+                            class="handle-del mr10"
+                            @click="handleClick('add')"
                         >
                             添加员工
                         </el-button>
@@ -30,9 +30,10 @@
                     <el-col :span="6">
                         <span>选择职位 </span>
                         <el-select
-                                v-model="position_id"
-                                placeholder="选择职位"
-                                class="handle-select mr10"
+                            @change="selectPosition"
+                            v-model="position_id"
+                            placeholder="选择职位"
+                            class="handle-select mr10"
                         >
                             <el-option
                                 :key="item.id"
@@ -94,19 +95,20 @@
                 >
                 </el-table-column>
                 <el-table-column
-                        fixed="right"
-                        label="操作"
+                    fixed="right"
+                    label="操作"
                 >
                     <template slot-scope="scope">
                         <el-button @click="handleClick('edit', scope)" type="text" size="small">详情</el-button>
                         <i style="padding: 0 10px; color: #ddd">|</i>
-                        <el-dropdown>
+                        <el-dropdown class="dropdown">
                             <el-button type="text" size="small">更多</el-button>
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item><span @click="handleClick('edit', scope)">编辑</span></el-dropdown-item>
-                                <el-dropdown-item><span>关联服务</span></el-dropdown-item>
+                                <el-dropdown-item @click="bindWechat(scope)" v-if="scope.row.role_names.indexOf('健康管理师') === -1"><span>绑定微信</span></el-dropdown-item>
+                                <el-dropdown-item v-else><span>关联服务</span></el-dropdown-item>
                                 <el-dropdown-item>设置排班</el-dropdown-item>
-                                <el-dropdown-item><span @click="handleRelevance()">禁用账号</span></el-dropdown-item>
+                                <el-dropdown-item><span @click="handleRelevance(scope)">禁用账号</span></el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </template>
@@ -145,6 +147,20 @@
         </div>
 
         <el-dialog
+            class="authQr-dialog"
+            title="绑定微信"
+            :visible.sync="authQrDialog"
+            width="400px"
+            height="400"
+            :before-close="handleClose"
+        >
+            <div class="box">
+                <img :src="authQrData.QR_url">
+                <p>扫码绑定微信</p>
+                <p>此功能用于健康管理师查看会员健康档案</p>
+            </div>
+        </el-dialog>
+        <el-dialog
             title="禁用账号"
             :visible.sync="isStaffSetDisable"
             width="500px"
@@ -169,13 +185,16 @@ export default {
     },
     data () {
         return {
+            authQrData: {}, // 扫码返回数据
             total: 0,
             page_no: 1,
             query: {},
+            currentId: '',
             positionSelectList: [],
             keyword: '',
             position_id: '',
             employeesTitle: '',
+            authQrDialog: false,
             dialogVisible: false,
             isStaffSetDisable: false,
             // 是否显示新增
@@ -190,6 +209,21 @@ export default {
         this.getPositionSelectList();
     },
     methods: {
+        bindWechat (scope) {
+            alert(1);
+            // this.authQrDialog = true;
+            // this.currentId = scope.row.id;
+            // this.authQrFn();
+        },
+        // 4.1.2.获取授权二维码
+        async authQrFn () {
+            const { data } = await api.staffBind({ member_id: this.member_id });
+            this.authQrData = data;
+        },
+        // 选择职位
+        selectPosition () {
+            this.getFormData();
+        },
         dateFormate(row, column, cellValue, index) {
             if (cellValue) {
                 return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
@@ -198,10 +232,12 @@ export default {
             }
         },
         async handleRelevance (scope) {
+            console.log(scope);
+            this.currentId = scope.row.id;
             this.isStaffSetDisable = true;
         },
         async setStaffSetDisable () {
-            const { data } = api.staffSetDisable({ id: scope.row.id, is_disable: scope.row.is_disable});
+            const { data } = api.staffSetDisable({ id: this.currentId, is_disable: 0});
             this.isStaffSetDisable = false;
         },
         handleCurrentChange(val) {
@@ -233,7 +269,7 @@ export default {
                 position_id: this.position_id,
                 keyword: this.keyword,
                 page_no: this.page_no
-            }
+            };
             const { data } = await api.staffList(params);
             this.tableData = data.data;
             this.total = data.allCount;

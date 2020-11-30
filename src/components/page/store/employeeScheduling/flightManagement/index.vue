@@ -19,7 +19,6 @@
         <div class="table">
             <el-table
                 :data="tableData"
-                border
                 style="width: 100%"
             >
                 <el-table-column
@@ -76,31 +75,54 @@
                 </div>
                 <div class="item">
                     <span>班次时间：</span>
-                    <el-time-picker
-                        is-range
-                        format='HH:mm'
-                        value-format="HH:mm"
-                        v-model="worktime"
-                        range-separator="至"
-                        start-placeholder="开始时间"
-                        end-placeholder="结束时间"
-                        placeholder="选择时间范围">
-                    </el-time-picker>
+
+                    <el-time-select
+                            class="width120"
+                            v-model="worktime1"
+                            :picker-options="{
+                            start: '09:00',
+                            step: '00:30',
+                            end: '18:00'
+                          }"
+                            placeholder="选择时间">
+                    </el-time-select>
+                    -
+                    <el-time-select
+                            class="width120"
+                            v-model="worktime2"
+                            :picker-options="{
+                            start: worktime1,
+                            step: '00:30',
+                            end: '18:00'
+                          }"
+                            placeholder="选择时间">
+                    </el-time-select>
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     <el-button size="small" @click="addResttimeListNum">添加休息时段</el-button>
                 </div>
-                <div class="item" v-for="(item, index) in resttimeList" :key="index">
+                <div class="item" v-for="(item, index) in resttimeList">
                     <span>休息时段：</span>
-                    <el-time-picker
-                        is-range
-                        format='HH:mm'
-                        value-format="HH:mm"
-                        v-model="resttimeList[index]"
-                        range-separator="至"
-                        start-placeholder="开始时间"
-                        end-placeholder="结束时间"
-                        placeholder="选择时间范围">
-                    </el-time-picker>
+                    <el-time-select
+                            class="width120"
+                            v-model="item.resttime1[0]"
+                            :picker-options="{
+                            start: '09:00',
+                            step: '00:30',
+                            end: '18:00'
+                          }"
+                            placeholder="选择时间">
+                    </el-time-select>
+                     -
+                    <el-time-select
+                            class="width120"
+                            v-model="item.resttime1[1]"
+                            :picker-options="{
+                            start: item.resttime1[0],
+                            step: '00:30',
+                            end: '18:00'
+                          }"
+                            placeholder="选择时间">
+                    </el-time-select>
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     <el-button size="small" @click="removeWorktimeNum(index)">删除</el-button>
                 </div>
@@ -131,10 +153,12 @@
             return {
                 worktime_id: '',
                 worktime_name: '',
-                worktime: ['08:00', '08:00'],
-                resttimeList: [
-                    ['08:00', '08:00']
-                ],
+                worktime: [],
+                worktime1: '',
+                worktime2: '',
+                resttime1: ['', ''],
+                resttime2: '',
+                resttimeList: [],
                 resttime: [],
                 value1: [],
                 page: {
@@ -153,24 +177,34 @@
         methods: {
             addWorktime () {
                 this.worktime_name = '';
-                this.resttimeList = [['08:00', '08:00']];
+                this.resttimeList = [{
+                    resttime1: {
+                        0: '09:00',
+                        1: '18:00',
+                    }
+                }];
                 this.dialogVisible = true;
             },
             addResttimeListNum () {
-                this.resttimeList.push(['08:00', '08:00']);
+                this.resttimeList.push({
+                    resttime1: {
+                        0: '09:00',
+                        1: '18:00',
+                    }
+                });
             },
             removeWorktimeNum (index) {
                 this.resttimeList.splice(index, 1) ;
             },
             async setWorktimeSave () {
                 this.dialogVisible = false;
-                console.log(this.worktime);
                 this.resttimeList.forEach(m => {
-                    this.resttime.push(m[0] + '-' + m[1]);
+                    this.resttime.push(m.resttime1[0] + '-' + m.resttime1[1]);
                 });
+                this.worktime.push(this.worktime1 + '-' + this.worktime2);
                 let params = {
                     worktime_name: this.worktime_name,
-                    worktime: this.worktime[0] + '-' + this.worktime[1],
+                    worktime: this.worktime,
                     resttime: this.resttime
                 };
                 if (this.worktime_id !== '') {

@@ -60,12 +60,13 @@
                 </el-table-column>
                 <el-table-column
                     prop="tel"
-                    width="200"
+                    width="120"
                     label="联系方式"
                 >
                 </el-table-column>
                 <el-table-column
                         fixed="right"
+                        width="100"
                         label="操作"
                 >
                     <template slot-scope="scope">
@@ -149,7 +150,7 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(async () => {
-                const data = await api.staffSetDisable({ id: id, is_disable: 1 });
+                const data = await api.staffSetDisable({ id: id, is_disable: 0 });
                 this.$message({
                     type: 'success',
                     message: '操作成功!'

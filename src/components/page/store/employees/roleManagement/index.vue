@@ -103,6 +103,7 @@
                 total: 0,
                 query: {},
                 dialogVisible: false,
+                isAddEmployees1: false,
                 // 是否显示新增
                 isAddEmployees: false,
                 tableData: [],
@@ -120,7 +121,7 @@
                 }
             },
             addRole () {
-                this.$router.push({ path: '/roleManagement/addRole'});
+                this.$router.push({ path: '/addRole'});
             },
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
@@ -128,7 +129,7 @@
                 this.getFormData();
             },
             handleClick (state, id) {
-                this.$router.push({ path: '/roleManagement/addRole', query: { state: state, id: id }});
+                this.$router.push({ path: '/addRole', query: { state: state, id: id }});
             },
             handleClose () {
                 this.isAddEmployees = false;

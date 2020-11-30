@@ -12,19 +12,19 @@
         >
             <template v-for="item in items">
                 <template v-if="item.subs">
-                    <el-submenu :index="item.index" :key="item.index">
+                    <el-submenu class="el-submenu0" :index="item.index" :key="item.index">
                         <template slot="title">
                             <i :class="item.icon"></i>
                             <span slot="title">{{ item.title }}</span>
                         </template>
                         <template v-for="subItem in item.subs">
-                            <el-submenu v-if="subItem.subs" :index="subItem.index" :key="subItem.index">
+                            <el-submenu class="el-submenu1" v-if="subItem.subs" :index="subItem.index" :key="subItem.index">
                                 <template slot="title">{{ subItem.title }}</template>
                                 <el-menu-item v-for="(threeItem, i) in subItem.subs" :key="i" :index="threeItem.index">{{
                                     threeItem.title
                                 }}</el-menu-item>
                             </el-submenu>
-                            <el-menu-item v-else :index="subItem.index" :key="subItem.index">{{ subItem.title }}</el-menu-item>
+                            <el-menu-item v-else  class="el-submenu1" :index="subItem.index" :key="subItem.index">{{ subItem.title }}</el-menu-item>
                         </template>
                     </el-submenu>
                 </template>
@@ -280,7 +280,7 @@
         left: 0;
         top: 70px;
         bottom: 0;
-        overflow-y: scroll;
+        overflow: initial;
     }
     .sidebar::-webkit-scrollbar {
         width: 0;
@@ -291,4 +291,22 @@
     .sidebar > ul {
         height: 100%;
     }
+    .el-submenu0{
+        position: relative;
+    }
+</style>
+<style>
+
+    /*.el-submenu0>ul{*/
+        /*position: absolute;*/
+        /*transition: 0.3s;*/
+        /*left: 100%;*/
+        /*z-index: 9;*/
+        /*display: none;*/
+        /*top: 0;*/
+    /*}*/
+    /*.el-submenu0:hover>ul{*/
+        /*position: absolute;*/
+        /*display: block;*/
+    /*}*/
 </style>

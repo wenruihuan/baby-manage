@@ -44,8 +44,8 @@
 </template>
 
 <script>
-    import breadcrumb from '../../../../common/address'
-    import * as api from '../../../../../api/index'
+    import breadcrumb from '../../common/address'
+    import * as api from '../../../api'
     export default {
         name: 'addRole',
         components: {
