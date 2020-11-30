@@ -86,7 +86,7 @@
         </div>
         <edit-wechat ref="editWechat" :html="form.intr" v-if="form.intr !== null" v-show="activeStep === 2" />
         <div class="btn-group" v-if="isEdit">
-            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
+            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="nextStep">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
             <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
             <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
             <el-popover
@@ -228,6 +228,17 @@ export default {
         /* 成功上传 */
         handleUploadSuccess (res, file) {
             this.form.img = `${ this.baseUrl }/${ file.name }`;
+        },
+        nextStep () {
+            if (this.activeStep === 2) {
+                this.activeStep = 1;
+                return false;
+            }
+            this.$refs.boxForm.validate(async valid => {
+                if (valid && this.activeStep === 1) {
+                    this.activeStep = 2;
+                }
+            });
         },
         /* 保存 */
         handleSave () {
