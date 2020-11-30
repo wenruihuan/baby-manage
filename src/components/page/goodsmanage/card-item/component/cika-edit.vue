@@ -221,6 +221,7 @@ export default {
            } else {
                this.rightsList = [];
                this.buyList = [];
+               this.form.intr = '';
            }
         },
         /* 点击card触发 */
