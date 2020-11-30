@@ -236,7 +236,7 @@
                 ],
                 activeName: 'all',
                 page: {
-                    size: 10,
+                    size: 20,
                     number: 1,
                     total: 0
                 },
