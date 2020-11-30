@@ -623,11 +623,11 @@ export default {
             this.getMemberOrder();
         },
         orderTypeFn (item) {
-            if (item.order_status === 0) {
+            if (item.order_status === '0') {
                 return '待付款';
-            } else if (item.order_status === 1) {
+            } else if (item.order_status === '1') {
                 return '待发货';
-            } else if (item.order_status === 2) {
+            } else if (item.order_status === '2') {
                 return '已发货';
             } else if (item.order_status === '3') {
                 return '已完成';

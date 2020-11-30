@@ -566,7 +566,7 @@ export default {
 .billing .billing-tab-box-content-bottom .service-list{
     width: 100%;
     flex-wrap: wrap;
-    height: calc( 100vh - 410px);
+    height: calc( 100vh - 283px);
     overflow-y: auto;
 }
 .billing .billing-tab-box-content-bottom .service-list .item{

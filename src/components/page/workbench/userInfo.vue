@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">取单</el-button>
-                    <el-button >关闭</el-button>
+                    <el-button @click="$router.go(-1)">关闭</el-button>
                 </div>
             </div>
         </div>

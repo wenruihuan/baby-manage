@@ -17,6 +17,15 @@ export const shopInfo = query => {
     });
 };
 
+// 10.4.获取首页信息
+export const homeIndex = query => {
+    return request({
+        url: `/admin/home/index`,
+        method: 'post',
+        data: query
+    });
+};
+
 // 获取店铺负责人
 export const shopManagerInfo = query => {
     return request({
