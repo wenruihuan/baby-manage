@@ -278,7 +278,7 @@
                 this.dialogVisibleServer = false;
             },
             handleSaveServer() {
-                this.selectRows.forEach((m) => {
+                this.selectRows.forEach(m => {
                     let obj = { id: m.id, img: m.img, name: m.name };
                     this.tableList.push(obj);
                 });
@@ -311,7 +311,7 @@
                 this.dialogVisibleGoods = false;
             },
             handleSaveGoods() {
-                this.selectRows.forEach((m) => {
+                this.selectRows.forEach(m => {
                     let obj = { id: m.id, img: m.img, name: m.name };
                     this.tableList.push(obj);
                 });
@@ -321,7 +321,7 @@
                 this.selectRows = selection;
             },
             beforeChangeTab(tab) {
-                if (this.tableList.findIndex((m) => !m.img) > -1 || this.selectRows.length > 0) {
+                if (this.tableList.findIndex(m => !m.img) > -1 || this.selectRows.length > 0) {
                     return new Promise((resolve, reject) => {
                         this.$confirm('此离开此页后操作将不被保存，是否确认切换？', '提示', {
                             confirmButtonText: '确定',
@@ -347,22 +347,22 @@
                     setTimeout(() => {
                         this.$nextTick(() => {
                             if (this.$refs.servertable) {
-                                this.$refs.servertable.clearSelection()
+                                this.$refs.servertable.clearSelection();
                             }
                             this.selectRows = [];
                         });
-                    }, 300)
+                    }, 300);
                 }
                 if (this.activeName === '3') {
                     this.dialogVisibleGoods = true;
                     setTimeout(() => {
                         this.$nextTick(() => {
                             if (this.$refs.goodstable) {
-                                this.$refs.goodstable.clearSelection()
+                                this.$refs.goodstable.clearSelection();
                             }
                             this.selectRows = [];
                         });
-                    }, 300)
+                    }, 300);
                 }
             },
             setDisable(index, boolean) {
@@ -373,7 +373,7 @@
                 });
             },
             handleEdit(index) {
-                console.log(index)
+                console.log(index);
                 this.editIndex = index;
                 if (this.activeName === '1') {
                     this.setDisable(index, false);
@@ -387,22 +387,22 @@
                     setTimeout(() => {
                         this.$nextTick(() => {
                             if (this.$refs.servertable) {
-                                this.$refs.servertable.clearSelection()
+                                this.$refs.servertable.clearSelection();
                             }
                             this.selectRows = [];
                         });
-                    }, 300)
+                    }, 300);
                 }
                 if (this.activeName === '3') {
                     this.dialogVisibleGoods = true;
                     setTimeout(() => {
                         this.$nextTick(() => {
                             if (this.$refs.goodstable) {
-                                this.$refs.goodstable.clearSelection()
+                                this.$refs.goodstable.clearSelection();
                             }
                             this.selectRows = [];
                         });
-                    }, 300)
+                    }, 300);
                 }
             },
             async handleSave() {
@@ -410,21 +410,21 @@
                 let params = '';
                 if (this.activeName === '1') {
                     apiFn = saveBanner;
-                    const imgs = this.tableList.map((m) => m.img);
+                    const imgs = this.tableList.map(m => m.img);
                     params = {
                         banners: imgs.join(',') || ''
                     };
                 }
                 if (this.activeName === '2') {
                     apiFn = saveService;
-                    const ids = this.tableList.map((m) => m.id);
+                    const ids = this.tableList.map(m => m.id);
                     params = {
                         ids: ids.join(',') || ''
                     };
                 }
                 if (this.activeName === '3') {
                     apiFn = saveGoods;
-                    const ids = this.tableList.map((m) => m.id);
+                    const ids = this.tableList.map(m => m.id);
                     params = {
                         ids: ids.join(',') || ''
                     };
@@ -440,21 +440,21 @@
                 let params = '';
                 if (this.activeName === '1') {
                     apiFn = previewBanner;
-                    const imgs = this.tableList.map((m) => m.img);
+                    const imgs = this.tableList.map(m => m.img);
                     params = {
                         banners: imgs.join(',') || ''
                     };
                 }
                 if (this.activeName === '2') {
                     apiFn = previewService;
-                    const ids = this.tableList.map((m) => m.id);
+                    const ids = this.tableList.map(m => m.id);
                     params = {
                         ids: ids.join(',') || ''
                     };
                 }
                 if (this.activeName === '3') {
                     apiFn = previewGoods;
-                    const ids = this.tableList.map((m) => m.id);
+                    const ids = this.tableList.map(m => m.id);
                     params = {
                         ids: ids.join(',') || ''
                     };
@@ -472,7 +472,7 @@
                 const apiFn = ['', getBanner, getRecommendService, getRecommendGoods][this.activeName];
                 const res = await apiFn();
                 if (res.code === 200) {
-                    res.data.forEach((m) => {
+                    res.data.forEach(m => {
                         m.disabled = true;
                     });
                     this.tableList = res.data;
@@ -591,12 +591,17 @@
         display: none;
     }
 
-    .lzp-avatar-uploader .el-upload {
+    .lzp-avatar-uploader >>> .el-upload {
         border: 1px dashed #d9d9d9;
         border-radius: 6px;
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        background-color: #fff;
+        box-sizing: border-box;
+        width: 360px !important;
+        height: 180px !important;
+        text-align: center;
     }
     .lzp-avatar-uploader .el-upload:hover {
         border-color: #409eff;
@@ -609,9 +614,9 @@
         line-height: 178px;
         text-align: center;
     }
-    .avatar {
+    /* .avatar {
         width: 178px;
         height: 178px;
         display: block;
-    }
+    } */
 </style>

@@ -92,7 +92,7 @@
                         v-for="(item, index) in sizeGroup"
                         :key="index"
                     >
-                        <span>{{ item.name }}:</span>
+                        <span>{{ item.name }}:  </span>
                         <ul class="size-value-readonly">
                             <li class="item" v-for="(innerItem, index) in item.values" :key="index">
                                 {{ innerItem.value }}
@@ -116,7 +116,7 @@
         </el-form>
         <edit-wechat ref="editWechat" v-show="activeStep === 2" :intr="form.intr" />
         <div class="btn-group" v-if="isEdit">
-            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="activeStep = activeStep === 1 ? 2 : 1">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
+            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="nextStep">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
             <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
             <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
             <el-popover
@@ -290,71 +290,75 @@ export default {
             });
         },
         nextStep () {
-            this.activeStep = 2;
+            if (this.activeStep === 2) {
+                this.activeStep = 1;
+                return false;
+            }
+            this.$refs.boxForm.validate(async valid => {
+                if (valid && this.activeStep === 1) {
+                    this.activeStep = 2;
+                }
+            });
         },
         /* 保存 */
         handleSave () {
             this.$refs.boxForm.validate(async valid => {
-                if (valid) {
-                    try {
-                        let { kind_name, ...obj } = this.form;
-                        obj.img = this.files.join(',');
-                        obj.sku = this.sizeGroup.map(item => ({
-                            name: item.name,
-                            value: item.values.map(i => i.value)
-                        }));
-                        obj.img_list = obj.img;
-                        obj.tag_ids = Array.isArray(obj.tag_ids) && obj.tag_ids.length > 0 ? obj.tag_ids.join(',') : '';
-                        obj.intr = this.$refs.editWechat.content;
-                        const data = await addOrEditBox(obj);
-                        if (data.code === ERR_OK) {
-                            this.$message({
-                                message: data.msg,
-                                type: 'success'
-                            });
-                            return true;
-                        }
-                    } catch (e) {
-                        console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue handleSave error: ${e}`);
+                try {
+                    let { kind_name, ...obj } = this.form;
+                    obj.img = this.files.join(',');
+                    obj.sku = this.sizeGroup.map(item => ({
+                        name: item.name,
+                        value: item.values.map(i => i.value)
+                    }));
+                    obj.img_list = obj.img;
+                    obj.tag_ids = Array.isArray(obj.tag_ids) && obj.tag_ids.length > 0 ? obj.tag_ids.join(',') : '';
+                    obj.intr = this.$refs.editWechat.content;
+                    const data = await addOrEditBox(obj);
+                    if (data.code === ERR_OK) {
+                        this.$message({
+                            message: data.msg,
+                            type: 'success'
+                        });
+                        return true;
                     }
+                } catch (e) {
+                    console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue handleSave error: ${e}`);
                 }
             });
         },
         /* 上下架状态 */
         async setPublishStatus () {
             this.$refs.boxForm.validate(async valid => {
-                if (valid) {
-                    try {
-                        let { kind_name, ...obj } = this.form;
-                        obj.img = this.files.join(',');
-                        obj.sku = this.sizeGroup.map(item => ({
-                            ...item,
-                            value: item.values.map(i => i.value)
-                        }));
-                        obj.img_list = obj.img;
-                        obj.intr = this.$refs.editWechat.content;
-                        const data = await addOrEditBox(obj);
-                        if (data.code === ERR_OK) {
-                            this.$message({
-                                message: data.msg,
-                                type: 'success'
-                            });
-                            try {
-                                const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
-                                if (data.code === ERR_OK) {
-                                    this.$message({
-                                        message: data.msg,
-                                        type: 'success'
-                                    });
-                                    this.isPublish = !this.isPublish;
-                                }
-                            } catch (e) {
-                                console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue setPublishStatus error: ${e}`);
+                try {
+                    let { kind_name, ...obj } = this.form;
+                    obj.img = this.files.join(',');
+                    obj.sku = this.sizeGroup.map(item => ({
+                        ...item,
+                        value: item.values.map(i => i.value)
+                    }));
+                    obj.img_list = obj.img;
+                    obj.intr = this.$refs.editWechat.content;
+                    const data = await addOrEditBox(obj);
+                    if (data.code === ERR_OK) {
+                        this.$message({
+                            message: data.msg,
+                            type: 'success'
+                        });
+                        try {
+                            const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
+                            if (data.code === ERR_OK) {
+                                this.$message({
+                                    message: data.msg,
+                                    type: 'success'
+                                });
+                                this.isPublish = !this.isPublish;
                             }
+                        } catch (e) {
+                            console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue setPublishStatus error: ${e}`);
                         }
-                    } catch (e) {
-                        console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue handleSave error: ${e}`);
                     }
+                } catch (e) {
+                    console.log(`src/components/page/goodsmanage/goods/component/edit-view.vue handleSave error: ${e}`);
                 }
             });
         },
@@ -493,7 +497,6 @@ export default {
     overflow: hidden;
 }
 .size-readonly .item {
-    float: left;
 }
 .size-value-readonly {
     float: right;

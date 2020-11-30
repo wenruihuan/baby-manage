@@ -287,7 +287,7 @@
                 if (res.code === 200) {
                     const formData = res.data;
                     // 转换颜色字段
-                    const colors = res.data.color.split(',');
+                    // const colors = res.data.color.split(',');
                     this.colorLeft = res.data.start_color || '';
                     this.colorRight = res.data.end_color || '';
                     // 转换条件字段
