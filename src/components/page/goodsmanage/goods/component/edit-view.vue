@@ -92,7 +92,7 @@
                         v-for="(item, index) in sizeGroup"
                         :key="index"
                     >
-                        <span>{{ item.name }}:</span>
+                        <span>{{ item.name }}:  </span>
                         <ul class="size-value-readonly">
                             <li class="item" v-for="(innerItem, index) in item.values" :key="index">
                                 {{ innerItem.value }}
@@ -497,7 +497,6 @@ export default {
     overflow: hidden;
 }
 .size-readonly .item {
-    float: left;
 }
 .size-value-readonly {
     float: right;

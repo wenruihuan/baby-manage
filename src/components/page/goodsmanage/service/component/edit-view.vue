@@ -530,7 +530,6 @@ export default {
     overflow: hidden;
 }
 .size-readonly .item {
-    float: left;
 }
 .size-value-readonly {
     float: right;
