@@ -49,7 +49,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="kind_name"
                         label="分类">
                 </el-table-column>
                 <el-table-column
