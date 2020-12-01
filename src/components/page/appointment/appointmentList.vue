@@ -246,6 +246,9 @@
             };
         },
         created() {
+            if (this.$route.query.keyword) {
+                this.searchValue = this.$route.query.keyword;
+            }
             this.getList();
         },
         methods: {

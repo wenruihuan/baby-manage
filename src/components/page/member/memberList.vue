@@ -668,6 +668,7 @@ export default {
 .memberList .level_name{
     background: #409EFF;
     display: inline-block;
+    transform: scale(0.8);
     padding: 3px 5px;
     font-size: 12px;
     color: #fff;
