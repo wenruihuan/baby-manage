@@ -48,7 +48,7 @@
                 items: [
                     {
                         icon: 'el-icon-lx-home',
-                        index: 'dashboard',
+                        index: '/dashboard',
                         title: '系统首页'
                     },
                     {
@@ -57,7 +57,7 @@
                         title: '店铺',
                         subs: [
                             {
-                                index: 'store',
+                                index: '/store',
                                 title: '店铺信息'
                             },
                             {
@@ -65,11 +65,11 @@
                                 title: '员工管理',
                                 subs: [
                                     {
-                                        index: 'EmployeesList',
+                                        index: '/EmployeesList',
                                         title: '员工列表'
                                     },
                                     {
-                                        index: 'EmployeeScheduling',
+                                        index: '/EmployeeScheduling',
                                         title: '员工排班'
                                     }
                                 ]
@@ -82,22 +82,22 @@
                         title: '预约管理',
                         subs: [
                             {
-                                index: 'AppointmentList',
+                                index: '/AppointmentList',
                                 title: '预约列表'
                             },
                             {
-                                index: 'EvaluateList',
+                                index: '/EvaluateList',
                                 title: '预约评价'
                             }
                         ]
                     },
                     {
                         icon: 'el-icon-time',
-                        index: 'memberList',
+                        index: '/memberList',
                         title: '会员管理',
                         subs: [
                             {
-                                index: 'memberList',
+                                index: '/memberList',
                                 title: '会员列表'
                             }
                         ]
@@ -150,15 +150,15 @@
                         title: '设置',
                         subs: [
                             {
-                                index: 'MiniProgramSetting',
+                                index: '/MiniProgramSetting',
                                 title: '小程序设置',
                                 subs: [
                                     {
-                                        index: 'InformationSetting',
+                                        index: '/InformationSetting',
                                         title: '资讯列表'
                                     },
                                     {
-                                        index: 'IndexSetting',
+                                        index: '/IndexSetting',
                                         title: '首页设置'
                                     }
                                 ]
@@ -168,15 +168,15 @@
                                 title: '客户设置',
                                 subs: [
                                     {
-                                        index: 'MemberSetting',
+                                        index: '/MemberSetting',
                                         title: '会员等级'
                                     },
                                     {
-                                        index: 'IntegralSetting',
+                                        index: '/IntegralSetting',
                                         title: '积分设置'
                                     },
                                     {
-                                        index: 'TagSetting',
+                                        index: '/TagSetting',
                                         title: '标签设置'
                                     }
                                 ]
@@ -186,21 +186,21 @@
                                 title: '预约设置',
                                 subs: [
                                     {
-                                        index: 'GlobalSetting',
+                                        index: '/GlobalSetting',
                                         title: '全局设置'
                                     },
                                     {
-                                        index: 'TechnicianSetting',
+                                        index: '/TechnicianSetting',
                                         title: '技师设置'
                                     }
                                 ]
                             },
                             {
-                                index: 'BillingSetting',
+                                index: '/BillingSetting',
                                 title: '开单设置'
                             },
                             {
-                                index: 'DistributionSetting',
+                                index: '/DistributionSetting',
                                 title: '商品配送设置'
                             }
                         ]
