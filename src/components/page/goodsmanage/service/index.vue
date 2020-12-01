@@ -254,7 +254,7 @@ export default {
                 const data = await getServiceTags({ page_no: 1, page_size: 1000000 });
                 if (data.code === ERR_OK) {
                     this.tagList = data.data.data;
-                    this.tagList.unshift({ id: 'all', name: '全部分类' });
+                    this.tagList.unshift({ id: 'all', name: '全部标签' });
                 }
             } catch (e) {
                 console.log(`service index.vue getTags error: ${e}`);
