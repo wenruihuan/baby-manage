@@ -1,8 +1,15 @@
 <template>
     <div class="cika-view">
-        <div class="top-container">
+        <div class="top-container" v-if="!isHistory">
             <el-button type="primary" @click="gotoEdit">编辑</el-button>
             <el-button @click="setDownPublish">下架</el-button>
+        </div>
+        <div style="padding: 10px;">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item>卡项列表</el-breadcrumb-item>
+                <el-breadcrumb-item>卡项详情</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isHistory">历史卡项详情</el-breadcrumb-item>
+            </el-breadcrumb>
         </div>
         <div class="content-container">
             <div class="top">
@@ -14,7 +21,7 @@
                                 <span class="key">卡类型:</span>
                                 <span class="val">次卡</span>
                             </li>
-                            <li>
+                            <li v-if="!isHistory">
                                 <span class="key">状态:</span>
                                 <span class="val">{{ isPublish ? '上架' : '下架' }}</span>
                             </li>
@@ -77,8 +84,8 @@
                 </div>
             </div>
             <div class="bottom">
-                <el-tabs type="border-card" @tab-click="handleTabClick">
-                    <el-tab-pane :label="`已售(${ hasSellTotal })`">
+                <el-tabs type="border-card" v-model="activeName" @tab-click="handleTabClick">
+                    <el-tab-pane :label="`已售(${ hasSellTotal })`" name="hasSold">
                         <div class="search-container">
                             <el-input
                                 class="search-input"
@@ -150,7 +157,7 @@
                             </el-pagination>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="历史卡项">
+                    <el-tab-pane label="历史卡项" v-if="!isHistory" name="history">
                         <el-table
                             :data="historyList"
                         >
@@ -223,11 +230,6 @@
             </div>
             <div class="tab-container">
                 <div class="el-breadcrumb-container">
-                    <el-breadcrumb separator="/">
-                        <el-breadcrumb-item>卡项列表</el-breadcrumb-item>
-                        <el-breadcrumb-item>卡项详情</el-breadcrumb-item>
-                        <el-breadcrumb-item>{{ activeTab === '历史卡项' ? '历史卡项详情' : '已售卡项详情' }}</el-breadcrumb-item>
-                    </el-breadcrumb>
                 </div>
                 <el-tabs type="border-card" @tab-click="handleTabClick">
                     <el-tab-pane label="卡项权益">
@@ -345,7 +347,9 @@ export default {
             expireForm: {},
             isValidShow: false,
             validForm: {},
-            isInifinate: -1
+            isInifinate: -1,
+            isHistory: false,
+            activeName: 'hasSold'
         };
     },
     created() {
@@ -353,6 +357,18 @@ export default {
         this.getDefaultImg();
         this.getTimeDetail(id);
         this.getSoldList();
+    },
+    computed: {
+        cardId () {
+            return this.$route.query.id || '';
+        }
+    },
+    watch: {
+        cardId (newVal, oldVal) {
+            this.getDefaultImg();
+            this.getTimeDetail(newVal);
+            this.getSoldList();
+        }
     },
     methods: {
         /* 获取默认图片 */
@@ -374,6 +390,9 @@ export default {
                     if (data.code === ERR_OK) {
                         this.cardDetail = data.data;
                         this.isPublish = data.data.is_publish == 1;
+                        if (this.isHistory) {
+                            this.activeName = 'hasSold';
+                        }
                     }
                 } catch (e) {
                     console.log(`/page/goodsmanage/card-item/component/cika-edit.vue getTimeDetail error: ${e}`);
@@ -393,10 +412,10 @@ export default {
         },
         /* 查看卡详情 */
         hanldeCardView (row, index) {
-            this.dialogVisible = true;
             if (this.activeTab === '历史卡项') {
                 this.getHistoryDetail(row.card_time_id);
             } else {
+                this.dialogVisible = true;
                 this.getSoldDetail(row.member_card_id);
             }
         },
@@ -450,6 +469,7 @@ export default {
         },
         /* tab切换时 */
         handleTabClick (tab) {
+            this.activeName = tab.name;
             this.activeTab = tab.label;
             this.selection = [];
             if (tab.label !== '历史卡项') {
@@ -479,6 +499,9 @@ export default {
                         };
                     });
                     this.hasSellTotal = data.data.all_count;
+                    if (this.isHistory) {
+                        this.activeName = 'hasSold';
+                    }
                 }
             } catch (e) {
                 console.log(`/card-item/component/time-card-view.vue getSoldList error: ${ e }`);
@@ -526,15 +549,9 @@ export default {
         },
         /* 获取历史详情 */
         async getHistoryDetail (card_time_id = '') {
+            this.isHistory = true;
             if (card_time_id) {
-                try {
-                    const data = await getTimeHisDetail({ card_time_id });
-                    if (data.code === ERR_OK) {
-                        this.cardItem = data.data;
-                    }
-                } catch (e) {
-                    console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue getHistoryDetail error: ${e}`);
-                }
+                this.$router.push('/cika-card-view?id=' + card_time_id);
             }
         }
     }

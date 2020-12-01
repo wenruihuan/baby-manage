@@ -1,8 +1,15 @@
 <template>
     <div class="cika-view">
-        <div class="top-container">
+        <div class="top-container" v-if="!isHistory">
             <el-button type="primary" @click="gotoEdit">编辑</el-button>
             <el-button @click="setDownPublish">{{ isPublish === '1' ? '下架' : '上架' }}</el-button>
+        </div>
+        <div style="padding: 10px;">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item>卡项列表</el-breadcrumb-item>
+                <el-breadcrumb-item>卡项详情</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isHistory">历史卡项详情</el-breadcrumb-item>
+            </el-breadcrumb>
         </div>
         <div class="content-container">
             <div class="top">
@@ -14,7 +21,7 @@
                                 <span class="key">卡类型:</span>
                                 <span class="val">充值卡</span>
                             </li>
-                            <li>
+                            <li v-if="!isHistory">
                                 <span class="key">状态:</span>
                                 <span class="val">{{ insertDetail.is_publish == '1' ? '上架' : '下架' }}</span>
                             </li>
@@ -65,8 +72,8 @@
                 </div>
             </div>
             <div class="bottom">
-                <el-tabs type="border-card" @tab-click="handleTabClick">
-                    <el-tab-pane :label="`已售(${ hasSellTotal })`">
+                <el-tabs v-model="activeName" type="border-card" @tab-click="handleTabClick">
+                    <el-tab-pane :label="`已售(${ hasSellTotal })`" name="hasSold">
                         <div class="search-container">
                             <el-input
                                     class="search-input"
@@ -137,7 +144,7 @@
                             </el-pagination>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="历史卡项">
+                    <el-tab-pane label="历史卡项" v-if="!isHistory" name="history">
                         <el-table
                                 :data="historyList"
                         >
@@ -323,8 +330,22 @@ export default {
             expireForm: {},
             isValidShow: false,
             validForm: {},
-            isInifinate: -1
+            isInifinate: -1,
+            isHistory: false,
+            activeName: 'hasSold'
         };
+    },
+    computed: {
+        cardId () {
+            return this.$route.query.id || '';
+        }
+    },
+    watch: {
+        cardId (newVal, oldVal) {
+            this.getDefaultImg();
+            this.getInsertDetail(newVal);
+            this.getSoldList();
+        }
     },
     created() {
         const id = this.$route.query.id;
@@ -345,6 +366,9 @@ export default {
                             ...item,
                             typeName: CARD__KIND_GRP[item.rel_type]
                         }));
+                        if (this.isHistory) {
+                            this.activeName = 'hasSold';
+                        }
                     }
                 } catch (e) {
                     console.log(`goodsmanage/card-item/component/insert-card-view.vue getInsertDetail error: ${e}`);
@@ -402,14 +426,10 @@ export default {
         },
         /* 查看历史卡详情 */
         async hanldeCardView2 (row, index) {
-            this.dialogVisible = true;
-            try {
-                const data = await getRechargeHistoryDetail({ card_recharge_id: row.card_recharge_id });
-                if (data.code === ERR_OK) {
-                    this.cardDetail = data.data;
-                }
-            } catch (e) {
-                console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
+            this.isHistory = true;
+            const card_recharge_id = row.card_recharge_id;
+            if (card_recharge_id) {
+                this.$router.push('/insert-card-view?id=' + card_recharge_id);
             }
         },
         /* 已售 */
@@ -454,6 +474,9 @@ export default {
                         };
                     });
                     this.hasSellTotal = Number(data.data.all_count);
+                    if (this.isHistory) {
+                        this.activeName = 'hasSold';
+                    }
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
@@ -478,6 +501,7 @@ export default {
         /* tab切换时 */
         handleTabClick (tab) {
             this.activeTab = tab.label;
+            this.activeName = tab.name;
             this.selection = [];
             this.searchVal = '';
             if (tab.label === '历史卡项') {
