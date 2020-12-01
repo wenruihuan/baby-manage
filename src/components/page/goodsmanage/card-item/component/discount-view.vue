@@ -136,9 +136,7 @@
                     <el-tab-pane label="历史卡项">
                         <el-table
                                 :data="historyList"
-                                @selection-change="handleSelectionChange"
                         >
-                            <el-table-column type="selection" width="55"></el-table-column>
                             <el-table-column prop="createTime" label="修改时间"></el-table-column>
                             <el-table-column prop="editer_name" label="修改人"></el-table-column>
                             <el-table-column prop="name" label="卡项名称"></el-table-column>
@@ -157,8 +155,6 @@
                         </el-table>
                         <div class="pagination-cont">
                             <div class="tool-btn">
-                                <el-button :disabled="selection.length <= 0" @click="shixiao">使失效</el-button>
-                                <el-button :disabled="selection.length <= 0" @click="updateExpire">修改有效期</el-button>
                             </div>
                             <el-pagination
                                     :current-page="curPage2"
