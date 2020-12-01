@@ -267,8 +267,8 @@ export default {
             this.isPublish = this.isPublish === 1;
             this.form.intr = this.$refs.editWechat.content;
             saveTimeCard(this.form).then(data => {
+                const id = data.data.id || '';
                 if (data.code === ERR_OK) {
-                    const id = this.$route.query.id;
                     setPublish({ id, is_publish: this.isPublish ? 1 : 0 }).then(data => {
                         if (data.code === ERR_OK) {
                             this.$message({

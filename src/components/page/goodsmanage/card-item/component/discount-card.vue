@@ -245,8 +245,8 @@ export default {
             this.isPublish = this.isPublish === '1' ? '0' : '1';
             this.form.intr = this.$refs.editWechat.content;
             saveDiscount(this.form).then(data => {
+                const id = data.data.id || '';
                 if (data.code === ERR_OK) {
-                    const id = this.$route.query.id;
                     setPublish({ id, is_publish: this.isPublish  }).then(data => {
                         if (data.code === ERR_OK) {
                             this.$message({
