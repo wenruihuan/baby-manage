@@ -98,3 +98,12 @@ export const bookDetail = query => {
         params: query
     })
 }
+
+// 导出预约列表
+export const exportBook = query => {
+    return request({
+        url: `/admin/booking/export`,
+        method: 'get',
+        params: query
+    })
+}

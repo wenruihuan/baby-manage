@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            <el-button class="export-btn">导出报表</el-button>
+            <el-button class="export-btn" @click="handleExport">导出报表</el-button>
         </div>
         <div class="container">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
@@ -183,10 +183,10 @@
 <script>
     import breadcrumb from '@/components/common/address';
     import appointmentDetail from '@/components/page/appointment/appointmentDetail';
-    import { getAppointmentList, getReadState, cancelBooking } from '@/api/appointment';
+    import { getAppointmentList, getReadState, cancelBooking, exportBook } from '@/api/appointment';
     import { formatDate } from '@/utils/utils';
 
-    const getDateRange = (number) => {
+    const getDateRange = number => {
         const end = new Date();
         const start = new Date();
         start.setTime(start.getTime() - 3600 * 1000 * 24 * number);
@@ -286,10 +286,53 @@
                 }
                 this.getReadState();
             },
+            async handleExport() {
+                const params = {
+                    page_no: this.page.number,
+                    page_size: this.page.size,
+                    back_booking_status: this.activeName !== 'all' ? this.activeName : ''
+                };
+                if (this.selectValue) {
+                    params.keyword_type = this.selectValue;
+                }
+                if (this.searchValue) {
+                    params.keyword = this.searchValue;
+                }
+                if (this.selectDate && this.selectDate.length > 1) {
+                    params.start_time = formatDate(this.selectDate[0], 'Y-M-D');
+                    params.end_time = formatDate(this.selectDate[1], 'Y-M-D');
+                }
+                if (this.sourceValue) {
+                    params.source = this.sourceValue;
+                }
+                const res = await exportBook(params);
+                if (res.code === 200) {
+                    const url = res.data.download;
+                    const arr = res.data.download.split('/');
+                    const filename = arr[arr.length - 1];
+                    if (!url) {
+                        return;
+                    }
+                    const link = document.createElement('a');
+                    link.style.display = 'none';
+                    link.href = url;
+                    link.setAttribute('download', decodeURI(filename));
+                    document.body.appendChild(link);
+                    // Firefox不支持 click()方法
+                    if (document.all) {
+                        link.click();
+                    } else {
+                        const evt = document.createEvent('MouseEvents');
+                        evt.initEvent('click', true, true);
+                        link.dispatchEvent(evt);
+                    }
+                    this.$message.success('文件即将开始下载，请稍等...');
+                }
+            },
             handleClickDropdown(command) {
                 this.$refs.detail.appointmentType = command;
                 this.$refs.detail.dialogType = 'add';
-                this.$refs.detail.dialogTitle = this.dropdownOptions.find((m) => m.value === command).label;
+                this.$refs.detail.dialogTitle = this.dropdownOptions.find(m => m.value === command).label;
                 this.$refs.detail.dialogVisible = true;
             },
             handleToDetail(type, id) {
