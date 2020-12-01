@@ -136,7 +136,7 @@ export default {
                     page_no: 1,
                     page_size: 10000000
                 });
-                this.serviceOptions = data.data.data;
+                this.serviceOptions = data.data;
             } catch (e) {
                 console.log(`cika-edit.vue getServiceKind error: ${ e }`);
             }
