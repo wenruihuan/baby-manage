@@ -146,7 +146,7 @@ export default {
                     { required: true, message: '请输入名称', trigger: 'blur' }
                 ],
                 price: [
-                    { required: true, message: '请选择分类', trigger: 'blur' }
+                    { required: true, message: '请输入售价', trigger: 'blur' }
                 ],
                 expire_day: [
                     { required: true, message: '请选择有效时间', trigger: 'change' }
