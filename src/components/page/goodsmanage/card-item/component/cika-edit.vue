@@ -213,7 +213,7 @@ export default {
                        this.form = data.data;
                        this.rightsList = this.form.right || [];
                        this.buyList = this.form.gifts || [];
-                       this.isPublish = this.form.is_publish === 1;
+                       this.isPublish = this.form.is_publish == 1;
                    }
                } catch (e) {
                    console.log(`/page/goodsmanage/card-item/component/cika-edit.vue getTimeDetail error: ${e}`);

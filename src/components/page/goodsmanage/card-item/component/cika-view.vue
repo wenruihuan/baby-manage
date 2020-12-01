@@ -373,7 +373,7 @@ export default {
                     const data = await getTimeDetial({ id });
                     if (data.code === ERR_OK) {
                         this.cardDetail = data.data;
-                        this.isPublish = data.data.is_publish === 1;
+                        this.isPublish = data.data.is_publish == 1;
                     }
                 } catch (e) {
                     console.log(`/page/goodsmanage/card-item/component/cika-edit.vue getTimeDetail error: ${e}`);

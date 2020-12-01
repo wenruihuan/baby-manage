@@ -95,7 +95,7 @@
                                 width="80"
                                 trigger="click"
                         >
-                            <el-button @click="handlePublish(scope.row.id, scope.row.is_publish === '1' ? '0' : '1')">{{ scope.row.is_publish === '1' ? '下架' : '上架' }}</el-button>
+                            <el-button @click="handlePublish(scope.row.id, scope.row.is_publish == '1' ? '0' : '1')">{{ scope.row.is_publish == '1' ? '下架' : '上架' }}</el-button>
                             <el-button
                                     style="margin-left: 8px;"
                                     slot="reference"

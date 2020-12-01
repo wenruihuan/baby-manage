@@ -16,7 +16,7 @@
                             </li>
                             <li>
                                 <span class="key">状态:</span>
-                                <span class="val">{{ insertDetail.is_publish === '1' ? '上架' : '下架' }}</span>
+                                <span class="val">{{ insertDetail.is_publish == '1' ? '上架' : '下架' }}</span>
                             </li>
                             <li>
                                 <span class="key">充值金额:</span>
