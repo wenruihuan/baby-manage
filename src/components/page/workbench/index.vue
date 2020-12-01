@@ -37,6 +37,10 @@ export default {
         }
     },
     created () {
+        this.operationState = this.$route.query.operationState;
+        if (this.operationState === 'activateCard') {
+            this.pageIndex = 2;
+        }
     },
     mounted () {
         if (this.$route.query.id) {

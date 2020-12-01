@@ -10,7 +10,7 @@
             </div>
             <div class="operation">
                 <el-button @click="getMemberProfile">健康档案</el-button>
-                <el-button>预约</el-button>
+                <el-button @click="$router.push({path: '/AppointmentList', query: { keyword: userInfo.name }})">预约</el-button>
                 <el-button>开单</el-button>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 待服务预约
             </div>
             <div class="right">
-                <router-link to="/AppointmentList">{{userInfo.booking_count}}条预约待处理 <i class="el-icon-arrow-right"></i></router-link>
+                <router-link :to="{path: '/AppointmentList', query: { keyword: userInfo.name }}">{{userInfo.booking_count}}条预约待处理 <i class="el-icon-arrow-right"></i></router-link>
             </div>
         </div>
         <div class="box4">
@@ -286,7 +286,7 @@
                                     label="操作"
                             >
                                 <template slot-scope="scope">
-                                    <el-button type="text">查看订单</el-button>
+                                    <el-button type="text" @click="viewOrder(scope)">查看订单</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -607,6 +607,9 @@ export default {
         this.getArchivesQueryAuth();
     },
     methods: {
+        viewOrder (scope) {
+            this.$router.push({ path: '/orderList', query: {order_no: scope.row.order_no}})
+        },
         // 获取健康师列表
         async getHmSelectList () {
             const  { data } = await api.hmSelectList();
@@ -623,11 +626,11 @@ export default {
             this.getMemberOrder();
         },
         orderTypeFn (item) {
-            if (item.order_status === 0) {
+            if (item.order_status === '0') {
                 return '待付款';
-            } else if (item.order_status === 1) {
+            } else if (item.order_status === '1') {
                 return '待发货';
-            } else if (item.order_status === 2) {
+            } else if (item.order_status === '2') {
                 return '已发货';
             } else if (item.order_status === '3') {
                 return '已完成';

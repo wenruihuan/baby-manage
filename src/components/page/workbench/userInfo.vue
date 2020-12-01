@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">取单</el-button>
-                    <el-button >关闭</el-button>
+                    <el-button @click="$router.go(-1)">关闭</el-button>
                 </div>
             </div>
         </div>
@@ -67,6 +67,10 @@
                     </p>
                 </div>
             </div>
+            <div>
+                <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">取单</el-button>
+                <el-button @click="$router.go(-1)">关闭</el-button>
+            </div>
         </div>
         <el-dialog
                 class="single-dialog"
@@ -74,7 +78,7 @@
                 :visible.sync="singleDialogVisible"
                 width="70%"
                 :before-close="handleClose">
-            <div class="list">
+            <div class="list dialogMain">
                 <div class="item" v-for="item in worktableOrderList">
                     <div class="name">{{item.shop_name}}</div>
                     <div class="name">{{item.order_no}}</div>

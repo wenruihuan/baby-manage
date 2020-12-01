@@ -34,37 +34,37 @@
                 <el-table-column label="姓名" prop="staff_name" align="center"></el-table-column>
                 <el-table-column label="手机号" prop="staff_phone" align="center"></el-table-column>
                 <el-table-column label="门店" prop="shop_name" align="center"></el-table-column>
-                <el-table-column label="周一" prop="worktime_list[0].worktime" align="center">
+                <el-table-column :label="zhouyi" prop="worktime_list[0].worktime" align="center">
                     <template slot-scope="scope">
                         <div class="item" @click="changeShiftFn(scope.row, scope.row.worktime_list[0])">{{scope.row.worktime_list[0].worktime}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="周二" prop="worktime_list[1].worktime" align="center">
+                <el-table-column :label="zhouer" prop="worktime_list[1].worktime" align="center">
                     <template slot-scope="scope">
                     <div class="item" @click="changeShiftFn(scope.row, scope.row.worktime_list[1])">{{scope.row.worktime_list[1].worktime}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="周三" prop="worktime_list[2].worktime" align="center">
+                <el-table-column :label="zhousan" prop="worktime_list[2].worktime" align="center">
                     <template slot-scope="scope">
                     <div class="item" @click="changeShiftFn(scope.row, scope.row.worktime_list[2])">{{scope.row.worktime_list[2].worktime}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="周四" prop="worktime_list[3].worktime" align="center">
+                <el-table-column :label="zhousi" prop="worktime_list[3].worktime" align="center">
                     <template slot-scope="scope">
                     <div class="item" @click="changeShiftFn(scope.row, scope.row.worktime_list[3])">{{scope.row.worktime_list[3].worktime}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="周五" prop="worktime_list[4].worktime" align="center">
+                <el-table-column :label="zhouwu" prop="worktime_list[4].worktime" align="center">
                     <template slot-scope="scope">
                     <div class="item" @click="changeShiftFn(scope.row, scope.row.worktime_list[4])">{{scope.row.worktime_list[4].worktime}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="周六" prop="worktime_list[5].worktime" align="center">
+                <el-table-column :label="zhouliu" prop="worktime_list[5].worktime" align="center">
                     <template slot-scope="scope">
                     <div class="item" @click="changeShiftFn(scope.row, scope.row.worktime_list[5])">{{scope.row.worktime_list[5].worktime}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="周日" prop="worktime_list[6].worktime" align="center">
+                <el-table-column :label="zhouri" prop="worktime_list[6].worktime" align="center">
                     <template slot-scope="scope">
                     <div class="item" @click="changeShiftFn(scope.row, scope.row.worktime_list[6])">{{scope.row.worktime_list[6].worktime}}</div>
                     </template>
@@ -91,8 +91,17 @@
             <div class="changeShiftBox">
                 <div class="item">
                     <span>
-                        {{currentDate}}
+                        员工姓名：
                     </span>
+                    <div>{{currentName}}</div>
+                </div>
+                <div class="item">
+                    <span>
+                        调整日期：
+                    </span>
+                    <div>
+                        {{currentDate}}
+                    </div>
                 </div>
                 <div class="item">
                     <span>调整班次：</span>
@@ -151,7 +160,7 @@
                 <div class="item" v-if="is_default_worktime === '0'">
                     <span>调整班次：</span>
                     <el-time-select
-                        class="width120"
+                        class="width200"
                         v-model="value1"
                         :picker-options="{
                             start: '09:00',
@@ -160,16 +169,17 @@
                           }"
                           placeholder="选择时间">
                     </el-time-select>
-                    -
+                    <a v-if="value1 !== ''">-</a>
                     <el-time-select
-                        class="width120"
+                        v-if="value1 !== ''"
+                        class="width200"
                         v-model="value2"
                         :picker-options="{
                             start: value1,
                             step: '00:30',
                             end: '18:00'
                           }"
-                          placeholder="选择时间">
+                          placeholder="先选择开始时间">
                     </el-time-select>
                 </div>
                 <div class="item item1" v-if="is_default_worktime === '1'">
@@ -280,7 +290,9 @@
         },
         data () {
             return {
+                zhouyi: '',
                 currentDate: '',
+                currentName: '',
                 currentWorkTime: '',
                 is_default_worktime: '0',
                 changeShiftDialogVisible: false,  // 调班
@@ -354,7 +366,14 @@
                 }
                 const { data } = await api.worktimeStaffList(params);
                 this.tableData = data.data;
-                this.total = data.all_count
+                this.total = data.all_count;
+                this.zhouyi = '周一 ' +  data.date_column[0];
+                this.zhouer = '周二 ' +  data.date_column[1];
+                this.zhousan = '周三 ' +  data.date_column[2];
+                this.zhousi = '周四 ' +  data.date_column[3];
+                this.zhouwu = '周五 ' +  data.date_column[4];
+                this.zhouliu = '周六 ' +  data.date_column[5];
+                this.zhouri = '周日 ' +  data.date_column[6];
             },
             handleCurrentChange (val) {
                 console.log(`当前页: ${val}`);
@@ -368,6 +387,7 @@
             async changeShiftFn (itemP, item) {
                 this.currentDate = item.date;
                 this.staff_id = itemP.staff_id;
+                this.currentName = itemP.staff_name;
                 this.currentWorkTime = item.worktime;
                 this.changeShiftDialogVisible = true;
             },

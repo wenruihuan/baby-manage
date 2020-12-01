@@ -45,6 +45,7 @@
                     持有卡项：
                     <el-select v-model="currentMemberCard" placeholder="选择会员等级">
                         <el-option
+                                @change="getMemberList"
                                 v-for="(item, index) in memberAllCardList.valid"
                                 :key="index"
                                 :label="item.title"
@@ -184,7 +185,7 @@
                         <div class="item" style="display: flex; align-items: center">
                             <div class="pic" style="margin-right: 20px;">
                                 <img :src="scope.row.head_img" alt="" width="80">
-                                <p>{{scope.row.level_name}}</p>
+                                <p class="level_name">{{scope.row.level_name}}</p>
                             </div>
                             <div class="info">
                                 <p>{{scope.row.memeber_name}}</p>
@@ -663,5 +664,14 @@ export default {
 .page-box{
     display: flex;
     justify-content: space-between;
+}
+.memberList .level_name{
+    background: #409EFF;
+    display: inline-block;
+    transform: scale(0.8);
+    padding: 3px 5px;
+    font-size: 12px;
+    color: #fff;
+    border-radius: 2px;
 }
 </style>

@@ -47,7 +47,7 @@
                                      v-for="item in boxSelectList"
                                 >
                                     <div class="name">{{item.name}}</div>
-                                    <div class="price">￥{{item.original_price}}</div>
+                                    <div class="price">￥{{item.price}}</div>
                                 </div>
                             </div>
                         </div>
@@ -287,7 +287,7 @@ export default {
         // 获取包厢列表
         async getboxSelectList (value) {
             const { data } = await api.boxSelectList({ page_size: 10, page_no: value });
-            this.boxSelectList = data.data.map(m => {
+            this.boxSelectList = data.map(m => {
                 m.selectState = false;
                 return m;
             });
@@ -307,7 +307,7 @@ export default {
         },
         async getServiceKind (value) {
             const { data } = await api.serviceKind({ keyword: value });
-            this.serviceKindList = data.data;
+            this.serviceKindList = data;
         },
         async getWorktableCommonService (value) {
             const { data } = await api.worktableCommonService({ keyword: value });
@@ -566,7 +566,7 @@ export default {
 .billing .billing-tab-box-content-bottom .service-list{
     width: 100%;
     flex-wrap: wrap;
-    height: calc( 100vh - 410px);
+    height: calc( 100vh - 283px);
     overflow-y: auto;
 }
 .billing .billing-tab-box-content-bottom .service-list .item{

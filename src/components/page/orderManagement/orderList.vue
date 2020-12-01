@@ -25,7 +25,7 @@
           </el-row>
           <el-row>
             <el-form-item label="下单时间：">
-              <el-date-picker 
+              <el-date-picker
                 type="daterange"
                 range-separator="至"
                 v-model="dateArr"
@@ -88,12 +88,12 @@
     <div class="main-body">
       <el-tabs type="card" v-model="activeTab" @tab-click="handleTabClick">
         <el-tab-pane label="全部" name="all">
-          <el-table 
-            :data="dataAll" 
+          <el-table
+            :data="dataAll"
             border style="width: 100%"
             :span-method="handleSpanMethod"
           >
-            <el-table-column 
+            <el-table-column
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
               :prop="item.prop"
@@ -128,7 +128,7 @@
         </el-tab-pane>
         <el-tab-pane label="待付款" name="unPay">
           <el-table :data="dataUnPay" border style="width: 100%" :span-method="handleSpanMethod">
-            <el-table-column 
+            <el-table-column
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
               :prop="item.prop"
@@ -163,7 +163,7 @@
         </el-tab-pane>
         <el-tab-pane label="已完成" name="done">
           <el-table :data="dataDone" border style="width: 100%" :span-method="handleSpanMethod">
-            <el-table-column 
+            <el-table-column
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
               :prop="item.prop"
@@ -199,7 +199,7 @@
         </el-tab-pane>
         <el-tab-pane label="已取消" name="cancel">
           <el-table :data="dataCancel" border style="width: 100%" :span-method="handleSpanMethod">
-            <el-table-column 
+            <el-table-column
               v-for="item in columnCfg" :key="item.prop"
               :label="item.label"
               :prop="item.prop"
@@ -305,7 +305,11 @@ export default {
     }
   },
   created() {
-    this.init()
+    if (this.$route.query.order_no) {
+      this.form.order_no = this.$route.query.order_no;
+      this.inputValue = this.$route.query.order_no;
+    }
+    this.init();
     console.log(dayjs().startOf('day').format(dateFormatStr))
   },
   methods: {
@@ -362,7 +366,7 @@ export default {
           this.form.start_time = dayjs().startOf('day').format(dateFormatStr)
           this.form.end_time = now
           break
-        case 3: 
+        case 3:
           this.form.start_time = dayjs().subtract(3, 'day').format(dateFormatStr)
           this.form.end_time = now
           break
@@ -411,7 +415,7 @@ export default {
         }
       }
     }
-    
+
   },
   filters: {
     statusFormatter(val) {

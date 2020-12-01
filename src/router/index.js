@@ -303,36 +303,6 @@ export default new Router({
                   meta: { title: '会员价' }
                 },
                 {
-                  path: '/workbench',
-                  component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/index.vue'),
-                  meta: { title: '工台' }
-                },
-                {
-                  path: '/billing',
-                  component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/billing.vue'),
-                  meta: { title: '开单' }
-                },
-                {
-                    path: '/cashier',
-                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/cashier.vue'),
-                    meta: { title: '收银' }
-                },
-                {
-                    path: '/recharge',
-                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/recharge.vue'),
-                    meta: { title: '充值' }
-                },
-                {
-                    path: '/activateCard',
-                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/activateCard.vue'),
-                    meta: { title: '开卡' }
-                },
-                {
-                    path: '/collectionConfirmation',
-                    component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/collectionConfirmation.vue'),
-                    meta: { title: '开卡' }
-                },
-                {
                     path: '/GivingRights',
                     component: () => import(/* webpackChunkName: "appointment" */ '../components/page/member/GivingRights.vue'),
                     meta: { title: '赠送权益' }
@@ -368,6 +338,35 @@ export default new Router({
                     meta: { title: '会员档案打印' }
                 }
             ]
+        }, {
+            path: '/workbench',
+            component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/index.vue'),
+            meta: { title: '工台' }
+        },
+        {
+            path: '/billing',
+            component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/billing.vue'),
+            meta: { title: '开单' }
+        },
+        {
+            path: '/cashier',
+            component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/cashier.vue'),
+            meta: { title: '收银' }
+        },
+        {
+            path: '/recharge',
+            component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/recharge.vue'),
+            meta: { title: '充值' }
+        },
+        {
+            path: '/activateCard',
+            component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/activateCard.vue'),
+            meta: { title: '开卡' }
+        },
+        {
+            path: '/collectionConfirmation',
+            component: () => import(/* webpackChunkName: "appointment" */ '../components/page/workbench/collectionConfirmation.vue'),
+            meta: { title: '开卡' }
         },
         {
             path: '/login',
