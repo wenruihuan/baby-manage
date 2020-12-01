@@ -338,17 +338,18 @@ export default {
           break
         case 3: 
           this.form.start_time = dayjs().subtract(3, 'day').format(dateFormatStr)
-          this.form.start_time = now
+          this.form.end_time = now
           break
         case 7:
           this.form.start_time = dayjs().subtract(7, 'day').format(dateFormatStr)
-          this.form.start_time = now
+          this.form.end_time = now
           break
       }
     },
     getTableData(page) {
       this.form.page_no = page
       this.inputName && (this.form[this.inputName] = this.inputValue)
+      console.log('form', this.form)
       getProductOrderList(this.form).then(res => {
         const { data, all_count } = res.data
         this[tabDataCfg[this.activeTab].total] = all_count
@@ -369,6 +370,7 @@ export default {
       this.form.end_time = val[1]
     },
     handleTabClick() {
+      this.form.order_status = tabDataCfg[this.activeTab].orderStatus
       if (this[tabDataCfg[this.activeTab].data].length === 0) {
         this.getTableData(1)
       }

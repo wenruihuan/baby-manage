@@ -106,7 +106,10 @@
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
                 <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
-                <span v-else-if="item.prop === 'create_time'">{{scoped.row[item.prop]|dateFormatter}}</span>
+                <div v-else-if="item.prop === 'create_time'">
+                  <p>{{scoped.row[item.prop]|dateFormatter}}</p>
+                  <p>{{scoped.row[item.prop]|timeFormatter}}</p>
+                </div>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -141,7 +144,10 @@
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
                 <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
-                <span v-else-if="item.prop === 'create_time'">{{scoped.row[item.prop]|dateFormatter}}</span>
+                <div v-else-if="item.prop === 'create_time'">
+                  <p>{{scoped.row[item.prop]|dateFormatter}}</p>
+                  <p>{{scoped.row[item.prop]|timeFormatter}}</p>
+                </div>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -176,7 +182,10 @@
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
                 <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
-                <span v-else-if="item.prop === 'create_time'">{{scoped.row[item.prop]|dateFormatter}}</span>
+                <div v-else-if="item.prop === 'create_time'">
+                  <p>{{scoped.row[item.prop]|dateFormatter}}</p>
+                  <p>{{scoped.row[item.prop]|timeFormatter}}</p>
+                </div>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -213,7 +222,10 @@
                   <span v-else>{{scoped.row.total_price}}</span>
                 </div>
                 <span v-else-if="item.prop === 'order_status'">{{scoped.row[item.prop]|statusFormatter}}</span>
-                <span v-else-if="item.prop === 'create_time'">{{scoped.row[item.prop]|dateFormatter}}</span>
+                <div v-else-if="item.prop === 'create_time'">
+                  <p>{{scoped.row[item.prop]|dateFormatter}}</p>
+                  <p>{{scoped.row[item.prop]|timeFormatter}}</p>
+                </div>
                 <span v-else>{{scoped.row[item.prop]}}</span>
               </template>
             </el-table-column>
@@ -425,7 +437,14 @@ export default {
     },
     dateFormatter(val) {
       if (val) {
-        return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+        return dayjs(val).format('YYYY-MM-DD')
+      } else {
+        return ''
+      }
+    },
+    timeFormatter(val) {
+      if (val) {
+        return dayjs(val).format('HH:mm:ss')
       } else {
         return ''
       }

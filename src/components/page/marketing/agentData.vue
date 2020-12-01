@@ -45,7 +45,7 @@
       </div>
     </div>
     <div class="main-body">
-      <el-table :data="tableData" border style="width: 100%">
+      <el-table :data="tableData" style="width: 100%">
         <el-table-column 
           v-for="item in columnCfg" :key="item.prop"
           :label="item.label"
@@ -225,6 +225,7 @@ export default {
     color: #409EFF
   }
   .avart-tag {
+    font-size: 10px;
     background-color: #409EFF;
     color: #ffffff;
   }
