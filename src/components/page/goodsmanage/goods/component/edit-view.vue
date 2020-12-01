@@ -340,12 +340,13 @@ export default {
                     obj.intr = this.$refs.editWechat.content;
                     const data = await addOrEditBox(obj);
                     if (data.code === ERR_OK) {
+                        const id = data.data.id;
                         this.$message({
                             message: data.msg,
                             type: 'success'
                         });
                         try {
-                            const data = await setPublish({ id: this.form.id, is_publish: this.isPublish ? '0' : '1' });
+                            const data = await setPublish({ id, is_publish: this.isPublish ? '0' : '1' });
                             if (data.code === ERR_OK) {
                                 this.$message({
                                     message: data.msg,
