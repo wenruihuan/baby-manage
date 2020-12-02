@@ -27,11 +27,14 @@ export default {
             form: {}
         }
     },
+    props: {
+        currentId: ''
+    },
     methods: {
         onSubmit(formName) {
             this.$refs[formName].validate( async (valid) => {
                 if (valid) {
-                    const { data } = await api.positionSave(this.form);
+                    const { data } = await api.positionSave({ id: this.currentId, ...this.form });
                     this.$parent.handleClose();
                 } else {
                     console.log('error submit!!');

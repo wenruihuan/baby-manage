@@ -37,7 +37,8 @@
                 </div>
             </div>
             <div class="footer-btn">
-                <el-button type="primary" @click="handleSave">保存</el-button>
+                <el-button v-if="state !== 'view'" type="primary" @click="handleSave">保存</el-button>
+                <el-button v-else type="primary" @click="handleCancel">返回</el-button>
             </div>
         </div>
     </div>
@@ -86,7 +87,7 @@
         created () {
             this.state = this.$route.query.state;
             this.id = this.$route.query.id;
-            if (this.id !== '') {
+            if (this.id) {
                 this.getUserInfo();
             }
             if (this.state === 'view') {
@@ -121,7 +122,10 @@
                     ...this.ruleForm,
                 };
                 await api.roleDetail(params);
-
+                this.$router.go(-1);
+            },
+            handleCancel () {
+                this.$router.go(-1);
             }
         }
     };

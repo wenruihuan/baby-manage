@@ -138,10 +138,12 @@ export default {
     position: absolute;
     left: 50%;
     top: 50%;
+    box-sizing: border-box;
     margin-top: -190px;
     width: 600px;
     margin-left: -300px;
     padding: 40px;
+    height: 385px;
     border-radius: 5px;
     background: rgba(255, 255, 255, 1);
     overflow: hidden;

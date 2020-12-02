@@ -42,32 +42,12 @@
                 <div class="title">店铺负责人</div>
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="负责人姓名" prop="name">
-                        <el-input :disabled="disabled" v-model="managerInfo.manager_name"></el-input>&nbsp;&nbsp;
-                        <el-popover
-                                placement="bottom"
-                                width="360"
-                                v-model="visible">
-                            <div style="display: flex">
-                                <el-input v-model="managerInfo.manager_name"></el-input>&nbsp;&nbsp;&nbsp;
-                                <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-                                <el-button type="primary" size="mini" @click="setShopSaveManager">确定</el-button>
-                            </div>
-                            <el-button slot="reference">修改</el-button>
-                        </el-popover>
+                        <el-input :disabled="disabled1" v-model="managerInfo.manager_name"></el-input>&nbsp;&nbsp;
+                        <el-button @click="editManagerInfo('disabled1')">修改</el-button>
                     </el-form-item>
                     <el-form-item label="负责人电话" prop="name">
-                        <el-input :disabled="disabled" v-model="managerInfo.manager_tel"></el-input>&nbsp;&nbsp;
-                        <el-popover
-                                placement="bottom"
-                                width="360"
-                                v-model="visible1">
-                            <div style="display: flex">
-                                <el-input v-model="managerInfo.manager_tel"></el-input>&nbsp;&nbsp;&nbsp;
-                                <el-button type="info" size="mini" @click="visible1 = false">取消</el-button>
-                                <el-button type="primary" size="mini" @click="setShopSaveManager">确定</el-button>
-                            </div>
-                            <el-button slot="reference">修改</el-button>
-                        </el-popover>
+                        <el-input :disabled="disabled2" v-model="managerInfo.manager_tel"></el-input>&nbsp;&nbsp;
+                        <el-button @click="editManagerInfo('disabled2')">修改</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -87,7 +67,10 @@ export default {
         return {
             visible: false,
             visible1: false,
+            visible2: false,
             disabled: true,
+            disabled1: true,
+            disabled2: true,
             formData: {},
             managerInfo: {},
             // 面包屑信息
@@ -118,6 +101,13 @@ export default {
         this.getShopManagerInfo();
     },
     methods: {
+        // 编辑店铺负责人
+        editManagerInfo (value) {
+            this[value] = !this[value];
+            if (this[value]) {
+                this.setShopSaveManager();
+            }
+        },
         async getShopInfo () {
            const { data } = await api.shopInfo();
            this.ruleForm = data;
@@ -128,8 +118,8 @@ export default {
        },
         async setShopSaveManager () {
             await api.shopSaveManager(this.managerInfo);
-            this.visible1 = false;
-            this.visible = false;
+            this.disabled1 = true;
+            this.disabled2 = true;
             this.getShopManagerInfo();
        },
     }

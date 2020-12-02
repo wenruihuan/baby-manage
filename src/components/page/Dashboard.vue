@@ -92,13 +92,12 @@
                 常用功能
             </div>
             <el-row :gutter="20">
-
                 <el-col :span="6">
                     <el-card class="item_card item_card1" shadow="hover">
-                        <div class="grid-content grid-con-3">
+                        <div class="grid-content grid-con-3" @click="getLink('/workbench', 'billing')">
                             <div>
                                 <i><img src="../../assets/img/Rectangle.png" alt=""></i>
-                                <div class="name"><router-link :to="{path: '/workbench', query:{ operationState: 'billing' }}">快速开单</router-link></div>
+                                <div class="name">快速开单</div>
                             </div>
                         </div>
                     </el-card>
@@ -106,30 +105,30 @@
 
                 <el-col :span="6">
                     <el-card class="item_card item_card1" shadow="hover">
-                        <div class="grid-content grid-con-3">
+                        <div class="grid-content grid-con-3" @click="getLink('/workbench', 'activateCard')">
                             <div>
                                 <i><img src="../../assets/img/Rectangle(3).png" alt=""></i>
-                                <div class="name"><router-link :to="{path: '/workbench', query:{ operationState: 'activateCard' }}">快速开卡</router-link></div>
+                                <div class="name">快速开卡</div>
                             </div>
                         </div>
                     </el-card>
                 </el-col>
                 <el-col :span="6">
                     <el-card class="item_card item_card1" shadow="hover">
-                        <div class="grid-content grid-con-3">
+                        <div class="grid-content grid-con-3" @click="getLink('/AppointmentList')">
                             <div>
                                 <div class="pic"><img src="../../assets/img/Rectangle(1).png" alt=""></div>
-                                <div class="name"><router-link :to="{path: '/AppointmentList'}">新增预约</router-link></div>
+                                <div class="name">新增预约</div>
                             </div>
                         </div>
                     </el-card>
                 </el-col>
                 <el-col :span="6">
                     <el-card class="item_card item_card1" shadow="hover">
-                        <div class="grid-content grid-con-3">
+                        <div class="grid-content grid-con-3" @click="getLink('/memberList')">
                             <div>
                                 <div class="pic"><img src="../../assets/img/Rectangle(2).png" alt=""></div>
-                                <div class="name"><router-link :to="{path: '/memberList'}">新增会员</router-link></div>
+                                <div class="name">新增会员</div>
                             </div>
                         </div>
                     </el-card>
@@ -191,6 +190,13 @@ export default {
         bus.$off('collapse', this.handleBus);
     },
     methods: {
+        getLink (path, state) {
+            if (state) {
+                this.$router.push({ path: path, query:{ operationState: state}});
+            } else {
+                this.$router.push({ path: path });
+            }
+        },
         getChart () {
             let myChart = this.$echarts.init(document.getElementById('chart'));
             // 绘制图表
@@ -250,7 +256,7 @@ export default {
         justify-content: center;
         height: 180px;
     }
-    .item_card1 .grid-content .name a{
+    .item_card1 .grid-content .name {
         font-size: 18px;
         color: #26292F;
         display: block;

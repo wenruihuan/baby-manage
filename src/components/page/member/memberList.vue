@@ -43,13 +43,12 @@
                 </div>
                 <div>
                     持有卡项：
-                    <el-select v-model="currentMemberCard" placeholder="选择会员等级">
+                    <el-select v-model="currentHaveCard" placeholder="选择会员等级">
                         <el-option
-                                @change="getMemberList"
-                                v-for="(item, index) in memberAllCardList.valid"
-                                :key="index"
-                                :label="item.title"
-                                :value="item.no"
+                            v-for="(item, index) in memberAllCardList"
+                            :key="index"
+                            :label="item.name"
+                            :value="item.type"
                         >
                         </el-option>
                     </el-select>
@@ -279,6 +278,7 @@
         <!--新增会员-->
         <user-info
             class="dialogMain"
+            :userId="userId"
             ref="ruleForm"
             v-if="memberdialogVisible"
             @submit="submitCallBack"
@@ -339,6 +339,7 @@ export default {
     name: 'memberList',
     data () {
         return {
+            userId: '',
             QR_url: '',
             hmdialogTitle: '所属健康管理师',
             allTagList: [],
@@ -430,6 +431,7 @@ export default {
             },
             currentMemberCard: '',
             currentMemberLeve: '',
+            currentHaveCard: '',
             value: '',
             value1: '',
             value2: '',
@@ -532,7 +534,7 @@ export default {
         },
         // 所有卡项
         async getMemberAllCard () {
-            const  { data } = await memberAllCard();
+            const  { data } = await api.listNoPage();
             this.memberAllCardList = data;
             this.memberAllCardList.valid.unshift({
                 title: '全部',
@@ -546,6 +548,7 @@ export default {
         },
         // 获取会员列表
         async getMemberList () {
+            this.search.have_card = this.currentHaveCard;
             this.search.start_birthday = this.birthdayValue[0];
             this.search.end_birthday = this.birthdayValue[1];
             this.search.reg_start_time = this.regTimeValue[0];
@@ -591,6 +594,7 @@ export default {
         },
         handleBilling (scope) {
             console.log(scope);
+            this.$alert('目前为会员id为假数据，如果用当前ID过去，后台没有对应id的会员');
             // this.$router.push({ path: '/workbench', query: { id: scope.row.memeber_id }})
             this.$router.push({ path: '/workbench', query: { id: '315728c141a1475680e6519d444a4314' }})
         },

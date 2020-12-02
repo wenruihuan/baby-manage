@@ -11,7 +11,7 @@
             <div class="operation">
                 <el-button @click="getMemberProfile">健康档案</el-button>
                 <el-button @click="$router.push({path: '/AppointmentList', query: { keyword: userInfo.name }})">预约</el-button>
-                <el-button>开单</el-button>
+                <el-button @click="handleBilling">开单</el-button>
             </div>
         </div>
         <div class="box1 clearfix">
@@ -368,89 +368,16 @@
             v-if="isShowCommonTag"
         ></common-tag>
         <!--v-if="isShowCommonTag"-->
-        <el-dialog
+        <!--新增会员-->
+        <user-info
             title="编辑会员"
-            :visible.sync="memberdialogVisible"
-            width="50%">
-            <div class="dialogMain">
-                <el-form :model="userInfoEdit" :rules="rules" ref="userInfoEdit" label-width="160px" class="demo-userInfoEdit">
-                    <el-form-item label="姓名：" prop="member_name" required>
-                        <el-input class="width200" v-model="userInfoEdit.member_name"></el-input>
-                    </el-form-item>
-                    <el-form-item label="备注名：" prop="remark_name">
-                        <el-input class="width200" v-model="userInfoEdit.remark_name"></el-input>
-                    </el-form-item>
-                    <el-form-item label="性别：" required prop="sex">
-                        <el-select  class="width200" v-model="userInfoEdit.sex" placeholder="请选择活动区域">
-                            <el-option label="男" value="男"></el-option>
-                            <el-option label="女" value="女"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="手机号：" prop="member_phone" required>
-                        <el-input class="width200" v-model="userInfoEdit.member_phone"></el-input>
-                    </el-form-item>
-                    <el-form-item prop="birthday" label="生日：">
-                        <el-date-picker class="width200" type="date" placeholder="选择日期" v-model="userInfoEdit.birthday"></el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="会员编号：" prop="member_no" required>
-                        <el-input class="width200" v-model="userInfoEdit.member_no"></el-input>
-                    </el-form-item>
-                    <el-form-item label="会员来源：" prop="member_source" required>
-                        <el-select class="width200" v-model="userInfoEdit.member_source" placeholder="请选择会员来源">
-                            <el-option label="线下录入" value="线下录入"></el-option>
-                            <el-option label="线上注册" value="线上注册"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="会员等级：" prop="level_id" required>
-                        <el-select v-model="userInfoEdit.level_id" placeholder="选择会员等级">
-                            <el-option
-                                    v-for="(item, index) in memberLevelList"
-                                    :key="index"
-                                    :label="item.title"
-                                    :value="item.no"
-                            >
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="健康管理师：" prop="hm_id">
-                        <el-select v-model="userInfoEdit.hm_id" placeholder="选择健康管理师">
-                            <el-option
-                                    v-for="(item, index) in hmSelectList"
-                                    :key="index"
-                                    :label="item.hm_name"
-                                    :value="item.hm_id"
-                            >
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="归属门店：" prop="shop_name">
-                        多多亲子岁月一店
-                        <!--                    <el-input class="width200" v-model="userInfoEdit.shop_name"></el-input>-->
-                    </el-form-item>
-                    <el-form-item label="微信号：" prop="wx">
-                        <el-input class="width200" v-model="userInfoEdit.wx"></el-input>
-                    </el-form-item>
-                    <el-form-item label="地址：" prop="desc">
-                        <el-cascader
-                            size="large"
-                            :options="options"
-                            v-model="region"
-                            @change="regionHandleChange">
-                        </el-cascader>
-                    </el-form-item>
-                    <el-form-item label="详细地址：">
-                        <el-input type="textarea" v-model="userInfoEdit.detail_address"></el-input>
-                    </el-form-item>
-                    <el-form-item label="备注：">
-                        <el-input type="textarea" v-model="userInfoEdit.remark"></el-input>
-                    </el-form-item>
-                </el-form>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelMemberdialogVisible">取消</el-button>
-                <el-button type="primary" @click="submitForm('userInfo')">保存</el-button>
-            </span>
-        </el-dialog>
+            style="padding: 0;"
+            :userId="userId"
+            ref="ruleForm"
+            v-if="memberdialogVisible"
+            @submit="submitCallBack"
+            @cancel="(state) => this.memberdialogVisible = state"
+        ></user-info>
     </div>
 </template>
 
@@ -607,6 +534,11 @@ export default {
         this.getArchivesQueryAuth();
     },
     methods: {
+        // 编辑会员提交后回调
+        submitCallBack () {
+            console.log('submitCallBack');
+            this.memberdialogVisible = false;
+        },
         viewOrder (scope) {
             this.$router.push({ path: '/orderList', query: {order_no: scope.row.order_no}})
         },
@@ -646,6 +578,12 @@ export default {
             this.userInfo = data;
             this.userInfo.member_name = data.name;
             this.userInfo.member_phone = data.phone;
+        },
+        handleBilling () {
+            console.log(this.userInfo);
+            // this.$router.push({ path: '/workbench', query: { id: this.userInfo.member_id }})
+            this.$alert('目前为会员id为假数据，如果用当前ID过去，后台没有对应id的会员');
+            this.$router.push({ path: '/workbench', query: { id: '315728c141a1475680e6519d444a4314' }})
         },
         //4.3.4.会员详情-卡项列表
         async getMemberCard () {

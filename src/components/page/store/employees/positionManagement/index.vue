@@ -52,9 +52,9 @@
                         <i style="padding: 0 10px; color: #ddd">|</i>
                         <el-popconfirm
                             @onConfirm="setPositionDelete(scope)"
-                            confirmButtonText='好的'
-                            cancelButtonText='不用了'
-                            title="这是一段内容确定删除吗？"
+                            confirmButtonText='确定'
+                            cancelButtonText='取消'
+                            title="确定删除该职位？"
                         >
                             <a style="color: #409EFF" slot="reference">删除</a>
                         </el-popconfirm>
@@ -87,7 +87,9 @@
                 :visible.sync="isAddEmployees"
                 width="50%"
                 :before-close="handleClose">
-                <operation-position></operation-position>
+                <operation-position
+                    :currentId="currentId"
+                ></operation-position>
             </el-dialog>
         </div>
     </div>
@@ -106,6 +108,7 @@
             return {
                 total: 0,
                 page_no: 1,
+                currentId: '',
                 query: {},
                 dialogVisible: false,
                 // 是否显示新增
@@ -125,7 +128,8 @@
                 }
             },
             async setPositionDelete (scope) {
-                api.positionDelete({ id: scope.row.id})
+                api.positionDelete({ id: scope.row.id});
+                this.getFormData();
             },
             async getFormData () {
                 let params = {
@@ -141,7 +145,8 @@
                 this.getFormData();
             },
             handleClick (val) {
-                console.log(val);
+                this.currentId = val.row.id;
+                console.log(this.currentId);
                 this.isAddEmployees = true;
             },
             handleClose () {
