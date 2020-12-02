@@ -49,7 +49,7 @@
                 >
                     <template slot-scope="scope">
                         <el-button @click="handleClick(scope)" type="text" size="small">编辑</el-button>
-                        <i style="padding: 0 10px; color: #ddd">|</i>
+                        <i style="padding: 0 10px; color: #ddd; font-style: normal !important;">|</i>
                         <el-button @click="setPositionDelete(scope)" type="text" size="small">删除</el-button>
 <!--                        <el-popconfirm-->
 <!--                            @onConfirm="setPositionDelete(scope)"-->

@@ -100,7 +100,7 @@
                 >
                     <template slot-scope="scope">
                         <el-button @click="handleClick('edit', scope)" type="text" size="small">详情</el-button>
-                        <i style="padding: 0 10px; color: #ddd">|</i>
+                        <i style="padding: 0 10px; color: #ddd; font-style: normal !important;">|</i>
                         <el-dropdown class="dropdown">
                             <el-button type="text" size="small">更多</el-button>
                             <el-dropdown-menu slot="dropdown">
