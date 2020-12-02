@@ -46,6 +46,7 @@
                     :on-success="handleUploadSuccess"
                     :before-remove="() => false"
                     :disabled="!isEdit"
+                    :show-file-list="false"
                 >
                     <i class="el-icon-plus"></i>
                 </el-upload>
