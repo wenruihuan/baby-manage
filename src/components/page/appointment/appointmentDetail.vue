@@ -26,15 +26,17 @@
                         <el-select
                             v-model="formData.phone"
                             filterable
+                            clearable
                             remote
                             reserve-keyword
+                            no-data-text="匹配失败"
                             placeholder="请输入手机号码"
                             :remote-method="remoteMethod"
                             :loading="loadingPhone"
                         >
                             <el-option v-for="item in memberOptions" :key="item.phone" :label="item.phone" :value="item.phone"> </el-option>
                         </el-select>
-                        <el-button v-if="!isMember" @click="handleAddMember">添加会员</el-button>
+                        <el-button @click="handleAddMember">新增会员</el-button>
                     </div>
                 </el-form-item>
                 <el-form-item label="下单人：" v-else>
@@ -307,7 +309,11 @@
                         if (item) {
                             this.formData.customer = item.name;
                         }
+                    } else {
+                        this.formData.customer = '';
+                        this.memberOptions = [];
                     }
+                    this.$refs.ruleForm.validateField('customer')
                 }
             }
         },
