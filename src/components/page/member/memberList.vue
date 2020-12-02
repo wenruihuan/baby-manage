@@ -93,13 +93,15 @@
             </div>
             <div class="box box1">
                 <span>生日：</span>
-                <div class="item">本月</div>
-                <div class="item">本周</div>
-                <div class="item">下个月</div>
-                <div class="item">今天</div>
-                <div class="item">明天</div>
+                <div :class="birthdayState === '' ? 'active item' : 'item'" @click="search.start_birthday = ''; search.end_birthday = ''; birthdayState = ''">全部</div>
+                <div :class="birthdayState === 'month' ? 'active item' : 'item'" @click="getMonthStartAndEnd(0, 'birthdayState', 'month', 'start_birthday', 'end_birthday')">本月</div>
+                <div :class="birthdayState === 'week' ? 'active item' : 'item'" @click="getWeekStartAndEnd(0, 'birthdayState', 'start_birthday', 'end_birthday')">本周</div>
+                <div :class="birthdayState === 'nextMonth' ? 'active item' : 'item'" @click="getMonthStartAndEnd(1, 'birthdayState', 'nextMonth', 'start_birthday', 'end_birthday')">下个月</div>
+                <div :class="birthdayState === 'today' ? 'active item' : 'item'" @click="getTodayTime('0', 'birthdayState', 'today', 'start_birthday', 'end_birthday')">今天</div>
+                <div :class="birthdayState === 'tomorrow' ? 'active item' : 'item'" @click="getTodayTime('1', 'birthdayState', 'tomorrow', 'start_birthday', 'end_birthday')">明天</div>
                 <div class="item">
                     <el-date-picker
+                        @change="birthdayStateFn"
                         v-model="birthdayValue"
                         type="daterange"
                         value-format="yyyy-MM-dd"
@@ -111,13 +113,15 @@
             </div>
             <div class="box box1">
                 <span>注册时间：</span>
-                <div class="item">本月</div>
-                <div class="item">本周</div>
-                <div class="item">下个月</div>
-                <div class="item">今天</div>
-                <div class="item">明天</div>
+                <div :class="regState === '' ? 'active item' : 'item'" @click="search.reg_start_time = ''; search.reg_end_time = ''; regState = ''">全部</div>
+                <div :class="regState === 'month' ? 'active item' : 'item'" @click="getMonthStartAndEnd(0, 'regState', 'month', 'reg_start_time', 'reg_end_time')">本月</div>
+                <div :class="regState === 'week' ? 'active item' : 'item'" @click="getWeekStartAndEnd(0, 'regState', 'reg_start_time', 'reg_end_time')">本周</div>
+                <div :class="regState === 'nextMonth' ? 'active item' : 'item'" @click="getMonthStartAndEnd(1, 'regState', 'nextMonth', 'reg_start_time', 'reg_end_time')">下个月</div>
+                <div :class="regState === 'today' ? 'active item' : 'item'" @click="getTodayTime('0', 'regState', 'today', 'start_birthday', 'end_birthday')">今天</div>
+                <div :class="regState === 'tomorrow' ? 'active item' : 'item'" @click="getTodayTime('1', 'regState', 'tomorrow', 'start_birthday', 'end_birthday')">明天</div>
                 <div class="item">
                     <el-date-picker
+                        @change="regStateFn"
                         v-model="regTimeValue"
                         value-format="yyyy-MM-dd"
                         type="daterange"
@@ -149,7 +153,7 @@
             </div>
             <div class="box box1">
                 <span>健康管理师：</span>
-                <el-select v-model="bb" placeholder="选择会员等级">
+                <el-select v-model="search.hm_id" placeholder="选择会员等级">
                     <el-option
                         v-for="item in hmSelectList"
                         :key="item.hm_id"
@@ -331,6 +335,7 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
 import userInfo from './common/userInfoDialog'
 import commonTag from './common/commonTag'
 import * as api from '../../../api/index'
@@ -341,6 +346,8 @@ export default {
         return {
             userId: '',
             QR_url: '',
+            regState: '',
+            birthdayState: '',
             hmdialogTitle: '所属健康管理师',
             allTagList: [],
             last_buy: [
@@ -403,6 +410,7 @@ export default {
                     value: 1
                 }
             ], //消费频次
+            weekValue: [], // 当前周
             birthdayValue: [],
             regTimeValue: [],
             search: {
@@ -412,6 +420,10 @@ export default {
                 buy_count: '',
                 tag_id: '',
                 source: '',
+                start_birthday: '',
+                end_birthday: '',
+                reg_start_time: '',
+                reg_end_time: '',
                 last_buy: ''
             },
             isShowCommonTag: false,
@@ -443,15 +455,34 @@ export default {
         userInfo,
         commonTag
     },
+    watch: {
+    },
     created() {
+        this.regState = '';
         this.getMemberLevelList();
         this.getMemberAllCard();
         this.getHmSelectList();
         this.getMemberList();
         this.getMemberAllTag();
         this.getMemberRegQr();
+        // 当前周计算
+        // this.weekValue = this.getWeekStartAndEnd(0);
     },
     methods: {
+        birthdayStateFn (value) {
+            if (value !== null) {
+                this.birthdayState = 'custom';
+            } else {
+                this.birthdayState = '';
+            };
+        },
+        regStateFn (value) {
+            if (value !== null) {
+                this.regState = 'custom';
+            } else {
+                this.regState = '';
+            };
+        },
         pointFn () {
             this.search.start_point = '';
             this.search.end_point = '';
@@ -536,9 +567,9 @@ export default {
         async getMemberAllCard () {
             const  { data } = await api.listNoPage();
             this.memberAllCardList = data;
-            this.memberAllCardList.valid.unshift({
-                title: '全部',
-                no: ''
+            this.memberAllCardList.unshift({
+                name: '全部',
+                type: ''
             })
         },
         // 会员等级列表
@@ -549,10 +580,14 @@ export default {
         // 获取会员列表
         async getMemberList () {
             this.search.have_card = this.currentHaveCard;
-            this.search.start_birthday = this.birthdayValue[0];
-            this.search.end_birthday = this.birthdayValue[1];
-            this.search.reg_start_time = this.regTimeValue[0];
-            this.search.reg_end_time = this.regTimeValue[1];
+            if (this.birthdayState === 'custom') {
+                this.search.start_birthday = this.birthdayValue[0];
+                this.search.end_birthday = this.birthdayValue[1];
+            }
+            if (this.regState === 'custom') {
+                this.search.reg_start_time = this.regTimeValue[0];
+                this.search.reg_end_time = this.regTimeValue[1];
+            };
             let params = {
                 page_size: 20,
                 page_no: this.page_no,
@@ -604,6 +639,63 @@ export default {
         },
         searchValFn (name, value) {
             this.search[name] = value;
+        },
+        getWeekStartAndEnd(AddWeekCount, state, startTime, endTime) {
+            //起止日期数组
+            let startStop = [];
+            //一天的毫秒数
+            let millisecond = 1000 * 60 * 60 * 24;
+            //获取当前时间
+            let currentDate = new Date();
+            //相对于当前日期AddWeekCount个周的日期
+            currentDate = new Date(currentDate.getTime() + (millisecond * 7 * AddWeekCount));
+            //返回date是一周中的某一天
+            let week = currentDate.getDay();
+            //返回date是一个月中的某一天
+            let month = currentDate.getDate();
+            //减去的天数
+            let minusDay = week !== 0 ? week - 1 : 6;
+            //获得当前周的第一天
+            let currentWeekFirstDay = new Date(currentDate.getTime() - (millisecond * minusDay));
+            //获得当前周的最后一天
+            let currentWeekLastDay = new Date(currentWeekFirstDay.getTime() + (millisecond * 6));
+            //添加至数组
+            this.$set(this, state, 'week');
+            this.$set(this.search, startTime, dayjs(currentWeekFirstDay).format('YYYY-MM-DD'));
+            this.$set(this.search, endTime, dayjs(currentWeekLastDay).format('YYYY-MM-DD'));
+        },
+        getMonthStartAndEnd (AddMonthCount, stateName, stateValue, startTime, endTime) {
+            //起止日期数组
+            let startStop = new Array();
+            //获取当前时间
+            let currentDate = new Date();
+            let month=currentDate.getMonth()+AddMonthCount;
+            if(month<0){
+                let n = parseInt((-month)/12);
+                month += n*12;
+                currentDate.setFullYear(currentDate.getFullYear()-n);
+            };
+            currentDate = new Date(currentDate.setMonth(month));
+            //获得当前月份0-11
+            let currentMonth = currentDate.getMonth();
+            //获得当前年份4位年
+            let currentYear = currentDate.getFullYear();
+            //获得上一个月的第一天
+            let currentMonthFirstDay = new Date(currentYear, currentMonth,1);
+            //获得上一月的最后一天
+            let currentMonthLastDay = new Date(currentYear, currentMonth+1, 0);
+            //添加至数组
+            this.$set(this, stateName, stateValue);
+            this.$set(this.search, startTime, dayjs(currentMonthFirstDay).format('YYYY-MM-DD'));
+            this.$set(this.search, endTime, dayjs(currentMonthLastDay).format('YYYY-MM-DD'));
+            //返回
+            return startStop;
+        },
+        getTodayTime (AddMonthCount, stateName, stateValue, startTime, endTime) {
+            console.log(dayjs(new Date().getTime() + 24*60*60*1000*AddMonthCount).format('YYYY-MM-DD'));
+            this.$set(this, stateName, stateValue);
+            this.$set(this.search, startTime, dayjs(new Date().getTime() + 24*60*60*1000*AddMonthCount).format('YYYY-MM-DD'));
+            this.$set(this.search, endTime, dayjs(new Date().getTime() + 24*60*60*1000*AddMonthCount).format('YYYY-MM-DD'));
         }
     }
 };

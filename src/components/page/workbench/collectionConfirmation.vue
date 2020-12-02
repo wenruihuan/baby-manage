@@ -57,7 +57,7 @@
                 this.$router.go(-1);
             },
             getLink () {
-                this.$router.push('/billing');
+                this.$router.push('/workbench');
             },
         }
     };

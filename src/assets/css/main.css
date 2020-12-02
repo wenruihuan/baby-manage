@@ -296,6 +296,23 @@ textarea{
     height: 0;
     visibility: hidden;
 }
+
+
+::-webkit-scrollbar {/*滚动条整体样式*/
+    width:4px;/*高宽分别对应横竖滚动条的尺寸*/
+    height:4px;
+}
+::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+    border-radius:5px;
+    -webkit-box-shadow: inset005pxrgba(0,0,0,0.2);
+    background:rgba(0,0,0,0.2);
+}
+::-webkit-scrollbar-track {/*滚动条里面轨道*/
+    -webkit-box-shadow: inset005pxrgba(0,0,0,0.2);
+    border-radius:0;
+    background:rgba(0,0,0,0.1);
+}
+
 /* 服务级联 */
 .service-cascader .el-cascader-panel .el-cascader-menu .el-cascader-menu__wrap .el-cascader-menu__list .el-cascader-node {
     height: auto;

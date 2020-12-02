@@ -38,8 +38,13 @@ export default {
     },
     created () {
         this.operationState = this.$route.query.operationState;
-        if (this.operationState === 'activateCard') {
+        this.comeFrom = this.$route.query.comeFrom;
+        if (this.operationState === 'activateCard' || this.comeFrom === 'activateCard') {
             this.pageIndex = 2;
+        } else if (this.comeFrom === 'recharge') {
+            this.pageIndex = 0;
+        } else if (this.comeFrom === 'billing') {
+            this.pageIndex = 1;
         }
     },
     mounted () {

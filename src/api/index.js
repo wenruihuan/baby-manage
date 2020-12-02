@@ -376,6 +376,15 @@ export const memberDetail= query => {
     });
 };
 
+//4.3.5.会员详情-增减积分
+export const memberIntegralOption= query => {
+    return request({
+        url: `/admin/member/integralOption`,
+        method: 'post',
+        data: query
+    });
+};
+
 
 
 //9.2.1.3.添加（编辑）会员标签
@@ -656,6 +665,34 @@ export const archivesBabyRecord = query => {
     export const worktimeStaffEdit= query => {
     return request({
         url: `/admin/worktime/staffEdit`,
+        method: 'post',
+        data: query
+    });
+};
+
+
+
+// 7.11.创建订单--服务
+    export const worktableHangService= query => {
+    return request({
+        url: `/admin/worktable/hangService`,
+        method: 'post',
+        data: query
+    });
+};
+// 7.12.创建订单--充值操作
+    export const worktableHangRecharge = query => {
+    return request({
+        url: `/admin/worktable/hangRecharge`,
+        method: 'post',
+        data: query
+    });
+};
+
+// 7.5.创建订单--开卡
+    export const worktableHangCard = query => {
+    return request({
+        url: `/admin/worktable/hangCard`,
         method: 'post',
         data: query
     });

@@ -121,7 +121,7 @@
                     id: this.id ? this.id : '',
                     ...this.ruleForm,
                 };
-                await api.roleDetail(params);
+                await api.roleSave(params);
                 this.$router.go(-1);
             },
             handleCancel () {

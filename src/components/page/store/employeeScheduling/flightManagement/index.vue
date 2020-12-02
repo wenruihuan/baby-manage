@@ -61,7 +61,7 @@
                     background
                     @current-change="handleCurrentChange"
                     layout="total, prev, pager, next, jumper"
-                    :total="page.total">
+                    :total="total">
             </el-pagination>
         </div>
         <el-dialog
@@ -76,7 +76,6 @@
                         <el-input v-model="worktime_name"></el-input>
                     </div>
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    <!--<span> 10:00-18:00</span>-->
                 </div>
                 <div class="item">
                     <span>班次时间：</span>
@@ -133,7 +132,7 @@
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button @click="setWorktimeCancel">取 消</el-button>
                 <el-button type="primary" @click="setWorktimeSave">确 定</el-button>
               </span>
         </el-dialog>
@@ -166,9 +165,8 @@
                 resttimeList: [],
                 resttime: [],
                 value1: [],
-                page: {
-                    total: 30
-                },
+                page_no: 1,
+                total: 0,
                 query: {},
                 dialogVisible: false,
                 // 是否显示新增
@@ -185,8 +183,8 @@
                 this.worktime_name = '';
                 this.resttimeList = [{
                     resttime1: {
-                        0: '09:00',
-                        1: '18:00',
+                        0: '',
+                        1: '',
                     }
                 }];
                 this.dialogVisible = true;
@@ -194,13 +192,19 @@
             addResttimeListNum () {
                 this.resttimeList.push({
                     resttime1: {
-                        0: '09:00',
-                        1: '18:00',
+                        0: '',
+                        1: '',
                     }
                 });
             },
             removeWorktimeNum (index) {
                 this.resttimeList.splice(index, 1) ;
+            },
+            async setWorktimeCancel () {
+                this.dialogVisible = false;
+                this.worktime1 = [];
+                this.worktime2 = [];
+                this.resttime = [];
             },
             async setWorktimeSave () {
                 this.resttime = [];
@@ -218,19 +222,24 @@
                 if (this.worktime_id !== '') {
                     params.worktime_id = this.worktime_id;
                 }
-                console.log(params);
-                api.worktimeSave(params)
+                api.worktimeSave(params);
+                this.worktime1 = [];
+                this.worktime2 = [];
+                this.resttime = [];
             },
             async getFormData () {
-                const { data } = await api.worktimeList();
+                let params = {
+                    page_size: 20,
+                    page_no: this.page_no
+                };
+                const { data } = await api.worktimeList(params);
                 this.tableData = data.data;
-                this.page.total = data.all_count;
-            },
-            handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
+                this.total = data.all_count;
             },
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
+                this.page_no = val;
+                this.getFormData();
             },
             handleClick (val) {
                 this.resttimeList = [];

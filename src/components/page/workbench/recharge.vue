@@ -223,7 +223,7 @@
                 })
             },
             getCashier () {
-                this.$router.push('/cashier');
+                this.$router.push({ path: '/cashier', query: { comeFrom: 'recharge'}});
             },
             getInfo (val) {
                 console.log(val);

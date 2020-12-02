@@ -56,11 +56,12 @@
             </div>
             <div class="info-box">
                 <div class="message">
-                    <span>消费明细({{consumeList.length}})</span>
+                    <span>消费明细({{consume.length}})</span>
                     <el-button @click="clearConsumeList">清空</el-button>
                 </div>
                 <div class="consume-list">
-                    <div class="consume-item" v-for="item in consumeList">
+                    {{consume}}
+                    <div class="consume-item" v-for="item in consume">
                         <div>
                             <div class="close" @click="clearConsumeItem(item)"><i class="el-icon-close"></i></div>
                             <div class="row">
@@ -242,7 +243,7 @@ export default {
             tabOperation2: '0',
             state: '',
             tabValue1: '',
-            consumeList: [],
+            consume: [],
             addServiceList: [],
             commonServiceList: [],
             commonBoxSelectList: [],
@@ -277,8 +278,12 @@ export default {
         },
     },
     methods: {
-        getCashier () {
-            this.$router.push('/cashier');
+        async getCashier () {
+            let params = {
+                memeber_id: this.memberId
+            };
+            const { data } = await api.worktableHangService(params);
+            this.$router.push({ path: '/cashier', query: { comeFrom: 'billing', order_id: data.order_id}});
         },
         getLink (index) {
             // this.$router.push(`/${link}`);
@@ -332,13 +337,13 @@ export default {
           return data;
         },
         handleChange () {
-            this.consumeList = [];
+            this.consume = [];
         },
         handleClose () {
-            this.consumeList = [];
+            this.consume = [];
         },
         clearConsumeList () {
-            this.consumeList = [];
+            this.consume = [];
         },
         // 选中服务时操作
         handleServiceList (item) {
@@ -368,13 +373,13 @@ export default {
         },
         // 包厢和服务选择时数组处理
         operationConsumeList () {
-            this.consumeList = this.commonServiceList.concat(this.commonBoxSelectList);
+            this.consume = this.commonServiceList.concat(this.commonBoxSelectList);
         },
         //删除选中明细
         clearConsumeItem (item) {
-            this.consumeList.forEach((m, index) => {
+            this.consume.forEach((m, index) => {
                if (item.id === m.id) {
-                   this.consumeList.splice(index, 1);
+                   this.consume.splice(index, 1);
                }
             });
             this.worktableCommonServiceList.forEach((m) => {

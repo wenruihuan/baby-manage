@@ -148,29 +148,40 @@
                         <p>可使用积分</p>
                         <p>
                             <span>{{pointInfoDetails.available_point}}</span>
+
                             <el-popover
-                                    placement="bottom"
-                                    width="400"
-                                    trigger="click">
+                                placement="bottom"
+                                width="320"
+                                v-model="integralOptionState"
+                                trigger="click">
                                 <div class="popoverBox">
                                     <div class="item">
-                                        <div><span>增减积分：</span></div>
-                                        <div>
-                                            <el-radio-group v-model="radio">
-                                                <el-radio :label="1">加 <el-input class="width85"></el-input>积分</el-radio><br>
-                                                <el-radio :label="2">减 <el-input class="width85"></el-input>积分</el-radio>
+                                        <div class="name">增减积分：</div>
+                                        <div class="value">
+                                            <el-radio-group v-model="integralOption.type">
+                                                <el-radio label="add">
+                                                    加&nbsp;&nbsp;
+                                                    <el-input class="width85" v-model="integralOption.size"></el-input>
+                                                    &nbsp;&nbsp;积分
+                                                </el-radio>
+                                                <br>
+                                                <el-radio label="reduce">
+                                                    减&nbsp;&nbsp;
+                                                    <el-input class="width85" v-model="integralOption.size"></el-input>
+                                                    &nbsp;&nbsp;积分
+                                                </el-radio>
                                             </el-radio-group>
                                         </div>
                                     </div>
                                     <div class="item">
-                                        <div><span>备注：</span></div>
-                                        <div>
-                                            <el-input type="textarea" ></el-input>
+                                        <div class="name">备注：</div>
+                                        <div class="value">
+                                            <el-input type="textarea" v-model="integralOption.remark"></el-input>
                                         </div>
                                     </div>
-                                    <div class="item">
-                                        <el-button>取消</el-button>
-                                        <el-button type="primary">确认</el-button>
+                                    <div class="item" style="margin-top: 20px;">
+                                        <el-button @click="integralOptionState = false">取消</el-button>
+                                        <el-button type="primary" @click="memberIntegralOptionFn">确认</el-button>
                                     </div>
                                 </div>
                                 <el-button style="background: none; border: 0; color: #409EFF;" slot="reference">增减积分</el-button>
@@ -391,6 +402,11 @@ export default {
     name: 'memberList',
     data () {
         return {
+            integralOption: {
+                type: 'add',
+                size: ''
+            },
+            integralOptionState: false,
             options: regionDataPlus,
             selectedOptions: [],
             rules: {
@@ -534,6 +550,16 @@ export default {
         this.getArchivesQueryAuth();
     },
     methods: {
+        //4.3.5.会员详情-增减积分
+        async memberIntegralOptionFn() {
+            const { data } = await api.memberIntegralOption(this.integralOption);
+            this.$message.success('操作成功！');
+            this.integralOptionState = false;
+            this.integralOption =  {
+                type: 'add',
+                size: ''
+            }
+        },
         // 编辑会员提交后回调
         submitCallBack () {
             console.log('submitCallBack');
@@ -925,4 +951,18 @@ export default {
 .messageDetails .box5 .row .item{
     margin-right: 20px;
 }
+</style>
+<style>
+    .popoverBox .item{
+        display: flex;
+    }
+    .popoverBox .item .name{
+        width: 100px;
+        text-align: right;
+        line-height: 35px;
+        margin-right: 15px;
+    }
+    .popoverBox .item .value label{
+        margin-bottom: 10px;
+    }
 </style>

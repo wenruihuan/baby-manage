@@ -5,11 +5,11 @@
                 收银台
             </div>
             <div class="right">
-                <el-button type="primary">返回开单</el-button>
+                <el-button type="primary" @click="getLink">返回开单</el-button>
                 <el-button @click="$router.go(-1)">关闭</el-button>
             </div>
         </div>
-        <div class="content">
+        <div class="contentBox">
             <div class="left">
                 <order-info></order-info>
             </div>
@@ -60,6 +60,7 @@ export default {
     data () {
         return {
             active: true,
+            comeFrom: '', //来自哪个页面
             paymentList: [
                 {
                     name: ''
@@ -71,6 +72,7 @@ export default {
         }
     },
     created() {
+        this.comeFrom = this.$route.query.comeFrom;
         this.getPaymentList();
     },
     methods: {
@@ -92,6 +94,17 @@ export default {
                 price: this.price,
                 price1: this.price1
             } })
+        },
+        // 返回开单操作
+        getLink () {
+            if (this.comeFrom === '') {
+                this.$router.go(-1);
+            } else {
+                this.$router.push({ path: '/workbench',query: {
+                        comeFrom: this.comeFrom
+                    }
+                })
+            };
         }
     }
 };
@@ -100,7 +113,7 @@ export default {
 <style scoped>
 .cashier .operation{
     height: 42px;
-    padding: 0 10px;
+    padding: 10px;
     display: flex;
     justify-content: space-between;
     background: #fff;
@@ -117,45 +130,54 @@ export default {
     align-items: center;
     height: 42px;
 }
-.cashier .content {
+.cashier .contentBox {
     display: flex;
-    padding: 0;
     justify-content: space-between;
+    padding: 20px 30px;
+    align-items: flex-start;
 }
-.cashier .content .left{
+.cashier .contentBox .left{
     width: 320px;
     margin-right: 30px;
+    height: calc( 100vh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #fff;
+
 }
-.cashier .content .right{
+.cashier .contentBox .right{
     flex: 1;
     padding: 0 10px;
     background: #fff;
+    height: calc( 100vh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
-.cashier .content .right .collection{
+.cashier .contentBox .right .collection{
     border-bottom: 1px solid #F0F0F0;
     display: flex;
     align-items: center;
     height: 80px;
     padding: 0 10px;
 }
-.cashier .content .right .collection span{
+.cashier .contentBox .right .collection span{
 
     font-size: 20px;
 }
-.cashier .content .right .collection b{
+.cashier .contentBox .right .collection b{
     font-size: 36px;
 }
-.cashier .content .right .box .title{
+.cashier .contentBox .right .box .title{
     height: 85px;
     line-height: 85px;
     font-size: 20px;
 }
-.cashier .content .right .box .list{
+.cashier .contentBox .right .box .list{
     display: flex;
     flex-wrap: wrap;
 }
 
-.cashier .content .right .box .list .item{
+.cashier .contentBox .right .box .list .item{
     width: 220px;
     height: 100px;
     border: 1px solid #dddddd;
@@ -167,10 +189,10 @@ export default {
     cursor: pointer;
     position: relative;
 }
-.cashier .content .right .box .list .item.active{
+.cashier .contentBox .right .box .list .item.active{
     border: 1px solid #1890ff;
 }
-.cashier .content .right .box .list .item .checkbox{
+.cashier .contentBox .right .box .list .item .checkbox{
     position: absolute;
     right: 0;
     bottom: 0;
@@ -181,7 +203,7 @@ export default {
     color: #fff;
     background: #1890ff;
 }
-.cashier .content .right .box .list .item .checkbox:before{
+.cashier .contentBox .right .box .list .item .checkbox:before{
     position: absolute;
     left: 0;
     top: 0;
@@ -191,40 +213,43 @@ export default {
     border-color: #fff transparent transparent #fff ;
     border-style: solid;
 }
-.cashier .content .right .box .list .item .checkbox i{
+.cashier .contentBox .right .box .list .item .checkbox i{
     position: absolute;
     right: 3px;
     bottom: 3px;
 }
-.cashier .content .right .box .list .item p{
+.cashier .contentBox .right .box .list .item p{
     line-height: 30px;
     text-align: center;
     color: #666666;
     font-size: 12px;
 }
-.cashier .content .right .box .list .item p.name{
+.cashier .contentBox .right .box .list .item p.name{
     color: #666666;
     font-size: 16px;
 }
-.cashier .content .right .box .row{
+.cashier .contentBox .right .box .row{
     display: flex;
     align-items: center;
     color: #666;
     font-size: 16px;
 }
-.cashier .content .right .box .row .input{
+.cashier .contentBox .right .box .row .input{
     width: 300px;
     margin: 0 20px;
 
 }
-.cashier .content .bottom{
+.cashier .contentBox .bottom{
     height: 120px;
     display: flex;
     align-items: center;
     border-top: 1px solid #F0F0F0;
     margin-top: 50px;
 }
-.cashier .content .bottom .el-button{
+.cashier .contentBox .bottom .el-button{
     width: 300px;
 }
+</style>
+<style>
+
 </style>

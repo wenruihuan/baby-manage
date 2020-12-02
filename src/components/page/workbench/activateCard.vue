@@ -307,7 +307,7 @@
                 this.giveCardDataList = value;
             },
             getCashier () {
-                this.$router.push('/cashier');
+                this.$router.push({ path: '/cashier', query: { comeFrom: 'activateCard'}});
             },
             // 选中卡时操作
             selectCardList (item, list) {
