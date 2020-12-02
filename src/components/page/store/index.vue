@@ -10,11 +10,11 @@
                         {{ruleForm.name}}
                     </el-form-item>
                     <el-form-item label="店铺logo" prop="name">
-                        <img :src="ruleForm.logo" alt="">
+                        <img :src="ruleForm.logo" alt="" width="80">
                     </el-form-item>
                     <el-form-item label="店铺照片" prop="name">
                         <div v-if="ruleForm.img">
-                            <span v-for="item in ruleForm.img.split(',')"><img :src="item" alt=""></span>
+                            <span v-for="item in ruleForm.img"><img :src="item" alt="" width="200"></span>
                         </div>
                     </el-form-item>
                     <el-form-item label="客服电话" prop="name" :title="ruleForm.tel">
@@ -43,11 +43,13 @@
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="负责人姓名" prop="name">
                         <el-input :disabled="disabled1" v-model="managerInfo.manager_name"></el-input>&nbsp;&nbsp;
-                        <el-button @click="editManagerInfo('disabled1')">修改</el-button>
+                        <el-button v-if="disabled1" @click="editManagerInfo('disabled1')">修改</el-button>
+                        <el-button v-else @click="editManagerInfo('disabled1')">保存</el-button>
                     </el-form-item>
                     <el-form-item label="负责人电话" prop="name">
                         <el-input :disabled="disabled2" v-model="managerInfo.manager_tel"></el-input>&nbsp;&nbsp;
-                        <el-button @click="editManagerInfo('disabled2')">修改</el-button>
+                        <el-button v-if="disabled2" @click="editManagerInfo('disabled2')">修改</el-button>
+                        <el-button v-else @click="editManagerInfo('disabled2')">保存</el-button>
                     </el-form-item>
                 </el-form>
             </div>

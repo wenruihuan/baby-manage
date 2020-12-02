@@ -35,6 +35,11 @@
                     prop="resttime"
                     label="休息时间"
                 >
+                    <template slot-scope="scope">
+                        <p v-for="item in scope.row.resttime">
+                            {{item}}
+                        </p>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="count"
@@ -176,6 +181,7 @@
         },
         methods: {
             addWorktime () {
+                this.resttimeList = [];
                 this.worktime_name = '';
                 this.resttimeList = [{
                     resttime1: {
@@ -197,6 +203,8 @@
                 this.resttimeList.splice(index, 1) ;
             },
             async setWorktimeSave () {
+                this.resttime = [];
+                this.worktime = [];
                 this.dialogVisible = false;
                 this.resttimeList.forEach(m => {
                     this.resttime.push(m.resttime1[0] + '-' + m.resttime1[1]);
@@ -225,13 +233,17 @@
                 console.log(`当前页: ${val}`);
             },
             handleClick (val) {
-                console.log(val);
+                this.resttimeList = [];
                 this.worktime_id = val.worktime_id;
                 this.worktime_name = val.name;
-                // this.worktime = val.worktime;
-                // this.resttime = val.worktime;
-                console.log(this.worktime_id);
-                console.log(this.worktime_name);
+                this.worktime1 = val.worktime.split('-')[0];
+                this.worktime2 = val.worktime.split('-')[1];
+                this.resttime = val.resttime;
+                console.log(val.resttime);
+                val.resttime.forEach(m => {
+                        console.log({resttime1: m.split('-')})
+                    this.resttimeList.push({resttime1: m.split('-')});
+                });
                 this.dialogVisible = true;
             },
             handleClose () {

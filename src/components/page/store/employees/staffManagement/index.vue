@@ -123,17 +123,6 @@
                     :total="total">
             </el-pagination>
         </div>
-        <el-dialog
-                title="提示"
-                :visible.sync="isRelevance"
-                width="30%"
-                :before-close="handleClose">
-            <span>这是一段信息</span>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="isRelevance = false">取 消</el-button>
-                <el-button type="primary" @click="isRelevance = false">确 定</el-button>
-              </span>
-        </el-dialog>
 
         <div class="AddEmployees" v-if="isAddEmployees">
             <el-dialog
@@ -200,7 +189,6 @@ export default {
             // 是否显示新增
             isAddEmployees: false,
             employeesId: '',
-            isRelevance: false,
             tableData: [],
         }
     },
@@ -210,10 +198,10 @@ export default {
     },
     methods: {
         bindWechat (scope) {
-            alert(1);
-            // this.authQrDialog = true;
-            // this.currentId = scope.row.id;
-            // this.authQrFn();
+            // alert(1);
+            this.authQrDialog = true;
+            this.currentId = scope.row.id;
+            this.authQrFn();
         },
         // 4.1.2.获取授权二维码
         async authQrFn () {
@@ -262,7 +250,6 @@ export default {
         },
         handleClose () {
             this.isAddEmployees = false;
-            this.isRelevance = false;
         },
         async getFormData () {
             let params = {

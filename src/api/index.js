@@ -163,6 +163,14 @@ export const worktimeStaffList = query => {
         params: query
     });
 };
+// 2.4.7 获取复制员工上一周的排班信息
+export const worktimeCopylast = query => {
+    return request({
+        url: `/admin/worktime/copylast`,
+        method: 'get',
+        params: query
+    });
+};
 
 // 添加（编辑）班次
 export const worktimeSave = query => {

@@ -8,33 +8,39 @@
                     <el-form-item label="店铺名称" prop="name">
                         <el-input :disabled="disabled" v-model="ruleForm.name"></el-input>
                     </el-form-item>
-                    <el-form-item label="店铺logo" prop="name">
+                    <el-form-item label="店铺logo" prop="img">
                         <el-upload
-                                v-model="ruleForm.logo"
+                                action="http://up-z0.qiniu.com"
                                 class="avatar-uploader"
-                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :data="uploadBody"
                                 :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload">
-                            <img v-if="ruleForm.logo" :src="ruleForm.logo" class="avatar">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                :before-upload="logoBeforeUpload"
+                                :on-success="logoHandleUploadSuccess"
+                        >
+                            <img :src="ruleForm.logo" class="" width="80">
+                            <i class="el-icon-plus"></i>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="店铺照片" prop="name">
                         <el-upload
-                                v-model="ruleForm.img"
                                 class="avatar-uploader"
-                                action="https://jsonplaceholder.typicode.com/posts/"
+                                action="http://up-z0.qiniu.com"
                                 :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload">
-                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                :data="uploadBody"
+                                :before-upload="imgBeforeUpload"
+                                :on-success="imgHandleUploadSuccess">
+                                <i class="el-icon-plus avatar-uploader-icon"></i>
                             <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
                         </el-upload>
-                        <div v-if="ruleForm.img">
-                            <span v-for="item in ruleForm.img.split(',')"><img :src="item" alt=""></span>
-                        </div>
+                        <ul class="img-list" v-if="ruleForm.img.length > 0">
+                            <li v-for="(item, index) in ruleForm.img"
+                                :key="index"
+                                class="img-item"
+                            >
+                                <span class="el-icon-circle-close remove-icon" @click="removeImg(index)"></span>
+                                <img :src="item" alt=''>
+                            </li>
+                        </ul>
                     </el-form-item>
                     <el-form-item label="客服电话" prop="name">
                         <el-input :disabled="disabled" v-model="ruleForm.tel"></el-input>
@@ -98,6 +104,7 @@
 <script>
 import * as api from '../../../api/index'
 import breadcrumb from '../../common/address'
+import { getUploadToken } from '@/components/page/goodsmanage/goods/api';
 // 地址选择器
 import { regionDataPlus, CodeToText } from 'element-china-area-data'
 export default {
@@ -107,6 +114,19 @@ export default {
     },
     data () {
         return {
+            uploadBody: {
+                token: '',
+                key: ''
+            },
+            uploadImg: {
+                token: '',
+                key: ''
+            },
+            files: [],
+            form: {
+                role_ids: [],
+                img: ''
+            },
             options: regionDataPlus,
             searchOption: {
                 city: '',
@@ -164,11 +184,47 @@ export default {
         }
     },
     created () {
+        this.getUploadToken();
         this.getShopInfo();
     },
     mounted: function() {
     },
     methods: {
+        /* 获取上传图片的token */
+        async getUploadToken () {
+            try{
+                const data = await getUploadToken();
+                this.uploadBody.token = data.data.uptoken;
+                this.baseUrl = data.data.baseUrl;
+            } catch (e) {
+                console.log(`getUploadToken error: ${e}`);
+            }
+        },
+
+        /* 上传之前 */
+        logoBeforeUpload (file) {
+            this.uploadBody.key = file.name;
+            return true;
+        },
+        /* 成功上传 */
+        logoHandleUploadSuccess (res, file) {
+            this.ruleForm.logo = `${ this.baseUrl }/${ file.name }`;
+        },
+
+        /* 上传之前 */
+        imgBeforeUpload (file) {
+            this.uploadBody.key = file.name;
+            return true;
+        },
+        /* 成功上传 */
+        imgHandleUploadSuccess (res, file) {
+            console.log(this.baseUrl);
+            console.log(file.name);
+            this.ruleForm.img.push(`${ this.baseUrl }/${ file.name }`);
+        },
+        removeImg (index) {
+            this.ruleForm.img.splice(index, 1);
+        },
         onSearchResult (value) {
             console.log(value);
             this.setMapNum(value[0].lng, value[0].lat);
@@ -216,8 +272,47 @@ export default {
     height: 150px;
     line-height: 150px;
 }
+.storeDetails .el-upload--text img{
+    width: 100%;
+    height: 100%;
+}
 </style>
 <style scoped>
+
+    .img-list {
+        max-width: 500px;
+        overflow: auto;
+        width: 500px;
+        list-style: none;
+        margin-top: 15px;
+    }
+    .img-list li {
+        float: left;
+        margin-right: 10px;
+        border: 1px solid #dddddd;
+        border-radius: 5px;
+        padding: 2px;
+        box-sizing: border-box;
+    }
+    .img-list li {
+        float: left;
+        margin-right: 10px;
+        border: 1px solid #dddddd;
+        border-radius: 5px;
+        padding: 2px;
+        box-sizing: border-box;
+        position: relative;
+    }
+    .img-list .remove-icon {
+        position: absolute;
+        right: -5px;
+        top: 0;
+        cursor: pointer;
+    }
+    .img-list li img {
+        max-width: 150px;
+        display: inline-block;
+    }
 .storeDetails .title{
     border-left: 5px solid #1890FF;
     text-indent: 20px;

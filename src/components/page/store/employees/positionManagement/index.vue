@@ -50,14 +50,15 @@
                     <template slot-scope="scope">
                         <el-button @click="handleClick(scope)" type="text" size="small">编辑</el-button>
                         <i style="padding: 0 10px; color: #ddd">|</i>
-                        <el-popconfirm
-                            @onConfirm="setPositionDelete(scope)"
-                            confirmButtonText='确定'
-                            cancelButtonText='取消'
-                            title="确定删除该职位？"
-                        >
-                            <a style="color: #409EFF" slot="reference">删除</a>
-                        </el-popconfirm>
+                        <el-button @click="setPositionDelete(scope)" type="text" size="small">删除</el-button>
+<!--                        <el-popconfirm-->
+<!--                            @onConfirm="setPositionDelete(scope)"-->
+<!--                            confirmButtonText='确定'-->
+<!--                            cancelButtonText='取消'-->
+<!--                            title="确定删除该职位？"-->
+<!--                        >-->
+<!--                            <a style="color: #409EFF" slot="reference">删除</a>-->
+<!--                        </el-popconfirm>-->
                     </template>
                 </el-table-column>
             </el-table>
@@ -128,8 +129,20 @@
                 }
             },
             async setPositionDelete (scope) {
-                api.positionDelete({ id: scope.row.id});
-                this.getFormData();
+
+                this.$confirm('确定删除该职位？', '', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    api.positionDelete({ id: scope.row.id});
+                    this.getFormData();
+                    this.$message({
+                        type: 'success',
+                        message: '操作成功!'
+                    });
+                }).catch(() => {
+                });
             },
             async getFormData () {
                 let params = {

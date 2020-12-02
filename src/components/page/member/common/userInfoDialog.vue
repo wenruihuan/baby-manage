@@ -7,19 +7,19 @@
                 :before-close="handleClose">
             <div class="dialogMain">
                 <el-form :model="userInfoEdit" :rules="rules" ref="userInfoEdit" label-width="160px" class="demo-userInfoEdit">
-                    <el-form-item label="姓名：" prop="member_name" required>
+                    <el-form-item label="姓名：" prop="member_name">
                         <el-input class="width200" v-model="userInfoEdit.member_name"></el-input>
                     </el-form-item>
                     <el-form-item label="备注名：" prop="remark_name">
                         <el-input class="width200" v-model="userInfoEdit.remark_name"></el-input>
                     </el-form-item>
-                    <el-form-item label="性别：" required prop="sex">
+                    <el-form-item label="性别：" prop="sex">
                         <el-select  class="width200" v-model="userInfoEdit.sex" placeholder="请选择性别">
                             <el-option label="男" value="男"></el-option>
                             <el-option label="女" value="女"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="手机号：" prop="member_phone" required>
+                    <el-form-item label="手机号：" prop="member_phone">
                         <el-input class="width200" :disabled="disabled" v-model="userInfoEdit.member_phone"></el-input>
                     </el-form-item>
                     <el-form-item prop="birthday" label="生日：">
@@ -28,13 +28,13 @@
                     <el-form-item label="会员编号：">
                         <el-input class="width200" :disabled="true" v-model="userInfoEdit.member_no"></el-input>
                     </el-form-item>
-                    <el-form-item label="会员来源：" prop="member_source" required>
+                    <el-form-item label="会员来源：" prop="member_source">
                         <el-select class="width200" v-model="userInfoEdit.member_source" placeholder="请选择会员来源">
                             <el-option label="线下录入" value="线下录入"></el-option>
                             <el-option label="线上注册" value="线上注册"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="会员等级：" prop="level_id" required>
+                    <el-form-item label="会员等级：" prop="level_id">
                         <el-select class="width200" v-model="userInfoEdit.level_id" placeholder="选择会员等级">
                             <el-option
                                     v-for="(item, index) in memberLevelList"
@@ -100,8 +100,7 @@ export default {
             region: '',
             options: regionDataPlus,
             title: '新增会员',
-            ruleForm: {
-            },
+            ruleForm: {},
             disabled: false,
             memberdialogVisible: true,
             userInfoEdit: {},
@@ -147,7 +146,7 @@ export default {
     created() {
         this.getHmSelectList();
         this.getMemberLevelList();
-        if (this.userId !== '') {
+        if (this.userId && this.userId !== '') {
             this.getUserInfo();
             this.title = '编辑会员';
         } else {

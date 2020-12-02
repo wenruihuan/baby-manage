@@ -2,7 +2,7 @@
     <div class="AddEmployees">
         <el-form ref="form" :model="form" :rules="formRules" label-width="100px">
             <div class="dialogMain">
-                <el-form-item label="归属门店:" prop="shop_name">
+                <el-form-item label="归属门店:">
                     多多亲子岁月一店
                 </el-form-item>
                 <el-form-item label="姓名:" prop="name">
@@ -44,15 +44,18 @@
                         ></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="头像:">
+
+                <el-form-item label="头像:" prop="img">
                     <el-upload
-                            class="avatar-uploader"
-                            action="https://jsonplaceholder.typicode.com/posts/"
-                            :show-file-list="false"
-                            :on-success="handleAvatarSuccess"
-                            :before-upload="beforeAvatarUpload">
-                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                        action="http://up-z0.qiniu.com"
+                        class="avatar-uploader"
+                        :data="uploadBody"
+                        :show-file-list="false"
+                        :before-upload="beforeUpload"
+                        :on-success="handleUploadSuccess"
+                    >
+                        <img :src="form.img">
+                        <i class="el-icon-plus"></i>
                     </el-upload>
                 </el-form-item>
                 <el-form-item label="性别">
@@ -75,11 +78,17 @@
 </template>
 <script>
 import * as api from '../../../../../api/index'
+import { getUploadToken } from '@/components/page/goodsmanage/goods/api';
 export default {
     name: 'AddEmployees',
     data() {
         return {
             positionSelectList: [],
+            uploadBody: {
+                token: '',
+                key: ''
+            },
+            files: [],
             roleSelectList: [],
             formRules: {
                 shop_name: [{ required: true, message: '请填写归属门店', trigger: 'blur' }],
@@ -91,7 +100,9 @@ export default {
             },
             form: {
                 role_ids: [],
+                img: ''
             },
+            baseUrl: '',
             imageUrl: ''
         }
     },
@@ -99,10 +110,32 @@ export default {
         employeesId: ''
     },
     created () {
+        this.getUploadToken();
         this.getPositionSelectList();
         this.getRoleSelectList();
     },
     methods: {
+
+        /* 获取上传图片的token */
+        async getUploadToken () {
+            try{
+                const data = await getUploadToken();
+                this.uploadBody.token = data.data.uptoken;
+                this.baseUrl = data.data.baseUrl;
+            } catch (e) {
+                console.log(`getUploadToken error: ${e}`);
+            }
+        },
+
+        /* 上传之前 */
+        beforeUpload (file) {
+            this.uploadBody.key = file.name;
+            return true;
+        },
+        /* 成功上传 */
+        handleUploadSuccess (res, file) {
+            this.form.img = `${ this.baseUrl }/${ file.name }`;
+        },
         async getPositionSelectList () {
             const { data } = await api.positionSelectList();
             this.positionSelectList = data.data;
