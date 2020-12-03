@@ -1,8 +1,11 @@
 <template>
-  <div class="qrcode-ctner">
-    <div class="qrcode" id="qrcode" ref="qrcode"></div>
-    <el-button @click="download">下载并保存</el-button>
-  </div>
+    <div class="qrcode-ctner">
+        <div class="qrcode" v-if="params.type === 'qrcode'" id="qrcode" ref="qrcode"></div>
+        <div v-else class="qrcode">
+            <img :src="params.codeContent" alt="" width="200px" height="200px" />
+        </div>
+        <el-button @click="download">下载并保存</el-button>
+    </div>
 </template>
 
 <script>
@@ -18,18 +21,18 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      console.log('code', this.params.codeContent)
-      this.getQrcode()
+      if (this.params.type === 'qrcode') {
+        this.getQrcode()
+      }
     })
   },
   methods: {
     download() {
-      let myCanvas = document.getElementById('qrcode').getElementsByTagName('canvas')
-      let a = document.createElement('a')
-      a.href = myCanvas[0].toDataURL('image/png')
-      a.download = '二维码'
-      a.click()
-      this.$message.success('正在下载保存')
+      if (this.params.type === 'qrcode') {
+        this.downloadQrcode()
+      } else {
+        this.downloadImg(this.params.codeContent)
+      }
     },
     getQrcode() {
       let qrcode = new Qrcode('qrcode', {
@@ -37,18 +40,44 @@ export default {
         height: 200,
         text: this.params.codeContent
       })
+    },
+    downloadQrcode() {
+      let a = document.createElement('a')
+      let myCanvas = document.getElementById('qrcode').getElementsByTagName('canvas')
+      a.href = myCanvas[0].toDataURL('image/png')
+      a.download = '二维码'
+      a.click()
+      this.$message.success('正在下载保存')
+    },
+    downloadImg(url) {
+      let img = new Image()
+      img.src = url
+      img.setAttribute('crossOrigin', 'anonymous')
+      img.onload = function() {
+        let canvas = document.createElement('canvas')
+        canvas.width = img.width
+        canvas.height = img.height
+        let context = canvas.getContext('2d')
+        context.drawImage(img, 0, 0, img.width, img.height)
+        let url = canvas.toDataURL('image/png')
+        let a = document.createElement('a')
+        a.href = url
+        a.download = '二维码'
+        a.click()
+        this.$message.success('正在下载保存')
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-  .qrcode-ctner {
+.qrcode-ctner {
     text-align: center;
-  }
-  .qrcode {
+}
+.qrcode {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
-  }
+}
 </style>
