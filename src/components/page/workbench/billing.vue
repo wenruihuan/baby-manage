@@ -60,8 +60,7 @@
                     <el-button @click="clearConsumeList">清空</el-button>
                 </div>
                 <div class="consume-list">
-                    {{consume}}
-                    <div class="consume-item" v-for="item in consume">
+                    <div class="consume-item" v-for="(item, index) in consume">
                         <div>
                             <div class="close" @click="clearConsumeItem(item)"><i class="el-icon-close"></i></div>
                             <div class="row">
@@ -71,22 +70,28 @@
                                 </div>
                                 <el-input-number v-model="item.sort" :min="1" :max="10"></el-input-number>
                                 <div class="price" v-if="item.original_price">
-                                    <span>￥{{item.original_price * item.sort}}</span>
-                                    <el-button @click="clearConsumeList">改价</el-button>
+                                    <span v-if="item.originalOriceState === '0'">￥{{item.original_price * item.sort}}</span>
+                                    <span v-if="item.originalOriceState === '1'">￥ <el-input class="width85" v-model="item.price" ></el-input></span>
+                                    <el-button v-if="item.originalOriceState === '0'" @click="changePrice(index,'1')">改价</el-button>
+                                    <el-button v-if="item.originalOriceState === '1'" @click="changePrice(index, '0')">保存</el-button>
                                 </div>
                             </div>
                             <div class="row row-bottom" v-if="item.original_price">
-                                <div>
-                                    技师：
-                                    <span class="item" v-for="itemStaff in itemStaffTechnicianSelectList">
-                                        {{itemStaff.name}}
-                                        <el-input v-model="itemStaff.time" class="shuru"></el-input>
-                                        分钟
-                                    </span>
-                                    <el-button icon="el-icon-plus" @click="showStaffTechnicianDialogVisible"></el-button>
+                                <div class="technician">
+                                    <div class="label">技师：</div>
+                                    <div class="value">
+                                        <div class="jsitem" v-for="itemStaff in item.technician">
+                                            <span class="item">
+                                                {{itemStaff.name}}
+                                                <el-input v-model="itemStaff.time" class="shuru"></el-input>
+                                                分钟
+                                            </span>
+                                        </div>
+                                        <el-button icon="el-icon-plus" @click="showStaffTechnicianDialogVisible(index)"></el-button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <el-select v-model="item.rightSelectValue" placeholder="请选择">
+                                <div class="rightList">
+                                    <el-select class="width150" v-model="item.right_id" placeholder="请选择">
                                         <el-option
                                             v-for="item in item.rightSelect"
                                             :key="item.right_id"
@@ -94,11 +99,21 @@
                                             :value="item.right_id">
                                         </el-option>
                                     </el-select>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    {{memberAllRechargeCard}}
+                                    <el-select class="width150" v-model="item.recharge_card_id" placeholder="请选择">
+                                        <el-option
+                                            v-for="item in memberAllRechargeCard"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                        </el-option>
+                                    </el-select>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="" @click="serviceDialogVisible = true">赠送服务</div>
+                    <div class="mainColor" @click="serviceDialogVisible = true">赠送服务</div>
                     <div class="consume-item consume-item1" v-for="item in addServiceList">
                         <div>
                             <div class="row">
@@ -126,10 +141,10 @@
         <div class="billing-bottom">
             <div class="billing-tab-page">
                 <el-pagination
-                        background
-                        layout="prev, pager, next"
-                        right
-                        :total="10">
+                    background
+                    layout="prev, pager, next"
+                    right
+                    :total="10">
                 </el-pagination>
             </div>
             <div class="operation">
@@ -256,6 +271,7 @@ export default {
             staffTechnicianValue: '',
             staffTechnicianSelectList: [],
             itemStaffTechnicianSelectList: [],
+            consumeIndex: 0,
             currentStaffTechnicianSelectList: [],
             serviceDialogVisible: false,
             staffTechnicianDialogVisible: false,
@@ -268,6 +284,7 @@ export default {
         this.getWorktableCommonService();
         this.getStaffTechnicianSelect();
         this.getboxSelectList(1);
+        this.getWorktableMemberAllRechargeCard();
     },
     watch: {
         commonServiceList () {
@@ -324,7 +341,7 @@ export default {
         // 获取用户的所有充值卡
         async getWorktableMemberAllRechargeCard (member_id) {
             const { data } = await api.worktableMemberAllRechargeCard({ member_id: member_id});
-            this.currentMemberInfo = { ...this.worktableMemberInfoList.filter(m => m.id === this.memberId )[0], userCard: data};
+            this.memberAllRechargeCard = data;
         },
         // 获取技师下拉列表
         async getStaffTechnicianSelect (value) {
@@ -366,6 +383,7 @@ export default {
                 this.commonServiceList = this.worktableCommonServiceList.filter(m => {
                     if(m.selectState) {
                         m.rightSelect = rightSelect;
+                        this.$set(m, 'originalOriceState', '0');
                         return m;
                     };
                 });
@@ -391,11 +409,13 @@ export default {
             });
         },
         //显示技师弹窗
-        showStaffTechnicianDialogVisible () {
+        showStaffTechnicianDialogVisible (index) {
+            this.consumeIndex = index;
             this.staffTechnicianDialogVisible = true;
         },
         // 设置明细需要技师
         setStaffTechnician () {
+            this.itemStaffTechnicianSelectList = [];
             this.staffTechnicianDialogVisible = false;
             this.currentStaffTechnicianSelectList.forEach(m => {
                 this.staffTechnicianSelectList.forEach(n => {
@@ -404,7 +424,8 @@ export default {
                     }
                 })
             });
-            this.currentStaffTechnicianSelectList = [];
+            this.$set(this.consume[this.consumeIndex], 'technician', this.staffTechnicianSelectList);
+            // this.currentStaffTechnicianSelectList = [];
         },
         // 确认赠送服务
         serviceSelectListConfirm () {
@@ -421,6 +442,12 @@ export default {
                     // this.$foreceUpdate()
                 }
             });
+        },
+
+        // 改价
+        changePrice (index, state) {
+            this.$set(this.consume[index], 'originalOriceState', state);
+            console.log(this.consume);
         },
     }
 };
@@ -517,10 +544,39 @@ export default {
     justify-content: space-between;
     margin-bottom: 10px;
 }
+.billing .billing-content .info-box .consume-list .consume-item .row-bottom .technician .label{
+    width: 50px;
+    line-height: 35px;
+    font-size: 16px;
+}
+.billing .billing-content .info-box .consume-list .consume-item .row-bottom .technician .value{
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+}
+.billing .billing-content .info-box .consume-list .consume-item .row-bottom .technician{
+    display: flex;
+    align-items: flex-start;
+}
 .billing .billing-content .info-box .consume-list .consume-item .row-bottom{
     border-top: 1px solid #ccc;
     padding-top: 20px;
     margin-top: 20px;
+    display: block;
+}
+.billing .billing-content .info-box .consume-list .consume-item .row-bottom>div{
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.billing .billing-content .info-box .consume-list .consume-item .row-bottom .rightList{
+    display: flex;
+    justify-content: flex-end;
+}
+.billing .billing-content .info-box .consume-list .consume-item .row-bottom>div .jsitem {
+    width: 40%;
+    margin-bottom: 10px;
 }
 .billing .billing-content .info-box .consume-list .consume-item .row .name span{
     font-size: 18px;
@@ -551,8 +607,8 @@ export default {
 }
 .billing .billing-tab-box-content-bottom .left-tab span:hover,
 .billing .billing-tab-box-content-bottom .left-tab span.active{
-    background: #409EFF;
-    color: #fff;
+    background: #fff;
+    color: #409EFF;
 }
 .billing .billing-tab-box-content-bottom .left-tab a,
 .billing .billing-tab-box-content-bottom .left-tab span{

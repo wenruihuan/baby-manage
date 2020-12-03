@@ -6,7 +6,6 @@
             </div>
             <div class="right">
                 <el-button type="primary" @click="getLink">返回开单</el-button>
-                <el-button @click="$router.go(-1)">关闭</el-button>
             </div>
         </div>
         <div class="contentBox">

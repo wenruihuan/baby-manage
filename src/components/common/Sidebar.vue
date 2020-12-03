@@ -214,10 +214,10 @@
                                 index: '/workbench',
                                 title: '开单'
                             },
-                            {
-                                index: '/cashier',
-                                title: '收银台'
-                            },
+                            // {
+                            //     index: '/cashier',
+                            //     title: '收银台'
+                            // },
                             // {
                             //     index: '/recharge',
                             //     title: '充值'

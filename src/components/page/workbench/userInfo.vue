@@ -3,19 +3,25 @@
         <div v-if="!currentMemberInfo.id" class="unUser">
             <div class="left">
                 <el-select
-                        v-model="memberId"
-                        filterable
-                        placeholder="请选择"
-                        remote
-                        :remote-method="getWorktableMemberInfo"
-                        @change="getWorktableMemberAllRechargeCard(memberId)"
+                    v-model="memberId"
+                    filterable
+                    class="width350"
+                    placeholder="请选择"
+                    remote
+                    :remote-method="getWorktableMemberInfo"
+                    @change="getWorktableMemberAllRechargeCard(memberId)"
                 >
                     <el-option
-                            v-for="item in worktableMemberInfoList"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id"
+                        v-for="item in worktableMemberInfoList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
                     >
+                        <div class="item" style="display: flex;justify-content: space-between">
+                            <span>{{item.name}}</span>
+                            <span>{{item.phone.substr(0,3) + "****" + item.phone.substr(7)}}</span>
+                            <span>{{item.no}}</span>
+                        </div>
                     </el-option>
                 </el-select>
             </div>
@@ -25,7 +31,7 @@
                 </div>
                 <div>
                     <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">取单</el-button>
-                    <el-button @click="$router.go(-1)">关闭</el-button>
+                    <el-button @click="$router.push('/dashboard')">关闭</el-button>
                 </div>
             </div>
         </div>
@@ -175,6 +181,8 @@ export default {
     components: {
         userInfo
     },
+    filters: {
+    },
     methods: {
         // 取消新增会员
         cancelMemberdialogVisible (value) {
@@ -206,6 +214,89 @@ export default {
         },
         async getWorktableMemberInfo (value) {
             const { data } = await api.worktableMemberInfo({ keyword: value });
+            /*let aaa = [
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+                {
+                    card_count: "1",
+                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
+                    id: "315728c141a1475680e6519d444a4314",
+                    last_buy: "2020-10-13",
+                    name: "张三",
+                    phone: "15962366666",
+                    total_buy: "1110.94",
+                },
+            ]*/
             this.worktableMemberInfoList = data;
         },
         handleClose () {

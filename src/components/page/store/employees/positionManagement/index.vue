@@ -129,13 +129,12 @@
                 }
             },
             async setPositionDelete (scope) {
-
                 this.$confirm('确定删除该职位？', '', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(async () => {
-                    api.positionDelete({ id: scope.row.id});
+                    await api.positionDelete({ id: scope.row.id});
                     this.getFormData();
                     this.$message({
                         type: 'success',
