@@ -6,7 +6,7 @@
         <el-form ref="form" :inline="true" :model="form" label-width="80">
           <el-row class="form-row">
             <el-form-item class="form-row-left">
-              <el-button type="primary">开单收银</el-button>
+              <el-button type="primary" @click="handleBilling">开单收银</el-button>
             </el-form-item>
             <el-form-item>
               <el-select v-model="inputName">
@@ -426,8 +426,10 @@ export default {
           return [1, colspan]
         }
       }
+    },
+    handleBilling() {
+      this.$router.push('/workbench')
     }
-
   },
   filters: {
     statusFormatter(val) {

@@ -189,7 +189,7 @@ export default {
       this.form.end_time = val[1]
     },
     handleBilling() {
-      this.$router.push('/billing')
+      this.$router.push('/workbench')
     }
   }
 }

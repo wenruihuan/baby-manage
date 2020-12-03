@@ -27,7 +27,7 @@
               <p>{{scope.row[item.prop].discount}}</p>
               <p>{{scope.row[item.prop].price}}</p>
             </div>
-            <span v-else-if="item.type === 'type'">{{scope.row[item.prop]|discountFormatter}}</span>
+            <span v-else-if="item.prop === 'type'">{{scope.row[item.prop]|discountFormatter}}</span>
             <span v-else>{{scope.row[item.prop]}}</span>
           </template>
         </el-table-column>
@@ -177,7 +177,6 @@ export default {
   },
   filters: {
     discountFormatter(val) {
-      console.log('val', val)
       const textObj = {
         target_discount: '优惠折扣',
         target_price: '指定价格'

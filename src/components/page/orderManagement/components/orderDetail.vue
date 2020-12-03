@@ -190,7 +190,7 @@
             <el-table-column label="退款单号" prop="refund_no" align="center"></el-table-column>
             <el-table-column label="操作时间" prop="create_time" width="220" align="center" :formatter="dateFormate"></el-table-column>
             <el-table-column label="操作人" prop="operator" align="center"></el-table-column>
-            <el-table-column label="退款金额（元）" prop="operator" align="center"></el-table-column>
+            <el-table-column label="退款金额（元）" prop="refund_price" align="center"></el-table-column>
             <el-table-column label="操作" prop="5" align="center">
               <template slot-scope="scoped">
                 <el-button type="text" @click="handleJumpToDetail(scoped.row.refund_id)">详情</el-button>
