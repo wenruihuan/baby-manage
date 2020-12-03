@@ -152,7 +152,7 @@ export default {
     downloadCode(name) {
       this.dialogTitle = '邀请码-一级推广员姓名'
       this.dialogName = 'qrcodeDialog',
-      this.dialogPrms = {codeContent: name}
+      this.dialogPrms = {codeContent: name, type: 'qrcode'}
       this.dialogShow = true
     },
     handleRemove(id) {

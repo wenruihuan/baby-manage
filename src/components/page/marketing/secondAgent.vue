@@ -75,7 +75,7 @@
       :visible.sync="dialogShow"
       :close-on-click-modal="false"
     >
-     <qrcode-dialog :params="{codeContent: codeText}"></qrcode-dialog> 
+     <qrcode-dialog :params="{codeContent: codeText, type: 'img'}"></qrcode-dialog> 
     </el-dialog>
   </div>
 </template>
