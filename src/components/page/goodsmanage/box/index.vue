@@ -117,7 +117,7 @@
 </template>
 
 <script>
-import { ERR_OK, getBoxList, getCategoryList, removeBox, setPublish } from './api';
+import { ERR_OK, getBoxList, geBoxtCategoryList, removeBox, setPublish } from './api';
 import BoxCategory from './component/box-category';
 import EditView from './component/edit-view';
 export default {
@@ -161,9 +161,9 @@ export default {
         /* 获取包厢分类下拉框 */
         async getCategory () {
             try {
-                const data = await getCategoryList();
+                const data = await geBoxtCategoryList();
                 if (data.code === ERR_OK) {
-                    this.categoryList = data.data.data;
+                    this.categoryList = data.data;
                     this.categoryList.unshift({ id: 'all', name: '全部分类' });
                 }
             } catch (e) {

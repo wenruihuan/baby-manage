@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { ERR_OK, getCategoryList, removeCategory, addCategory } from '../api';
+import { ERR_OK, geBoxtCategoryList, removeCategory, addCategory } from '../api';
 
 export default {
     data () {
@@ -64,10 +64,10 @@ export default {
             this.categoryName = '';
             this.visible = true;
             try {
-                const { data } = await getCategoryList();
+                const data = await geBoxtCategoryList();
                 this.boxCategoryData = data.data;
             } catch (e) {
-                console.log(`getCategoryList error: ${e}`);
+                console.log(`geBoxtCategoryList error: ${e}`);
             }
         },
         /* 新增 */
