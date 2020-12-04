@@ -99,16 +99,16 @@
                     label="操作"
                 >
                     <template slot-scope="scope">
-                        <el-button @click="handleClick('edit', scope)" type="text" size="small">详情</el-button>
+                        <el-button @click="handleClick('view', scope)" type="text" size="small">详情</el-button>
                         <i style="padding: 0 10px; color: #ddd; font-style: normal !important;">|</i>
                         <el-dropdown class="dropdown">
-                            <el-button type="text" size="small">更多</el-button>
+                            <el-button type="text" size="small">更多<i class="el-icon-arrow-down el-icon--right"></i></el-button>
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item><span @click="handleClick('edit', scope)">编辑</span></el-dropdown-item>
-                                <el-dropdown-item @click="bindWechat(scope)" v-if="scope.row.role_names.indexOf('健康管理师') === -1"><span>绑定微信</span></el-dropdown-item>
-                                <el-dropdown-item v-else><span>关联服务</span></el-dropdown-item>
-                                <el-dropdown-item>设置排班</el-dropdown-item>
-                                <el-dropdown-item><span @click="handleRelevance(scope)">禁用账号</span></el-dropdown-item>
+                                <el-dropdown-item ><p @click="handleClick('edit', scope)">编辑</p></el-dropdown-item>
+                                <el-dropdown-item v-if="scope.row.is_hm === 1"><p @click="bindWechat(scope)">绑定微信</p></el-dropdown-item>
+                                <el-dropdown-item v-if="scope.row.is_technician === 1"><p>关联服务</p></el-dropdown-item>
+                                <el-dropdown-item><p @click="setWorktimeStaffEdit(scope) ">设置排班</p></el-dropdown-item>
+                                <el-dropdown-item><p @click="handleRelevance(scope)">禁用账号</p></el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </template>
@@ -144,7 +144,7 @@
             :before-close="handleClose"
         >
             <div class="box">
-                <img :src="authQrData.QR_url">
+                <img :src="authQrData.imgUrl">
                 <p>扫码绑定微信</p>
                 <p>此功能用于健康管理师查看会员健康档案</p>
             </div>
@@ -160,17 +160,26 @@
                 <el-button type="primary" @click="setStaffSetDisable">确 定</el-button>
             </span>
         </el-dialog>
+
+        <!--设置排班-->
+        <set-scheduling
+                @cancel="setSchedulingCancel"
+                ref="setScheduling"
+                v-show="changeStaffDialogVisible"
+        ></set-scheduling>
     </div>
 </template>
 
 <script>
 import * as api from '../../../../../api/index'
+import setScheduling from '../../employeeScheduling/workforceManagement/setScheduling'
 import AddEmployees from './AddEmployees'
 import dayjs from 'dayjs'
 export default {
     name: '',
     components: {
-        AddEmployees
+        AddEmployees,
+        setScheduling
     },
     data () {
         return {
@@ -186,6 +195,7 @@ export default {
             authQrDialog: false,
             dialogVisible: false,
             isStaffSetDisable: false,
+            changeStaffDialogVisible: false,
             // 是否显示新增
             isAddEmployees: false,
             employeesId: '',
@@ -197,6 +207,19 @@ export default {
         this.getPositionSelectList();
     },
     methods: {
+        // 唤起排班弹窗，获取基本信息
+        setWorktimeStaffEdit (value) {
+            console.log(value);
+            this.changeStaffDialogVisible = true;
+            this.staffName = value.row.name;
+            this.staffId = value.row.id;
+            this.$refs.setScheduling.getFormData(this.staffId, this.staffName);
+        },
+        setSchedulingCancel () {
+            this.staffName = '';
+            this.staffId = '';
+            this.changeStaffDialogVisible = false;
+        },
         bindWechat (scope) {
             // alert(1);
             this.authQrDialog = true;
@@ -237,18 +260,24 @@ export default {
             this.positionSelectList = data.data;
         },
         handleClick (state, val) {
-            this.employeesId = '';
-            this.employeesTitle = '新增员工';
             this.isAddEmployees = true;
-            if (state === 'edit') {
-                this.employeesTitle = '编辑员工';
+            if (state === 'add') {
+                this.employeesId = '';
+                this.employeesTitle = '新增员工';
+            } else {
                 this.employeesId = val.row.id;
                 this.$nextTick(() => {
-                    this.$refs.AddEmployees.getInfoData(val);
+                    this.$refs.AddEmployees.getInfoData(val, state);
                 });
+                if (state === 'edit') {
+                    this.employeesTitle = '编辑员工';
+                } else {
+                    this.employeesTitle = '员工信息';
+                }
             }
         },
         handleClose () {
+            this.authQrDialog = false;
             this.isAddEmployees = false;
         },
         async getFormData () {
@@ -259,7 +288,7 @@ export default {
             };
             const { data } = await api.staffList(params);
             this.tableData = data.data;
-            this.total = data.allCount;
+            this.total = data.all_count;
         }
     }
 };

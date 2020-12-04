@@ -6,17 +6,18 @@
                     多多亲子岁月一店
                 </el-form-item>
                 <el-form-item label="姓名:" prop="name">
-                    <el-input class="width150" v-model="form.name"></el-input>
+                    <el-input :disabled="disabled" class="width150" v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item label="系统账号:" prop="acount">
-                    <el-input class="width150" v-model="form.acount"></el-input>
+                    <el-input :disabled="disabled" class="width150" v-model="form.acount"></el-input>
                 </el-form-item>
                 <el-form-item label="联系电话:" prop="tel">
-                    <el-input class="width150" v-model="form.tel"></el-input>
+                    <el-input :disabled="disabled" class="width150" v-model="form.tel"></el-input>
                 </el-form-item>
                 <el-form-item label="选择职位:" prop="position_id">
 <!--                    <input v-model="form.position_id" hidden />-->
                     <el-select
+                        :disabled="disabled"
                         v-model="form.position_id"
                         placeholder="选择职位"
                         class="handle-select mr10 width150"
@@ -31,10 +32,11 @@
                 </el-form-item>
                 <el-form-item label="关联角色:" prop="role_ids">
                     <el-select
-                            multiple
-                            v-model="form.role_ids"
-                            placeholder="选择职位"
-                            class="handle-select mr10 width150"
+                        :disabled="disabled"
+                        multiple
+                        v-model="form.role_ids"
+                        placeholder="选择职位"
+                        class="handle-select mr10 width150"
                     >
                         <el-option
                             :key="item.id"
@@ -47,6 +49,7 @@
 
                 <el-form-item label="头像:" prop="img">
                     <el-upload
+                        :disabled="disabled"
                         action="http://up-z0.qiniu.com"
                         class="avatar-uploader"
                         :data="uploadBody"
@@ -59,13 +62,13 @@
                     </el-upload>
                 </el-form-item>
                 <el-form-item label="性别">
-                    <el-radio-group class="width150" v-model="form.resource">
+                    <el-radio-group :disabled="disabled" class="width150" v-model="form.resource">
                         <el-radio label="男"></el-radio>
                         <el-radio label="女"></el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="备注：">
-                    <el-input class="width250 height150" type="textarea" v-model="form.desc"></el-input>
+                    <el-input :disabled="disabled" class="width250 height150" type="textarea" v-model="form.desc"></el-input>
                 </el-form-item>
             </div>
 
@@ -88,6 +91,7 @@ export default {
                 token: '',
                 key: ''
             },
+            disabled: false,
             files: [],
             roleSelectList: [],
             formRules: {
@@ -146,8 +150,11 @@ export default {
             this.roleSelectList = data.data;
             console.log(data.data);
         },
-        getInfoData (value) {
+        getInfoData (value, state) {
             this.form = value.row;
+            if (state === 'view') {
+                this.disabled = true;
+            }
         },
         async onSubmit() {
             this.$refs.form.validate(async (valid) => {

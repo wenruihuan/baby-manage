@@ -653,8 +653,8 @@ export const archivesBabyRecord = query => {
     export const staffBind= query => {
     return request({
         url: `/admin/staff/bind`,
-        method: 'post',
-        data: query
+        method: 'get',
+        params: query
     });
 };
 

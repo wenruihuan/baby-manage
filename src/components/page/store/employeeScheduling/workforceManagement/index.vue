@@ -124,7 +124,7 @@
                 <el-button type="primary" @click="changeShiftConfirm">确 定</el-button>
               </span>
         </el-dialog>
-        <el-dialog
+       <!-- <el-dialog
             title="设置排班"
             :visible.sync="changeStaffDialogVisible"
             width="800px">
@@ -277,142 +277,130 @@
                 <el-button @click="changeStaffDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="changeStaffConfirm">保存</el-button>
               </span>
-        </el-dialog>
+        </el-dialog>-->
+        <!--设置排班-->
+        <set-scheduling
+            ref="setScheduling"
+            v-show="changeStaffDialogVisible"
+        ></set-scheduling>
     </div>
 </template>
 
 <script>
-    import moment from 'moment';
-    import * as api from '../../../../../api/index'
-    export default {
-        name: '',
-        components: {
+import setScheduling from './setScheduling'
+import moment from 'moment';
+import * as api from '../../../../../api/index'
+export default {
+    name: '',
+    components: {
+        setScheduling
+    },
+    data () {
+        return {
+            zhouyi: '',
+            zhouer: '',
+            zhousan: '',
+            zhousi: '',
+            zhouwu: '',
+            zhouliu: '',
+            zhouri: '',
+            currentDate: '',
+            currentName: '',
+            currentWorkTime: '',
+            changeShiftDialogVisible: false,  // 调班
+            changeStaffDialogVisible: false,  // 班排
+            week: '',
+            staffName: '',
+            weekValue: '',
+            yearValue: '',
+            month: '',
+            year: '',
+            form: {
+                page_size: 20,
+                page_no: 1
+            },
+            tableData: [],
+            total: 0,
+            page_no: 1,
+            query: {},
+            dialogVisible: false,
+        }
+    },
+    created () {
+        this.getWorktimeList();
+        this.getFormData();
+    },
+    watch: {
+        weekValue (value) {
+            this.week = moment(value).format('W');
         },
-        data () {
-            return {
-                zhouyi: '',
-                currentDate: '',
-                currentName: '',
-                currentWorkTime: '',
-                is_default_worktime: '0',
-                changeShiftDialogVisible: false,  // 调班
-                changeStaffDialogVisible: false,  // 班排
-                worktimeSelectList: [],
-                worktime_id_array:['','','','','','',''],
-                week: '',
-                staffName: '',
-                weekValue: '',
-                yearValue: '',
-                value1: '',
-                value2: '',
-                month: '',
-                year: '',
-                form: {
-                    page_size: 20,
-                    page_no: 1
-                },
-                tableData: [],
-                total: 0,
-                page_no: 1,
-                query: {},
-                dialogVisible: false,
-            }
-        },
-        created () {
-            this.getWorktimeList();
+        yearValue (value) {
+            console.log(value);
+            this.year = moment(value).format('YYYY');
+            this.month = moment(value).format('MM');
+        }
+    },
+    methods: {
+        handleCurChange(value) {
+            this.page_no = value;
             this.getFormData();
         },
-        watch: {
-            weekValue (value) {
-                this.week = moment(value).format('W');
-            },
-            yearValue (value) {
-                console.log(value);
-                this.year = moment(value).format('YYYY');
-                this.month = moment(value).format('MM');
-            }
+        // 唤起排班弹窗，获取基本信息
+        setWorktimeStaffEdit (value) {
+            this.changeStaffDialogVisible = true;
+            this.staffName = value.row.staff_name;
+            this.staffId = value.row.staff_id;
+            this.$refs.setScheduling.getFormData(this.staffId, this.staffName);
         },
-        methods: {
-            setWorktimeArray (index) {
-                if (this.worktime_id_array[index] === '') {
-                    this.$set(this.worktime_id_array, index, this.staffId);
-                } else {
-                    this.$set(this.worktime_id_array, index, '');
-                }
-            },
-            copeFn () {},
-            weekFilter (val) {
-            },
-            handleCurChange(value) {
-                this.page_no = value;
-                this.getFormData();
-            },
-            setWorktimeStaffEdit (value) {
-                console.log(value);
-                this.staffName = value.row.staff_name;
-                this.staffId = value.row.staff_id;
-                this.changeStaffDialogVisible =true;
-            },
-            async setPositionDelete (scope) {
-                api.positionDelete({ id: scope.row.id})
-            },
-            async getFormData () {
-                let params = {
-                    page_size: 20,
-                    page_no: this.page_no,
-                    year: this.year,
-                    month: this.month,
-                    week: this.week,
-                }
-                const { data } = await api.worktimeStaffList(params);
-                this.tableData = data.data;
-                this.total = data.all_count;
-                this.zhouyi = '周一 ' +  data.date_column[0];
-                this.zhouer = '周二 ' +  data.date_column[1];
-                this.zhousan = '周三 ' +  data.date_column[2];
-                this.zhousi = '周四 ' +  data.date_column[3];
-                this.zhouwu = '周五 ' +  data.date_column[4];
-                this.zhouliu = '周六 ' +  data.date_column[5];
-                this.zhouri = '周日 ' +  data.date_column[6];
-            },
-            handleCurrentChange (val) {
-                console.log(`当前页: ${val}`);
-
-            },
-            async getWorktimeList () {
-                const { data } = await api.worktimeSelectList();
-                this.worktimeSelectList = data;
-            },
-            // 调班
-            async changeShiftFn (itemP, item) {
-                this.currentDate = item.date;
-                this.staff_id = itemP.staff_id;
-                this.currentName = itemP.staff_name;
-                this.currentWorkTime = item.worktime;
-                this.changeShiftDialogVisible = true;
-            },
-            async changeShiftConfirm () {
-                let params = {
-                    staff_id: this.staff_id,
-                    date: this.currentDate,
-                    worktime_id: this.currentWorkTime,
-                }
-                const { data } = await api.worktimeStaffChange(params);
-                console.log(data);
-                this.changeShiftDialogVisible = false;
-            },
-            async changeStaffConfirm () {
-                let params = {
-                    staff_id: this.staffId,
-                    is_default_worktime: this.is_default_worktime,
-                    worktime_id_array: this.worktime_id_array,
-                }
-                const { data } = await api.worktimeStaffEdit(params);
-                console.log(data);
-                this.changeStaffDialogVisible = false;
+        // 获取列表数据
+        async getFormData () {
+            let params = {
+                page_size: 20,
+                page_no: this.page_no,
+                year: this.year,
+                month: this.month,
+                week: this.week,
             }
+            const { data } = await api.worktimeStaffList(params);
+            this.tableData = data.data;
+            this.total = data.all_count;
+            this.zhouyi = '周一 ' +  data.date_column[0];
+            this.zhouer = '周二 ' +  data.date_column[1];
+            this.zhousan = '周三 ' +  data.date_column[2];
+            this.zhousi = '周四 ' +  data.date_column[3];
+            this.zhouwu = '周五 ' +  data.date_column[4];
+            this.zhouliu = '周六 ' +  data.date_column[5];
+            this.zhouri = '周日 ' +  data.date_column[6];
+        },
+        handleCurrentChange (val) {
+            console.log(`当前页: ${val}`);
+            this.page_no = val;
+            this.getFormData();
+        },
+        async getWorktimeList () {
+            const { data } = await api.worktimeSelectList();
+            this.worktimeSelectList = data;
+        },
+        // 调班
+        async changeShiftFn (itemP, item) {
+            this.currentDate = item.date;
+            this.staff_id = itemP.staff_id;
+            this.currentName = itemP.staff_name;
+            this.currentWorkTime = item.worktime;
+            this.changeShiftDialogVisible = true;
+        },
+        async changeShiftConfirm () {
+            let params = {
+                staff_id: this.staff_id,
+                date: this.currentDate,
+                worktime_id: this.currentWorkTime,
+            };
+            const { data } = await api.worktimeStaffChange(params);
+            console.log(data);
+            this.changeShiftDialogVisible = false;
         }
-    };
+    }
+};
 </script>
 
 <style scoped>
@@ -436,48 +424,6 @@
     .date-box .item{
         margin: 0 20px;
     }
-    .changeShiftBox .item{
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-    .changeShiftBox .item1{
-        align-items: flex-start;
-    }
-    .changeShiftBox .item span{
-        width: 100px;
-        display: inline-block;
-        text-align: right;
-        margin-right: 10px;
-    }
-    .changeShiftBox  .worktime1Item{
-        margin-bottom: 10px;
-    }
-    .changeShiftBox .item .worktime1Item span{
-        width: 50px;
-        text-align: left;
-    ;
-    }
-    .changeShiftBox .worktime .worktimeItem{
-        width: 65px;
-        line-height: 35px;
-        text-align: center;
-        color: #333;
-        display: inline-block;
-        cursor: pointer;
-        transition: 0.3s;
-        border: 1px solid rgba(221, 221, 221, 1);
-    }
-    .changeShiftBox .worktime .worktimeItem.active{
-        background: #409EFF;
-        height: 35px;
-        color: #fff;
-    }
-    .changeShiftBox .tips{
-        color: rgba(121, 121, 121, 0.670588235294118);
-        font-size: 12px;
-    }
-
 </style>
 <style>
     .tableContent.el-table td{
