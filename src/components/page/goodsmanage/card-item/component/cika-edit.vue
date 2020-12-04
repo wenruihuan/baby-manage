@@ -63,7 +63,7 @@
             <div class="content1">
                 <div class="left">
                     <p class="card-start">卡片封面</p>
-                    <el-radio-group class="pic-choose" v-model="form.is_custom_cover">
+                    <el-radio-group class="pic-choose" v-model="form.is_custom_cover" @change="handleChangeImg">
                         <el-radio :label="0">默认背景图</el-radio>
                         <el-radio :label="1">
                             <span>自定义图片</span>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="right">
                     <div class="img-container">
-                        <img :src="form.img || defaultPic" alt="">
+                        <img :src="form.img" alt="">
                     </div>
                 </div>
             </div>
@@ -141,7 +141,7 @@ export default {
                 is_publish: '',
                 is_show: '',
                 isInfinity: 1,
-                is_custom_cover: 1,
+                is_custom_cover: 0,
                 img: '',
                 intr: null,
                 right: [],
@@ -169,16 +169,25 @@ export default {
                 token: '',
                 key: ''
             },
-            qrCode: ''
+            qrCode: '',
+            customImg: ''
         };
     },
     created() {
         const id = this.$route.query.id;
         this.getTimeDetail(id);
-        this.getDefaultImg();
+        this.getDefaultImg(id);
         this.getUploadToken();
     },
     methods: {
+        /* 切换图片 */
+        handleChangeImg (value) {
+            if (value == 0) {
+                this.form.img = this.defaultPic;
+            } else {
+                this.form.img = this.customImg;
+            }
+        },
         /* 获取上传图片的token */
         async getUploadToken () {
             try{
@@ -192,11 +201,14 @@ export default {
             }
         },
         /* 获取默认图片 */
-        async getDefaultImg () {
+        async getDefaultImg (id) {
             try {
                 const data = await getDefaultPic();
                 if (data.code === ERR_OK) {
                     this.defaultPic = data.data.time;
+                    if (!id) {
+                        this.form.img = this.defaultPic;
+                    }
                 }
             } catch (e) {
                 console.log(`src/components/page/goodsmanage/card-item/component/cika-edit.vue error: ${e}`);
@@ -214,6 +226,7 @@ export default {
                        this.rightsList = this.form.right || [];
                        this.buyList = this.form.gifts || [];
                        this.isPublish = this.form.is_publish == 1;
+                       this.customImg = this.form.img || '';
                    }
                } catch (e) {
                    console.log(`/page/goodsmanage/card-item/component/cika-edit.vue getTimeDetail error: ${e}`);
@@ -236,6 +249,7 @@ export default {
         /* 成功上传 */
         handleUploadSuccess (res, file) {
             this.form.img = `${ this.baseUrl }/${ file.name }`;
+            this.customImg = this.form.img;
         },
         nextStep () {
             if (this.activeStep === 2) {

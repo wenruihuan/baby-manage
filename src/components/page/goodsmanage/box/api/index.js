@@ -65,6 +65,15 @@ export const getCategoryList = query => {
     });
 };
 
+/* 获取商品分类列表 */
+export const geBoxtCategoryList = query => {
+    return request({
+        url: `/admin/box/selectList`,
+        method: 'get',
+        params: query
+    });
+};
+
 /* 添加包厢分类 */
 export const addCategory = query => {
     return request({

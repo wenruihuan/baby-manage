@@ -79,7 +79,7 @@
                 </div>
                 <div class="right">
                     <div class="img-container">
-                        <img :src="form.img  || defaultPic" alt="">
+                        <img :src="form.img" alt="">
                     </div>
                 </div>
             </div>
@@ -162,13 +162,14 @@ export default {
                 token: '',
                 key: ''
             },
-            defaultPic: ''
+            defaultPic: '',
+            customImg: ''
         };
     },
     created() {
         const id = this.$route.query.id;
         this.getUploadToken();
-        this.getDefaultImg();
+        this.getDefaultImg(id);
         this.getInsertDetail(id);
     },
     methods: {
@@ -185,11 +186,14 @@ export default {
             }
         },
         /* 获取默认图片 */
-        async getDefaultImg () {
+        async getDefaultImg (id) {
             try {
                 const data = await getDefaultPic();
                 if (data.code === ERR_OK) {
                     this.defaultPic = data.data.recharge;
+                    if (!id) {
+                        this.form.img = this.defaultPic;
+                    }
                 }
             } catch (e) {
                 console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue error: ${e}`);
@@ -205,6 +209,7 @@ export default {
                        this.form = data.data.data;
                        this.rightsList = this.form.right || [];
                        this.buyList = this.form.gifts || [];
+                       this.customImg = this.form.img || '';
                    }
                } catch (e) {
                    console.log(`src/components/page/goodsmanage/card-item/component/insert-card.vue getInsertDetail error: ${e}`);
@@ -216,8 +221,10 @@ export default {
         },
         /* 选择默认封面 */
         changePic (value) {
-            if (value === 0) {
+            if (value == 0) {
                 this.form.img = this.defaultPic;
+            } else {
+                this.form.img = this.customImg || '';
             }
         },
         /* 上传之前 */
@@ -228,6 +235,7 @@ export default {
         /* 成功上传 */
         handleUploadSuccess (res, file) {
             this.form.img = `${ this.baseUrl }/${ file.name }`;
+            this.customImg = this.form.img;
         },
         nextStep () {
             if (this.activeStep === 2) {
