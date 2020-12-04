@@ -109,7 +109,7 @@
                 }
             },
             handleNoCheck() {
-                this.noDistributionList[0].available = true;
+                this.noDistributionList[0].available = !this.noDistributionList[0].available;
             },
             handleChangeName(type, index) {
                 let item = this[type === '0' ? 'noDistributionList' : 'distributionList'][index];
