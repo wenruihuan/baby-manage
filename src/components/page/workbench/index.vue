@@ -56,7 +56,6 @@ export default {
     },
     methods: {
         getInfo (val) {
-            console.log(val);
             this.memberId = val;
         },
         pageIndexValue (val) {

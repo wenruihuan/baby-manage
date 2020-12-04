@@ -211,6 +211,7 @@ export default {
         reselectUser () {
             this.currentMemberInfo = {};
             this.memberId = '';
+            this.$emit('getInfo', '');
         },
         async getWorktableMemberInfo (value) {
             const { data } = await api.worktableMemberInfo({ keyword: value });

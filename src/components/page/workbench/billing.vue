@@ -28,7 +28,7 @@
                                     v-for="(item, index) in serviceKindList"
                                 >{{item.name}}</span>
                             </div>
-                            <div class="service-list clearfix">
+                            <div :class="memberId !== '' ? 'service-list clearfix active': 'service-list clearfix'">
                                 <div class="item"
                                      :class="item.selectState ? 'item active' : 'item'"
                                      @click="handleServiceList(item)"
@@ -39,6 +39,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="billing-tab-box-content-bottom" v-if="tabOperation1 === '1'">
                             <div class="service-list clearfix">
                                 <div class="item"
@@ -100,7 +101,6 @@
                                         </el-option>
                                     </el-select>
                                     &nbsp;&nbsp;&nbsp;&nbsp;
-                                    {{memberAllRechargeCard}}
                                     <el-select class="width150" v-model="item.recharge_card_id" placeholder="请选择">
                                         <el-option
                                             v-for="item in memberAllRechargeCard"
@@ -277,6 +277,9 @@ export default {
             staffTechnicianDialogVisible: false,
         }
     },
+    props: {
+        memberId: ''
+    },
     created () {
         this.getServiceKind();
         // this.getServiceSelectList();
@@ -446,8 +449,12 @@ export default {
 
         // 改价
         changePrice (index, state) {
+            if (state === '0') {
+                this.$set(this.consume[index], 'original_price', this.consume[index].price);
+            } else {
+                this.$set(this.consume[index], 'price', this.consume[index].original_price);
+            }
             this.$set(this.consume[index], 'originalOriceState', state);
-            console.log(this.consume);
         },
     }
 };
@@ -629,6 +636,9 @@ export default {
     flex-wrap: wrap;
     height: calc( 100vh - 283px);
     overflow-y: auto;
+}
+.billing .billing-tab-box-content-bottom .service-list.active{
+    height: calc( 100vh - 330px);
 }
 .billing .billing-tab-box-content-bottom .service-list .item{
     background: #F7F8FA;
