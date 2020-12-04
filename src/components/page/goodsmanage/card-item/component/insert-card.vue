@@ -162,7 +162,8 @@ export default {
                 token: '',
                 key: ''
             },
-            defaultPic: ''
+            defaultPic: '',
+            customImg: ''
         };
     },
     created() {
@@ -205,6 +206,7 @@ export default {
                        this.form = data.data.data;
                        this.rightsList = this.form.right || [];
                        this.buyList = this.form.gifts || [];
+                       this.customImg = this.form.img || '';
                    }
                } catch (e) {
                    console.log(`src/components/page/goodsmanage/card-item/component/insert-card.vue getInsertDetail error: ${e}`);
@@ -216,8 +218,10 @@ export default {
         },
         /* 选择默认封面 */
         changePic (value) {
-            if (value === 0) {
+            if (value == 0) {
                 this.form.img = this.defaultPic;
+            } else {
+                this.form.img = this.customImg;
             }
         },
         /* 上传之前 */
@@ -228,6 +232,7 @@ export default {
         /* 成功上传 */
         handleUploadSuccess (res, file) {
             this.form.img = `${ this.baseUrl }/${ file.name }`;
+            this.customImg = this.form.img;
         },
         nextStep () {
             if (this.activeStep === 2) {
