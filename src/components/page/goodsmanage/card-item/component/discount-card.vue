@@ -65,7 +65,7 @@
                 </div>
                 <div class="right">
                     <div class="img-container">
-                        <img :src="form.img || defaultPic" alt="">
+                        <img :src="form.img" alt="">
                     </div>
                 </div>
             </div>
@@ -152,17 +152,9 @@ export default {
         const id = this.$route.query.id;
         this.getDiscountDetail(id);
         this.getUploadToken();
-        this.getDefaultImg();
+        this.getDefaultImg(id);
     },
     methods: {
-        /* 切换图片 */
-        handleChangeImg (value) {
-            if (value == 0) {
-                this.form.img = this.defaultPic;
-            } else {
-                this.form.img = this.customImg;
-            }
-        },
         /* 获取上传图片的token */
         async getUploadToken () {
             try{
@@ -176,11 +168,14 @@ export default {
             }
         },
         /* 获取默认图片 */
-        async getDefaultImg () {
+        async getDefaultImg (id) {
             try {
                 const data = await getDefaultPic();
                 if (data.code === ERR_OK) {
                     this.defaultPic = data.data.discount;
+                    if (!id) {
+                        this.form.img = this.defaultPic;
+                    }
                 }
             } catch (e) {
                 console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue error: ${e}`);
