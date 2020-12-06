@@ -112,6 +112,8 @@
                 this.$set(this.isIndeterminate, index, false);
             },
             handleCheckedCitiesChange (value, index) {
+                console.log(value);
+                console.log(index);
                 const checkedCount = this.checkedCitiesList[index].length;
                 this.$set(this.checkAll, index, checkedCount === this.roleAathList[index].children.length);
                 this.$set(this.isIndeterminate, index, checkedCount > 0 && checkedCount < this.roleAathList[index].children.length);
@@ -121,8 +123,9 @@
                     id: this.id ? this.id : '',
                     ...this.ruleForm,
                 };
+                console.log($('input[type=checkbox]:checked').length);
                 await api.roleSave(params);
-                this.$router.go(-1);
+                // this.$router.go(-1);
             },
             handleCancel () {
                 this.$router.go(-1);

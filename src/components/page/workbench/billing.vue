@@ -121,18 +121,20 @@
                                     <span>{{item.name}}</span>
                                 </div>
                                 <div>
-                                    <el-input class="shuru" v-model="item.sort"></el-input>次数
+                                    <el-input class="shuru" v-model="item.sort"></el-input>&nbsp;次数
                                 </div>
                                 <div>
                                     <el-date-picker
+                                        class="width120"
                                         v-model="item.date"
                                         type="date"
                                         placeholder="选择日期">
                                     </el-date-picker>
-                                    前有效
+                                    &nbsp;前有效
                                 </div>
                                 <div @click="clearConsumeServiceItem(item)">删除</div>
                             </div>
+                            <div class="mainColor" @click="serviceDialogVisible = true">赠送服务</div>
                         </div>
                     </div>
                 </div>
@@ -250,7 +252,6 @@ export default {
     },
     data () {
         return {
-            memberId: '', // 选中用户ID
             memberId1: '', // 选中用户ID
             currentMemberInfo: {}, // 选中用户信息
             tabOperation: '0',
@@ -260,6 +261,7 @@ export default {
             tabValue1: '',
             consume: [],
             addServiceList: [],
+            currentServiceList: [],
             commonServiceList: [],
             commonBoxSelectList: [],
             currentConsumeList: [],
@@ -299,11 +301,35 @@ export default {
     },
     methods: {
         async getCashier () {
+            let consume = [];
+            this.consume.forEach(m => {
+                console.log(m.technician);
+                consume.push({
+                    type: 'service',
+                    service_id: m.id,
+                    service_time: m.service_time,
+                    price: m.price,
+                    right_id: m.right_id,
+                    recharge_card_id: m.recharge_card_id,
+                })
+            });
+            let gift = [];
+            this.addServiceList.forEach(m => {
+                gift.push({
+                    type: m.type,
+                    service_id: m.id,
+                    time: m.time,
+                    validity: m.validity
+                });
+            });
+            console.log(gift);
             let params = {
-                memeber_id: this.memberId
+                member_id: this.memberId,
+                consume: consume,
+                gift: gift
             };
             const { data } = await api.worktableHangService(params);
-            this.$router.push({ path: '/cashier', query: { comeFrom: 'billing', order_id: data.order_id}});
+            // this.$router.push({ path: '/cashier', query: { comeFrom: 'billing', order_id: data.order_id}});
         },
         getLink (index) {
             // this.$router.push(`/${link}`);
@@ -375,6 +401,7 @@ export default {
             item.selectState = !item.selectState;
             this.commonBoxSelectList = this.boxSelectList.filter(m => {
                 if(m.selectState) {
+                    console.log(m);
                     return m;
                 };
             });
@@ -386,6 +413,7 @@ export default {
                 this.commonServiceList = this.worktableCommonServiceList.filter(m => {
                     if(m.selectState) {
                         m.rightSelect = rightSelect;
+                        console.log(m);
                         this.$set(m, 'originalOriceState', '0');
                         return m;
                     };
@@ -414,25 +442,30 @@ export default {
         //显示技师弹窗
         showStaffTechnicianDialogVisible (index) {
             this.consumeIndex = index;
+            this.currentStaffTechnicianSelectList = [];
             this.staffTechnicianDialogVisible = true;
         },
         // 设置明细需要技师
         setStaffTechnician () {
             this.itemStaffTechnicianSelectList = [];
             this.staffTechnicianDialogVisible = false;
+            console.log(this.currentStaffTechnicianSelectList);
+            let array = [];
             this.currentStaffTechnicianSelectList.forEach(m => {
                 this.staffTechnicianSelectList.forEach(n => {
                     if (m === n.id) {
-                        this.itemStaffTechnicianSelectList.push(n)
+                        array.push(n)
                     }
                 })
             });
-            this.$set(this.consume[this.consumeIndex], 'technician', this.staffTechnicianSelectList);
+            this.$set(this.consume[this.consumeIndex], 'technician', array);
             // this.currentStaffTechnicianSelectList = [];
         },
         // 确认赠送服务
         serviceSelectListConfirm () {
             console.log(this.$refs.multipleTable.selection);
+            console.log(this.currentServiceList);
+            // this.addServiceList = this.currentServiceList;
             this.addServiceList = this.$refs.multipleTable.selection;
             this.serviceDialogVisible = false;
         },
@@ -664,6 +697,9 @@ export default {
 .billing .billing-tab-box-content-bottom .service-list .item .price{
     color: #F725B4;
     margin-top: 10px;
+}
+.billing .mainColor{
+    margin-bottom: 20px;
 }
 .billing .billing-bottom{
     display: flex;

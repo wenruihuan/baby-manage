@@ -10,29 +10,29 @@
                     </span>
                 <div>
                     {{staffName}}
-                    <a @click="copeFn" class="mainColor">复制上周排班</a>
+                    <a @click="copeFn" style="cursor:pointer;" class="mainColor">复制上周排班</a>
                 </div>
             </div>
             <div class="item">
                 <span>排班方式：</span>
                 <div>
-                    <el-radio v-model="is_default_worktime" :label="0">默认排班</el-radio>
-                    <el-radio v-model="is_default_worktime" :label="1">自定义排班</el-radio>
+                    <el-radio v-model="is_default_worktime" :label="1">默认排班</el-radio>
+                    <el-radio v-model="is_default_worktime" :label="0">自定义排班</el-radio>
                 </div>
             </div>
-            <div class="item" v-if="is_default_worktime === 0">
+            <div class="item" v-if="is_default_worktime === 1">
                 <span>时间范围：</span>
-                <div class="worktime">{{worktime_array}}
-                    <span :class="worktime_array[0] !== '' ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(0)">周一</span>
-                    <span :class="worktime_array[1] !== '' ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(1)">周二</span>
-                    <span :class="worktime_array[2] !== '' ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(2)">周三</span>
-                    <span :class="worktime_array[3] !== '' ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(3)">周四</span>
-                    <span :class="worktime_array[4] !== '' ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(4)">周五</span>
-                    <span :class="worktime_array[5] !== '' ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(5)">周六</span>
-                    <span :class="worktime_array[6] !== '' ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(6)">周日</span>
+                <div class="worktime">
+                    <span :class="worktime_array[0] ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(0)">周一</span>
+                    <span :class="worktime_array[1] ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(1)">周二</span>
+                    <span :class="worktime_array[2] ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(2)">周三</span>
+                    <span :class="worktime_array[3] ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(3)">周四</span>
+                    <span :class="worktime_array[4] ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(4)">周五</span>
+                    <span :class="worktime_array[5] ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(5)">周六</span>
+                    <span :class="worktime_array[6] ? 'active worktimeItem' : 'worktimeItem'" @click="setWorktimeArray(6)">周日</span>
                 </div>
             </div>
-            <div class="item" v-if="is_default_worktime === 0">
+            <div class="item" v-if="is_default_worktime === 1">
                 <span>调整班次：</span>
                 <el-time-select
                         class="width200"
@@ -57,7 +57,7 @@
                         placeholder="先选择开始时间">
                 </el-time-select>
             </div>
-            <div class="item item1" v-if="is_default_worktime === 1">
+            <div class="item item1" v-if="is_default_worktime === 0">
                 <span>时间范围：</span>
                 <div class="worktime1">
                     <div class="worktime1Item">
@@ -166,14 +166,15 @@ export default {
             staffName: '',
             value1: '',
             value2: '',
-            is_default_worktime: 0,
+            is_default_worktime: 1,
             timeArray: [],
             worktimeSelectList: [],
             worktime_id_array:['','','','','','',''],
-            worktime_array:['','','','','','',''],
+            worktime_array:[false, false, false, false, false, false, false],
         }
     },
     created() {
+        this.getWorktimeList();
     },
     methods: {
         getFormData (staffId, staffName) {
@@ -184,10 +185,10 @@ export default {
             this.staffName = staffName;
         },
         setWorktimeArray (index) {
-            if (this.worktime_array[index] === '') {
-                this.$set(this.worktime_array, index, true);
-            } else {
+            if (this.worktime_array[index]) {
                 this.$set(this.worktime_array, index, false);
+            } else {
+                this.$set(this.worktime_array, index, true);
             }
         },
         setWorktimeIdArray (index) {
@@ -199,15 +200,23 @@ export default {
         },
         changeStaffCancel () {
             this.changeStaffDialogVisible = false;
-            this.worktime_array = ['','','','','','',''];
+            this.worktime_array = [false, false, false, false, false, false, false];
             this.$emit('cancel');
         },
         // 复制上周排班
-        copeFn () {},
+        async copeFn () {
+            let params = {
+                staff_id: this.staffId
+            }
+            const { data } = await api.worktimeCopylast(params);
+            this.changeStaffDialogVisible = false;
+        },
+        async getWorktimeList () {
+            const { data } = await api.worktimeSelectList();
+            this.worktimeSelectList = data;
+        },
         // 2.4.4.设置排班
         async changeStaffConfirm () {
-            this.selectTime = this.value1 + '-' + this.value2;
-            console.log(this.selectTime);
             let params = {};
             if (this.is_default_worktime === 0) {
                 params = {
@@ -216,13 +225,30 @@ export default {
                     worktime_id_array: this.worktime_id_array,
                 };
             } else if (this.is_default_worktime === 1) {
+                if (this.value1 === '') {
+                    this.$message.error('请选择调整班次开始时间');
+                    return false;
+                }
+                if (this.value2 === '') {
+                    this.$message.error('请选择调整班次结束时间');
+                    return false;
+                }
+                this.selectTime = this.value1 + '-' + this.value2;
+                let worktime_array = [];
+                this.worktime_array.forEach(m => {
+                    if (m) {
+                        worktime_array.push(this.selectTime)
+                    } else {
+                        worktime_array.push('')
+                    }
+                });
                 params = {
                     staff_id: this.staffId,
                     is_default_worktime: this.is_default_worktime,
-                    worktime_array: this.worktime_array,
+                    worktime_array: worktime_array
                 };
             }
-            // const { data } = await api.worktimeStaffEdit(params);
+            const { data } = await api.worktimeStaffEdit(params);
         }
     }
 };

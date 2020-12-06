@@ -110,9 +110,9 @@
                             class="width120"
                             v-model="item.resttime1[0]"
                             :picker-options="{
-                            start: '09:00',
+                            start: '12:00',
                             step: '00:30',
-                            end: '18:00'
+                            end: '13:00'
                           }"
                             placeholder="选择时间">
                     </el-time-select>
@@ -158,11 +158,15 @@
                 worktime_id: '',
                 worktime_name: '',
                 worktime: [],
-                worktime1: '',
-                worktime2: '',
+                worktime1: '9:00',
+                worktime2: '18:00',
                 resttime1: ['', ''],
                 resttime2: '',
-                resttimeList: [],
+                resttimeList: [
+                    {
+                        resttime1:['12:00', '13:00']
+                    }
+                ],
                 resttime: [],
                 value1: [],
                 page_no: 1,
@@ -179,22 +183,17 @@
         },
         methods: {
             addWorktime () {
-                this.resttimeList = [];
                 this.worktime_name = '';
-                this.resttimeList = [{
-                    resttime1: {
-                        0: '',
-                        1: '',
+                this.resttimeList = [
+                    {
+                        resttime1:['12:00', '13:00']
                     }
-                }];
+                ];
                 this.dialogVisible = true;
             },
             addResttimeListNum () {
                 this.resttimeList.push({
-                    resttime1: {
-                        0: '',
-                        1: '',
-                    }
+                    resttime1:['12:00', '13:00']
                 });
             },
             removeWorktimeNum (index) {

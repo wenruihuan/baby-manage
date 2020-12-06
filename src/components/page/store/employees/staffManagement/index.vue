@@ -106,7 +106,7 @@
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item ><p @click="handleClick('edit', scope)">编辑</p></el-dropdown-item>
                                 <el-dropdown-item v-if="scope.row.is_hm === 1"><p @click="bindWechat(scope)">绑定微信</p></el-dropdown-item>
-                                <el-dropdown-item v-if="scope.row.is_technician === 1"><p>关联服务</p></el-dropdown-item>
+                                <el-dropdown-item v-if="scope.row.is_technician === 1"><p @click="handleEdit">关联服务</p></el-dropdown-item>
                                 <el-dropdown-item><p @click="setWorktimeStaffEdit(scope) ">设置排班</p></el-dropdown-item>
                                 <el-dropdown-item><p @click="handleRelevance(scope)">禁用账号</p></el-dropdown-item>
                             </el-dropdown-menu>
@@ -149,6 +149,56 @@
                 <p>此功能用于健康管理师查看会员健康档案</p>
             </div>
         </el-dialog>
+
+        <el-dialog
+                class="technician_setting_detail"
+                title="关联服务"
+                :visible.sync="dialogVisibleAdd"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                width="680px"
+        >
+            <el-radio-group v-model="is_all_service" @change="handleChangeAddRadio">
+                <el-radio label="1">所有服务</el-radio>
+                <el-radio label="0">指定服务</el-radio>
+            </el-radio-group>
+            <el-select
+                    v-model="addSelectValue"
+                    style="margin-left: 30px; margin-bottom: 10px"
+                    :disabled="is_all_service === '1'"
+                    @change="getServiceList"
+            >
+                <el-option v-for="item in addSelectOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+            </el-select>
+            <el-table ref="multipleTable" :data="addTableData" @selection-change="handleSelectionChange" style="width: 100%">
+                <el-table-column v-if="is_all_service === '0'" type="selection" width="55"> </el-table-column>
+                <el-table-column prop="name" label="服务名称" align="center">
+                    <template slot-scope="scope">
+                        <div class="table-name">
+                            <el-image style="width: 30px; height: 30px" :src="scope.row.img" fit="cover"></el-image>
+                            <div class="info">
+                                <p>{{ scope.row.name }}</p>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="price" label="价格" align="center"> </el-table-column>
+                <el-table-column prop="kind_name" label="分类" align="center"> </el-table-column>
+                <el-table-column prop="create_time" label="创建时间" align="center">
+                    <template slot-scope="scope">
+                        <div class="date_item" v-if="scope.row.create_time">
+                            <p>{{ $formatDate(scope.row.create_time, 'Y-M-D') }}</p>
+                            <p>{{ $formatDate(scope.row.create_time, 'h:m:s') }}</p>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <span slot="footer">
+                        <el-button @click="dialogVisibleAdd = false">取 消</el-button>
+                        <el-button type="primary" @click="handleSaveAdd">保 存</el-button>
+                    </span>
+        </el-dialog>
+
         <el-dialog
             title="禁用账号"
             :visible.sync="isStaffSetDisable"
@@ -172,6 +222,16 @@
 
 <script>
 import * as api from '../../../../../api/index'
+import {
+    getGlobalData,
+    saveGlobal,
+    getTechnicianList,
+    setTechnicianLimit,
+    setTechnicianSingle,
+    getServiceClassification,
+    getServiceList,
+    bindService
+} from '@/api/setting';
 import setScheduling from '../../employeeScheduling/workforceManagement/setScheduling'
 import AddEmployees from './AddEmployees'
 import dayjs from 'dayjs'
@@ -186,13 +246,16 @@ export default {
             authQrData: {}, // 扫码返回数据
             total: 0,
             page_no: 1,
+            is_all_service: '1',
             query: {},
             currentId: '',
             positionSelectList: [],
+            addSelectOptions: [],
             keyword: '',
             position_id: '',
             employeesTitle: '',
             authQrDialog: false,
+            dialogVisibleAdd: false,
             dialogVisible: false,
             isStaffSetDisable: false,
             changeStaffDialogVisible: false,
@@ -204,6 +267,7 @@ export default {
     },
     created () {
         this.getFormData();
+        this.getServiceList();
         this.getPositionSelectList();
     },
     methods: {
@@ -276,6 +340,9 @@ export default {
                 }
             }
         },
+        handleSelectionChange(row) {
+            this.addSelectRows = row;
+        },
         handleClose () {
             this.authQrDialog = false;
             this.isAddEmployees = false;
@@ -289,6 +356,41 @@ export default {
             const { data } = await api.staffList(params);
             this.tableData = data.data;
             this.total = data.all_count;
+        },
+        async getServiceList() {
+            const params = {
+                kind_id: this.serverSelectValue,
+                keyword: ''
+            };
+            const res = await getServiceList(params);
+            if (res.code === 200) {
+                this.addTableData = res.data || [];
+            }
+        },
+        handleEdit() {
+            this.dialogVisibleAdd = true;
+            this.getServiceClassification();
+        },
+        async getServiceClassification() {
+            const res = await getServiceClassification({ page_no: 1, page_size: 999 });
+            if (res.code === 200) {
+                this.addSelectOptions = res.data || [];
+            }
+        },
+        async handleSaveAdd() {
+            this.loading = true;
+            const params = {
+                is_all_service: this.is_all_service
+            };
+            if (this.is_all_service === '0') {
+                params.service_id_list = this.addSelectRows.map((m) => m.id);
+            }
+            const res = await bindService(params);
+            if (res.code === 200) {
+                this.$message.success('关联成功');
+                this.dialogVisibleAdd = false;
+                this.getTechnicianList();
+            }
         }
     }
 };

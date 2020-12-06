@@ -327,7 +327,6 @@ export default {
         }
     },
     created () {
-        this.getWorktimeList();
         this.getFormData();
     },
     watch: {
@@ -376,10 +375,6 @@ export default {
             console.log(`当前页: ${val}`);
             this.page_no = val;
             this.getFormData();
-        },
-        async getWorktimeList () {
-            const { data } = await api.worktimeSelectList();
-            this.worktimeSelectList = data;
         },
         // 调班
         async changeShiftFn (itemP, item) {

@@ -91,7 +91,7 @@
                         </el-select>
                     </div>
                     <div v-if="box4State === 1">
-                        <router-link :to="{path: '/integralSubsidiary', query: { member_id: this.userId }}">查看全部<i class="el-icon-arrow-right"></i></router-link>
+                        <router-link :to="{path: '/GivingRights', query: { member_id: this.userId }}">查看全部<i class="el-icon-arrow-right"></i></router-link>
                     </div>
                     <div v-if="box4State === 2">
                         <router-link :to="{path: '/integralDetails', query: {available_point: pointInfoDetails.available_point, total_point: pointInfoDetails.total_point}}">查看积分明细<i class="el-icon-arrow-right"></i></router-link>
@@ -161,13 +161,13 @@
                                             <el-radio-group v-model="integralOption.type">
                                                 <el-radio label="add">
                                                     加&nbsp;&nbsp;
-                                                    <el-input class="width85" v-model="integralOption.size"></el-input>
+                                                    <el-input class="width85" v-model="integralOptionAddsize"></el-input>
                                                     &nbsp;&nbsp;积分
                                                 </el-radio>
                                                 <br>
                                                 <el-radio label="reduce">
                                                     减&nbsp;&nbsp;
-                                                    <el-input class="width85" v-model="integralOption.size"></el-input>
+                                                    <el-input class="width85" v-model="integralOptionSubsize"></el-input>
                                                     &nbsp;&nbsp;积分
                                                 </el-radio>
                                             </el-radio-group>
@@ -454,6 +454,8 @@ export default {
             page_no1: 1,
             page_no2: 1,
             all_count1: 0,
+            integralOptionAddsize: 0,
+            integralOptionSubsize: 0,
             all_count2: 0,
             currentOrderStatus: '',
             orderStatus: [
@@ -552,9 +554,16 @@ export default {
     methods: {
         //4.3.5.会员详情-增减积分
         async memberIntegralOptionFn() {
+            if (this.integralOption.type === 'add') {
+                this.integralOption.size = this.integralOptionAddsize;
+            } else if (this.integralOption.type === 'reduce') {
+                this.integralOption.size = this.integralOptionSubsize;
+            }
             const { data } = await api.memberIntegralOption(this.integralOption);
             this.$message.success('操作成功！');
             this.integralOptionState = false;
+            this.integralOptionAddsize = 0;
+            this.integralOptionSubsize = 0;
             this.integralOption =  {
                 type: 'add',
                 size: ''

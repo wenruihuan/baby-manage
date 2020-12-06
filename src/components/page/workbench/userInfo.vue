@@ -78,23 +78,30 @@
                 <el-button @click="$router.go(-1)">关闭</el-button>
             </div>
         </div>
+
         <el-dialog
-                class="single-dialog"
-                title="取单列表"
-                :visible.sync="singleDialogVisible"
-                width="70%"
-                :before-close="handleClose">
-            <div class="list ">
-                <div class="item" v-for="item in worktableOrderList">
-                    <div class="name">{{item.shop_name}}</div>
-                    <div class="name">{{item.order_no}}</div>
-                    <div class="name">消费项目：{{item.order_name}}</div>
-                    <div class="name">下单时间：{{item.create_time}}</div>
-                    <div class="name">
-                        <span>￥{{item.total_price}}</span>
-                        <div>
-                            <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">收款</el-button>
-                            <el-button >取消</el-button>
+            class="single-dialog1"
+            title="取单列表"
+            :visible.sync="singleDialogVisible"
+            width="900px"
+            :before-close="handleClose">
+            <div class="list dialogMain">
+                <div>
+                    <div class="item" v-for="item in worktableOrderList">
+                        <div class="top">
+                            <div class="member_info">{{item.member_info.member_name}}</div>
+                            <div class="member_info">{{item.member_info.member_no}}</div>
+                        </div>
+                        <div class="contentBox">
+                            <div class="order_info"><span>消费项目：</span>{{item.order_info.order_name}}</div>
+                            <div class="order_info"><span>下单时间：</span>{{item.order_info.create_time | timeFormatter }}</div>
+                        </div>
+                        <div class="bottom">
+                            <span class="balance_price">￥{{item.order_info.balance_price}}</span>
+                            <div>
+                                <el-button type="primary" icon="el-icon-document" @click="singleDialogVisible = true">收款</el-button>
+                                <el-button >取消</el-button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -118,10 +125,16 @@
 
 <script>
 
+import dayjs from 'dayjs'
 import userInfo from '../member/common/userInfoDialog'
 import * as api from '../../../api/index'
 export default {
     name: 'index',
+    filters: {
+        timeFormatter(val) {
+            return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+        },
+    },
     data () {
         return {
             rules: {
@@ -180,8 +193,6 @@ export default {
     },
     components: {
         userInfo
-    },
-    filters: {
     },
     methods: {
         // 取消新增会员
@@ -386,19 +397,55 @@ export default {
         margin-right: 10px;
         border-radius: 100%;
     }
-    .single-dialog .list {
+    .single-dialog11{
+        height: 850px;
+    }
+    .single-dialog1 .list>div{
+        width: 100%;
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
+        justify-content: flex-start;
     }
-    .single-dialog .list .item {
-        width: 23.5%;
+    .single-dialog1 .list .item {
+        width: 32%;
         background: #fff;
         text-align: center;
         border-radius: 3px;
         padding: 10px;
         box-sizing: border-box;
         margin-bottom: 20px;
+        margin-right: 2%;
+    }
+    .single-dialog1 .list .item:nth-child(3n) {
+        margin-right: 0;
+    }
+    .single-dialog1 .list .item .top {
+        border-bottom: 1px solid #f2f2f2;
+        margin-bottom: 20px;
+    }
+    .single-dialog1 .list .item .top .member_info{
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+    .single-dialog1 .list .item .contentBox {
+        text-align: left;
+    }
+        .single-dialog1 .list .item .contentBox .order_info{
+            margin-bottom: 10px;
+        font-size: 14px;
+        color: #333333;
+    }
+    .single-dialog1 .list .item .contentBox .order_info span{
+        color: #D9D9D9;
+        font-size: 14px;
+    }
+    .single-dialog1 .list .item .bottom{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #f2f2f2;
+        margin-top: 10px;
+        padding-top: 10px;
     }
     .demo-ruleForm{
         height: 450px;
@@ -406,7 +453,7 @@ export default {
     }
 </style>
 <style>
-    .single-dialog .el-dialog .el-dialog__body{
+    .single-dialog1 .el-dialog .el-dialog__body{
         background: #EDEDED;
         padding: 30px 20px;
         margin: 0 auto;
