@@ -24,7 +24,7 @@
                 <el-form-item label="物流配送：">
                     <div class="distributionList-item" v-for="(item, index) in distributionList" :key="index">
                         <div class="item_header">
-                            <el-checkbox v-model="item.available" @change="handleNoCheck">{{ item.name }}</el-checkbox>
+                            <el-checkbox v-model="item.available">{{ item.name }}</el-checkbox>
                             <div class="cost">
                                 快递费：<el-input v-model="item.price"> <span slot="prefix" class="el-input__icon">￥</span> </el-input>元
                             </div>
