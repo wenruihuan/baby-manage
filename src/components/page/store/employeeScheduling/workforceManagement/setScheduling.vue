@@ -113,10 +113,10 @@
                         <span>周五</span>
                         <el-select v-model="worktime_id_array[4]">
                             <el-option
-                                    @click="setWorktimeIdArray(4)"
-                                    v-for="item in worktimeSelectList"
-                                    :label="item.name"
-                                    :value="item.worktime_id"
+                                @click="setWorktimeIdArray(4)"
+                                v-for="item in worktimeSelectList"
+                                :label="item.name"
+                                :value="item.worktime_id"
                             >
                             </el-option>
                         </el-select>
