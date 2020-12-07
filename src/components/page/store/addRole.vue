@@ -25,7 +25,8 @@
                     <el-collapse accordion>
                         <el-collapse-item>
                             <template slot="title">
-                                <el-checkbox :disabled="disabled" :indeterminate="isIndeterminate[index]" v-model="checkAll[index]" @change="(value) => handleCheckAllChange(value, index)">{{item.label}}</el-checkbox>
+                                {{item.label}}
+<!--                                <el-checkbox :disabled="disabled" :indeterminate="isIndeterminate[index]" v-model="checkAll[index]" @change="(value) => handleCheckAllChange(value, index)">{{item.label}}</el-checkbox>-->
                             </template>
                             <div class="check-box" v-show="!item.show">
                                 <el-checkbox-group v-model="checkedCitiesList[index]" @change="(value) => handleCheckedCitiesChange(value, index)">
