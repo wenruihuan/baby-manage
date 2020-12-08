@@ -231,6 +231,7 @@
                 selectDate: '',
                 sourceValue: '',
                 sourceOptions: [
+                    { label: '全部', value: '' },
                     { label: '线下门店', value: '线下门店' },
                     { label: '微信小程序', value: '微信小程序' }
                 ],
