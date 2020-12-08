@@ -164,7 +164,7 @@
                 <div style="display: flex">
                     <span>健康档案</span>
                     &nbsp;&nbsp;&nbsp;
-                    <div>
+                    <div class="mainColor">
                         <span
                                 class="mainColor editBtn"
                                 v-if="!motherInfoState && isArchivesQueryAuth"
@@ -622,7 +622,7 @@
                     <div style="display: flex">
                         <span>宝宝档案</span>
                         &nbsp;&nbsp;&nbsp;
-                        <div>
+                        <div class="mainColor">
                         <span
                                 class="mainColor editBtn"
                                 v-if="!babyDataItem.babyInfoState && isArchivesQueryAuth"

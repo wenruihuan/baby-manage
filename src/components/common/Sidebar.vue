@@ -401,6 +401,11 @@
     .menu-popper {
         padding: 0;
         border: none;
+        border-right-color: rgb(50, 65, 87) !important;
+        background: #283446 !important;
+        height: 100vh;
+        top: 70px !important;
+        margin-left: 0 !important;
     }
     .menu-popper /deep/ .popper__arrow {
         border-right-color: rgb(50, 65, 87) !important;
