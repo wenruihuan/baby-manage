@@ -25,8 +25,8 @@
                                 label="使用情况"
                         >
                             <template slot-scope="scope">
-                                <div style="color: #999">{{scope.row.time}}</div>
-                                <div style="color: #333">{{scope.row.available_time}}</div>
+                                <div style="color: #999">赠送{{scope.row.time}}次</div>
+                                <div style="color: #333">赠送{{scope.row.available_time}}次</div>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -66,8 +66,8 @@
                                 label="使用情况"
                         >
                             <template slot-scope="scope">
-                                <div style="color: #999">{{scope.row.time}}</div>
-                                <div style="color: #333">{{scope.row.available_time}}</div>
+                                <div style="color: #999">赠送{{scope.row.time}}次</div>
+                                <div style="color: #333">赠送{{scope.row.available_time}}次</div>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -104,8 +104,8 @@
                                 label="使用情况"
                         >
                             <template slot-scope="scope">
-                                <div style="color: #999">{{scope.row.time}}</div>
-                                <div style="color: #333">{{scope.row.available_time}}</div>
+                                <div style="color: #999">赠送{{scope.row.time}}次</div>
+                                <div style="color: #333">赠送{{scope.row.available_time}}次</div>
                             </template>
                         </el-table-column>
                         <el-table-column
