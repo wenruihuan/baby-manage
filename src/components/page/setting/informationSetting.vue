@@ -112,7 +112,15 @@
             };
         },
         created() {
+            document.onkeydown = e => {
+                if (window.event.keyCode == 13) {
+                    this.getList();
+                }
+            };
             this.getList();
+        },
+        destroyed() {
+            document.onkeydown = e => ''
         },
         methods: {
             async getList() {
@@ -127,7 +135,7 @@
                 };
                 const res = await getArticleList(params);
                 if (res.data) {
-                    res.data.data.forEach((m) => {
+                    res.data.data.forEach(m => {
                         m.create_time = formatDate(m.create_time, 'Y-M-D h:m:s');
                         m.is_publish = !!m.is_publish;
                     });

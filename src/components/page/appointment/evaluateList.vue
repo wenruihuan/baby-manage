@@ -85,7 +85,7 @@
     import { formatDate } from '@/utils/utils';
     import { getAppointmentRateList } from '@/api/appointment';
 
-    const getDateRange = (number) => {
+    const getDateRange = number => {
         const end = new Date();
         const start = new Date();
         start.setTime(start.getTime() - 3600 * 1000 * 24 * number);
@@ -132,7 +132,15 @@
             };
         },
         created() {
+            document.onkeydown = e => {
+                if (window.event.keyCode == 13) {
+                    this.getListData();
+                }
+            };
             this.getListData();
+        },
+        destroyed() {
+            document.onkeydown = e => '';
         },
         methods: {
             async getListData() {
@@ -163,7 +171,7 @@
                 this.loading = false;
                 if (res.code === 200) {
                     let list = res.data.data || [];
-                    list.forEach((m) => {
+                    list.forEach(m => {
                         m.service_rate = Number(m.service_rate);
                         m.shop_rate = Number(m.shop_rate);
                         m.technician_rate = Number(m.technician_rate);

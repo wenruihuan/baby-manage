@@ -15,7 +15,8 @@
                     <el-select v-model="selectValue" placeholder="请选择" clearable>
                         <el-option v-for="item in selectOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                     </el-select>
-                    <el-input placeholder="请输入" prefix-icon="el-icon-search" v-model="searchValue" clearable> </el-input>
+                    <el-input placeholder="请输入" prefix-icon="el-icon-search" v-model="searchValue" clearable @keyup.enter="getList">
+                    </el-input>
                     <el-button @click="getList">搜索</el-button>
                 </div>
             </div>
@@ -247,10 +248,18 @@
             };
         },
         created() {
+            document.onkeydown = e => {
+                if (window.event.keyCode == 13) {
+                    this.getList();
+                }
+            };
             if (this.$route.query.keyword) {
                 this.searchValue = this.$route.query.keyword;
             }
             this.getList();
+        },
+        destroyed() {
+            document.onkeydown = e => '';
         },
         methods: {
             async getReadState() {
