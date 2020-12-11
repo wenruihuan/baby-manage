@@ -50,7 +50,7 @@
                     </el-form-item>
                     <el-form-item label="营业时间" prop="name">
                         <el-input class="inline-input"v-model="ruleForm.service_time"></el-input>
-                        <span class="block-tips">  用于网店展示，短信提醒展示</span>
+                        <span class="block-tips">  仅做展示用，请根据门店实际营业时间填写</span>
                     </el-form-item>
                     <!--<el-form-item label=" ">
                         <el-time-picker

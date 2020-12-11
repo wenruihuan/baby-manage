@@ -419,6 +419,47 @@ export default {
     .date-box .item{
         margin: 0 20px;
     }
+    .changeShiftBox .item{
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .changeShiftBox .item1{
+        align-items: flex-start;
+    }
+    .changeShiftBox .item span{
+        width: 100px;
+        display: inline-block;
+        text-align: right;
+        margin-right: 10px;
+    }
+    .changeShiftBox  .worktime1Item{
+        margin-bottom: 10px;
+    }
+    .changeShiftBox .item .worktime1Item span{
+        width: 50px;
+        text-align: left;
+    }
+    .changeShiftBox .worktime .worktimeItem{
+        width: 65px;
+        line-height: 35px;
+        text-align: center;
+        color: #333;
+        display: inline-block;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid rgba(221, 221, 221, 1);
+    }
+    .changeShiftBox .worktime .worktimeItem.active{
+        background: #409EFF;
+        height: 35px;
+        color: #fff;
+    }
+    .changeShiftBox .tips{
+        color: rgba(121, 121, 121, 0.670588235294118);
+        font-size: 12px;
+    }
+
 </style>
 <style>
     .tableContent.el-table td{

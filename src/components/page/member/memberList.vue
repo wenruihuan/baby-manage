@@ -228,8 +228,8 @@
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="reg_time"
-                        label="注册时间"
+                    prop="reg_time"
+                    label="注册时间"
                 >
                 </el-table-column>
                 <el-table-column
@@ -261,9 +261,9 @@
         </div>
         <div class="page-box">
             <div class="operation">
-                <el-button @click="isShowCommonTagFn">添加标签</el-button>
-                <el-button @click="deleteMemberFn">移除会员</el-button>
-                <el-button @click="hmdialogVisibleFn">更改健康管理师</el-button>
+                <el-button :disabled="memeberIds.length < 1" @click="isShowCommonTagFn">添加标签</el-button>
+                <el-button :disabled="memeberIds.length < 1" @click="deleteMemberFn">移除会员</el-button>
+                <el-button :disabled="memeberIds.length < 1" @click="hmdialogVisibleFn">更改健康管理师</el-button>
             </div>
             <el-pagination
                     background

@@ -249,6 +249,7 @@ export default {
                 };
             }
             const { data } = await api.worktimeStaffEdit(params);
+            this.changeStaffCancel();
         }
     }
 };

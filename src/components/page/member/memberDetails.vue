@@ -227,25 +227,25 @@
                         </div>
                     </div>
                     <div class="table">
-
                         <el-table
-                                :data="orderTableData"
-                                style="width: 100%"
-                                ref="multipleTable"
+                            :data="orderTableData"
+                            style="width: 100%"
+                            ref="multipleTable"
                         >
                             <el-table-column
-                                    prop="order_no"
-                                    label="订单编号"
+                                prop="order_no"
+                                label="订单编号"
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="create_time"
-                                    label="下单时间"
+                                prop="create_time"
+                                label="下单时间"
+                                :formatter="dateFormate"
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="service"
-                                    label="商品"
+                                prop="service"
+                                label="商品"
                             >
                                 <template slot-scope="scope">
                                     <div v-if="Array.isArray(scope.row.service)" class="item">
@@ -257,39 +257,39 @@
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                    prop="technician_name"
-                                    label="技师"
+                                prop="technician_name"
+                                label="技师"
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="pay_type_name"
-                                    label="订单来源"
+                                prop="pay_type_name"
+                                label="订单来源"
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="shop_name"
-                                    label="下单门店"
+                                prop="shop_name"
+                                label="下单门店"
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="price"
-                                    label="单价（元）"
+                                prop="price"
+                                label="单价（元）"
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="count"
-                                    label="数量"
+                                prop="count"
+                                label="数量"
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="total_price"
-                                    label="订单金额（元）"
+                                prop="total_price"
+                                label="订单金额（元）"
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="order_status"
-                                    label="状态"
-                                    :formatter="orderTypeFn"
+                                prop="order_status"
+                                label="状态"
+                                :formatter="orderTypeFn"
                             >
                             </el-table-column>
                             <el-table-column
@@ -393,6 +393,7 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
 import userInfo from './common/userInfoDialog'
 import commonTag from './common/commonTag'
 import * as api from '../../../api/index'
@@ -552,6 +553,13 @@ export default {
         this.getArchivesQueryAuth();
     },
     methods: {
+        dateFormate(row, column, cellValue, index) {
+            if (cellValue) {
+                return dayjs(cellValue).format('YYYY-MM-DD HH:mm:ss')
+            } else {
+                return ''
+            }
+        },
         //4.3.5.会员详情-增减积分
         async memberIntegralOptionFn() {
             if (this.integralOption.type === 'add') {

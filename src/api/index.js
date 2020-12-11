@@ -707,3 +707,12 @@ export const archivesBabyRecord = query => {
     });
 };
 
+
+// 10.1.发送验证码
+    export const sendCode = query => {
+    return request({
+        url: `/admin/common/sendCode`,
+        method: 'post',
+        data: query
+    });
+};

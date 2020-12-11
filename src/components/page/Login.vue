@@ -62,7 +62,8 @@ export default {
          * @author wenruihuan
          * 2020/6/4
          */
-        getCode () {
+        async getCode () {
+            const { data } = await api.sendCode({ phone: this.param.phone});
             if (!this.codeState) {
                 this.resetTime();
             }
@@ -86,7 +87,7 @@ export default {
                         clearInterval(timer);
                         this.resetCode =true;
                         this.codeState =false;
-                        this.codeText = "发送短信验证码"
+                        this.codeText = "发送验证码"
                     }
                 },1000);
             }
