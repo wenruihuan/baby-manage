@@ -2,7 +2,7 @@
     <div class="integral-setting">
         <breadcrumb :breadcrumbList="breadcrumbList"></breadcrumb>
         <div class="container" v-loading="loading">
-            <div class="info-title">设置积分有效期</div>
+            <div class="info-title">设置积分说明</div>
             <el-form :model="formData" label-width="100px">
                 <el-form-item label="积分说明：">
                     <el-input type="textarea" :autosize="{ minRows: 6, maxRows: 10 }" v-model="formData.message"></el-input>
