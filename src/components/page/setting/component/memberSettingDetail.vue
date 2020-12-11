@@ -28,7 +28,9 @@
                                 <i class="el-icon-user-solid"></i><span>{{ formData.name }}</span>
                             </p>
                         </div>
-                        <span class="mini_member_card" :style="(colorLeft || colorRight) && cardStyle">{{ formData.name || '请填写等级名称' }}</span>
+                        <span class="mini_member_card" :style="(colorLeft || colorRight) && cardStyle">{{
+                            formData.name || '请填写等级名称'
+                        }}</span>
                     </div>
                 </el-form-item>
                 <el-form-item label="条件：" required>
@@ -78,31 +80,40 @@
                     <el-checkbox-group v-model="checkList1">
                         <el-checkbox label="1">
                             <div class="check-box-item">
-                                所有服务享<el-input
-                                    type="number"
+                                所有服务享<el-input-number
                                     v-model="formData.discount_right.service"
+                                    :min="0"
+                                    :max="10"
+                                    step-strictly
+                                    :controls="false"
                                     :disabled="!checkList1.includes('1')"
-                                ></el-input
+                                ></el-input-number
                                 >折
                             </div>
                         </el-checkbox>
                         <el-checkbox label="2">
                             <div class="check-box-item">
-                                所有卡项享<el-input
-                                    type="number"
+                                所有卡项享<el-input-number
                                     v-model="formData.discount_right.card"
+                                    :min="0"
+                                    :max="10"
+                                    step-strictly
+                                    :controls="false"
                                     :disabled="!checkList1.includes('2')"
-                                ></el-input
+                                ></el-input-number
                                 >折
                             </div>
                         </el-checkbox>
                         <el-checkbox label="3">
                             <div class="check-box-item">
-                                所有商品享<el-input
-                                    type="number"
+                                所有商品享<el-input-number
                                     v-model="formData.discount_right.goods"
+                                    :min="0"
+                                    :max="10"
+                                    step-strictly
+                                    :controls="false"
                                     :disabled="!checkList1.includes('3')"
-                                ></el-input
+                                ></el-input-number
                                 >折
                             </div>
                         </el-checkbox>
@@ -330,7 +341,7 @@
                 }
             },
             handleSaveForm() {
-                this.$refs['ruleForm'].validate(async (valid) => {
+                this.$refs['ruleForm'].validate(async valid => {
                     if (valid) {
                         const formData = JSON.parse(JSON.stringify(this.formData));
                         // 组装颜色参数
@@ -395,7 +406,7 @@
             },
             handleSaveAdd() {
                 let list = [];
-                this.selectRow.forEach((m) => {
+                this.selectRow.forEach(m => {
                     let obj = {
                         type: m.type,
                         card_id: m.card_id,
@@ -461,6 +472,10 @@
         display: inline;
     }
     .check-box-item .el-input {
+        width: 80px;
+        margin: 0 5px;
+    }
+    .check-box-item .el-input-number {
         width: 80px;
         margin: 0 5px;
     }

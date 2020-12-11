@@ -41,8 +41,8 @@
         <div class="container">
             <el-table :data="tableData" border style="width: 100%">
                 <el-table-column prop="service_name" label="商品" align="center"> </el-table-column>
-                <el-table-column prop="order_no" label="订单编号" align="center"> </el-table-column>
-                <el-table-column prop="source" label="评分" align="center">
+                <el-table-column prop="order_no" label="订单编号" align="center" min-width="200px"> </el-table-column>
+                <el-table-column prop="source" label="评分" align="center" min-width="250px">
                     <template slot-scope="scope">
                         <p class="rate-item rate-item-big">
                             <el-rate v-model="scope.row.service_rate" disabled text-color="#ff9900"></el-rate>

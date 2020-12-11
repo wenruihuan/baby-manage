@@ -6,7 +6,7 @@
             <el-form :model="formData" label-width="130px" class="demo-ruleForm">
                 <el-form-item label="不配送：">
                     <div class="no-distributionList-item" v-for="(item, index) in noDistributionList" :key="index">
-                        <el-checkbox v-model="item.available" @change="handleNoCheck">{{ item.name }}</el-checkbox>
+                        <el-checkbox v-model="item.available">{{ item.name }}</el-checkbox>
                         <div class="remark">
                             <span class="label">说明：</span>
                             <el-input v-model="item.message"></el-input>
@@ -107,9 +107,6 @@
                     const defaultItem = { ...res.data.default_express, ...commonItem, isDefault: true };
                     this.$set(this, 'distributionList', [...[defaultItem], ...res.data.express]);
                 }
-            },
-            handleNoCheck() {
-                this.noDistributionList[0].available = !this.noDistributionList[0].available;
             },
             handleChangeName(type, index) {
                 let item = this[type === '0' ? 'noDistributionList' : 'distributionList'][index];
