@@ -624,7 +624,7 @@
                         &nbsp;&nbsp;&nbsp;
                         <div class="mainColor">
                         <span
-                                class="mainColor editBtn"
+                                class="mainColor editBtn"locationList
                                 v-if="!babyDataItem.babyInfoState && isArchivesQueryAuth"
                                 @click="babyDataItem.babyInfoState = true"
                         >

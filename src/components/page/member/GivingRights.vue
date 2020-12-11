@@ -9,7 +9,7 @@
                 </el-tab-pane>
                 <el-tab-pane :label="userEnd" name="已用完"></el-tab-pane>
             </el-tabs>
-            <div class="contentBox" v-if="activeName === '可使用(0)' || activeName === '可使用'">
+            <div class="contentBox" v-if="activeName === userNum || activeName === '可使用'">
                 <div class="table">
                     <el-table
                             :data="useData"
@@ -153,7 +153,7 @@ export default {
                     name: '赠送权益',
                 }
             ],
-            activeName: '可使用(0)',
+            activeName: '可使用',
             userNum: '可使用(0)',
             timeOutNum: '已过期(0)',
             userEnd: '已用完(0)',
@@ -186,10 +186,9 @@ export default {
                 } else {
                     this.useData.push(m);
                 }});
-
-                this.userEnd = '已用完(' + this.usedUpData.length +')';
-                this.userNum = '可使用(' + this.useData.length +')';
-                this.timeOutNum = '已过期(' + this.overdueData.length +')';
+            this.userEnd = '已用完(' + this.usedUpData.length +')';
+            this.userNum = '可使用(' + this.useData.length +')';
+            this.timeOutNum = '已过期(' + this.overdueData.length +')';
         },
     }
 };

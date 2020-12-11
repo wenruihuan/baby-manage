@@ -698,3 +698,12 @@ export const archivesBabyRecord = query => {
     });
 };
 
+// 7.8.订单-服务确认收款
+    export const worktableConfirmService = query => {
+    return request({
+        url: `/admin/worktable/confirmService`,
+        method: 'post',
+        data: query
+    });
+};
+

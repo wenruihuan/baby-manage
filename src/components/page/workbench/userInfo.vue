@@ -137,41 +137,6 @@ export default {
     },
     data () {
         return {
-            rules: {
-                member_name: [
-                    { required: true, message: '请输入会员名称', trigger: 'blur' }
-                ],
-                member_phone: [
-                    { required: true, message: '请输入手机号', trigger: 'blur' }
-                ],
-                member_no: [
-                    { required: true, message: '请输入会员编号', trigger: 'blur' }
-                ],
-                sex: [
-                    { required: true, message: '请选择性别', trigger: 'change' }
-                ],
-                member_source: [
-                    { required: true, message: '请选择会员来源', trigger: 'change' }
-                ],
-                level_id: [
-                    { required: true, message: '选择会员等级', trigger: 'change' }
-                ],
-                date1: [
-                    { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-                ],
-                date2: [
-                    { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
-                ],
-                type: [
-                    { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-                ],
-                resource: [
-                    { required: true, message: '请选择活动资源', trigger: 'change' }
-                ],
-                desc: [
-                    { required: true, message: '请填写活动形式', trigger: 'blur' }
-                ]
-            },
             singleDialogVisible: false,
             memberdialogVisible: false,
             worktableMemberInfoList: [],
@@ -226,89 +191,6 @@ export default {
         },
         async getWorktableMemberInfo (value) {
             const { data } = await api.worktableMemberInfo({ keyword: value });
-            /*let aaa = [
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-                {
-                    card_count: "1",
-                    head_img: "http://static.zhiyemao.net/0e255ee0afab11eab7b55b5caa932854/2020_10_22_14_31_FgNNvJa6grI8VvC8zEacwdOJoRtR/摄图网_300142486_wx_治疗师腹部施加压力水疗沙龙接受按摩的女人双手按摩女腹部（非企业商用）.jpg",
-                    id: "315728c141a1475680e6519d444a4314",
-                    last_buy: "2020-10-13",
-                    name: "张三",
-                    phone: "15962366666",
-                    total_buy: "1110.94",
-                },
-            ]*/
             this.worktableMemberInfoList = data;
         },
         handleClose () {

@@ -88,27 +88,27 @@
                                                 分钟
                                             </span>
                                         </div>
-                                        <el-button icon="el-icon-plus" @click="showStaffTechnicianDialogVisible(index)"></el-button>
+                                        <el-button class="add" icon="el-icon-plus" @click="showStaffTechnicianDialogVisible(index)"></el-button>
+                                        <div class="rightList">
+                                            <el-select class="width150" v-model="item.right_id" placeholder="请选择">
+                                                <el-option
+                                                        v-for="item in item.rightSelect"
+                                                        :key="item.right_id"
+                                                        :label="item.right_name"
+                                                        :value="item.right_id">
+                                                </el-option>
+                                            </el-select>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <el-select class="width150" v-model="item.recharge_card_id" placeholder="请选择">
+                                                <el-option
+                                                        v-for="item in memberAllRechargeCard"
+                                                        :key="item.id"
+                                                        :label="item.name"
+                                                        :value="item.id">
+                                                </el-option>
+                                            </el-select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="rightList">
-                                    <el-select class="width150" v-model="item.right_id" placeholder="请选择">
-                                        <el-option
-                                            v-for="item in item.rightSelect"
-                                            :key="item.right_id"
-                                            :label="item.right_name"
-                                            :value="item.right_id">
-                                        </el-option>
-                                    </el-select>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;
-                                    <el-select class="width150" v-model="item.recharge_card_id" placeholder="请选择">
-                                        <el-option
-                                            v-for="item in memberAllRechargeCard"
-                                            :key="item.id"
-                                            :label="item.name"
-                                            :value="item.id">
-                                        </el-option>
-                                    </el-select>
                                 </div>
                             </div>
                         </div>
@@ -154,8 +154,8 @@
                     待收款：<span>￥99.00</span>
                 </div>
                 <div class="item">
-                    <el-button>挂单</el-button>
-                    <el-button type="primary" @click="getCashier">收款</el-button>
+                    <el-button @click="getCashier('0')">挂单</el-button>
+                    <el-button type="primary" @click="getCashier('1')">收款</el-button>
                 </div>
             </div>
         </div>
@@ -300,7 +300,7 @@ export default {
         },
     },
     methods: {
-        async getCashier () {
+        async getCashier (state) {
             let consume = [];
             this.consume.forEach(m => {
                 console.log(m.technician);
@@ -314,22 +314,25 @@ export default {
                 })
             });
             let gift = [];
-            this.addServiceList.forEach(m => {
+                this.addServiceList.forEach(m => {
                 gift.push({
                     type: m.type,
                     service_id: m.id,
-                    time: m.time,
+                    time: m.service_time,
                     validity: m.validity
                 });
-            });
-            console.log(gift);
+            });;
             let params = {
                 member_id: this.memberId,
                 consume: consume,
                 gift: gift
             };
             const { data } = await api.worktableHangService(params);
-            // this.$router.push({ path: '/cashier', query: { comeFrom: 'billing', order_id: data.order_id}});
+            if (state === '0') {
+                this.$router.go(0);
+            } else {
+                this.$router.push({ path: '/cashier', query: { comeFrom: 'billing', order_id: data.order_id}});
+            }
         },
         getLink (index) {
             // this.$router.push(`/${link}`);
@@ -569,7 +572,7 @@ export default {
 }
 .billing .billing-content .info-box .consume-list .consume-item{
     background: #F7F8FA;
-    padding: 30px 20px;
+    padding: 30px 20px 2px;
     position: relative;
     margin-bottom: 20px;
 }
@@ -615,8 +618,14 @@ export default {
     justify-content: flex-end;
 }
 .billing .billing-content .info-box .consume-list .consume-item .row-bottom>div .jsitem {
-    width: 40%;
+    width: 150px;
     margin-bottom: 10px;
+}
+.billing .billing-content .info-box .consume-list .consume-item .row-bottom>div .add {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin-right: 15px;
 }
 .billing .billing-content .info-box .consume-list .consume-item .row .name span{
     font-size: 18px;

@@ -87,7 +87,11 @@ export default {
             this.currentPayment = item;
         },
         // 确认收款
-        confirmReceipt () {
+        async confirmReceipt () {
+            let data = {};
+            if (this.comeFrom === 'billing') {
+                data = await api.worktableConfirmService()
+            }
             this.$router.push({ path: '/collectionConfirmation',query: {
                 payment: this.paymentList[this.currentPayment].name,
                 price: this.price,

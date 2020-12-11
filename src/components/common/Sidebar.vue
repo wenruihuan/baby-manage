@@ -59,29 +59,6 @@
                         <span slot="title">{{ item.title }}</span>
                     </el-menu-item>
                 </el-popover>
-                <!-- <template v-if="item.subs">
-                    <el-submenu class="el-submenu0" :index="item.index" :key="item.index">
-                        <template slot="title">
-                            <i :class="item.icon"></i>
-                            <span slot="title">{{ item.title }}</span>
-                        </template>
-                        <template v-for="subItem in item.subs">
-                            <el-submenu class="el-submenu1" v-if="subItem.subs" :index="subItem.index" :key="subItem.index">
-                                <template slot="title">{{ subItem.title }}</template>
-                                <el-menu-item v-for="(threeItem, i) in subItem.subs" :key="i" :index="threeItem.index">{{
-                                    threeItem.title
-                                }}</el-menu-item>
-                            </el-submenu>
-                            <el-menu-item v-else  class="el-submenu1" :index="subItem.index" :key="subItem.index">{{ subItem.title }}</el-menu-item>
-                        </template>
-                    </el-submenu>
-                </template> -->
-                <!-- <template v-else>
-                    <el-menu-item :index="item.index" :key="item.index">
-                        <i :class="item.icon"></i>
-                        <span slot="title">{{ item.title }}</span>
-                    </el-menu-item>
-                </template> -->
             </template>
         </el-menu>
     </div>
@@ -96,12 +73,27 @@
                 activeMenu: '',
                 items: [
                     {
-                        icon: 'el-icon-lx-home',
+                        icon: 'i-gaikuang',
                         index: '/dashboard',
                         title: '概况'
                     },
                     {
-                        icon: 'el-icon-lx-home',
+                        icon: 'i-yuyue',
+                        index: 'AppointmentList',
+                        title: '预约',
+                        subs: [
+                            {
+                                index: '/AppointmentList',
+                                title: '预约列表'
+                            },
+                            {
+                                index: '/EvaluateList',
+                                title: '预约评价'
+                            }
+                        ]
+                    },
+                    {
+                        icon: 'i-dianpu',
                         index: 'Store',
                         title: '店铺',
                         defaultOpen: ['Employee'],
@@ -127,54 +119,9 @@
                         ]
                     },
                     {
-                        icon: 'el-icon-time',
-                        index: 'AppointmentList',
-                        title: '预约',
-                        subs: [
-                            {
-                                index: '/AppointmentList',
-                                title: '预约列表'
-                            },
-                            {
-                                index: '/EvaluateList',
-                                title: '预约评价'
-                            }
-                        ]
-                    },
-                    {
-                        icon: 'el-icon-time',
-                        index: 'MemberList',
-                        title: '会员',
-                        subs: [
-                            {
-                                index: '/memberList',
-                                title: '会员列表'
-                            }
-                        ]
-                    },
-                    {
-                        icon: 'el-icon-tickets',
-                        index: 'OrderList',
-                        title: '订单',
-                        subs: [
-                            {
-                                index: '/orderList',
-                                title: '订单列表'
-                            },
-                            {
-                                index: '/refundList',
-                                title: '退单列表'
-                            },
-                            {
-                                index: '/productOrderList',
-                                title: '商品订单列表'
-                            }
-                        ]
-                    },
-                    {
+                        icon: 'i-shangping',
                         title: '商品',
                         index: 'Goods',
-                        icon: 'el-icon-time',
                         subs: [
                             {
                                 index: '/boxlist',
@@ -195,7 +142,60 @@
                         ]
                     },
                     {
-                        icon: 'el-icon-s-tools',
+                        icon: 'i-dingdan',
+                        index: 'OrderList',
+                        title: '订单',
+                        subs: [
+                            {
+                                index: '/orderList',
+                                title: '订单列表'
+                            },
+                            {
+                                index: '/refundList',
+                                title: '退单列表'
+                            },
+                            {
+                                index: '/productOrderList',
+                                title: '商品订单列表'
+                            }
+                        ]
+                    },
+                    {
+                        icon: 'i-kehu',
+                        index: 'MemberList',
+                        title: '客户',
+                        subs: [
+                            {
+                                index: '/memberList',
+                                title: '会员列表'
+                            }
+                        ]
+                    },
+                    {
+                        icon: 'i-yingxiao',
+                        index: 'FirstAgent',
+                        title: '营销',
+                        subs: [
+                            {
+                                index: '/firstAgent',
+                                title: '一级推广员列表'
+                            },
+                            {
+                                index: '/secondAgent',
+                                title: '二级推广员列表'
+                            },
+                            {
+                                index: '/agentData',
+                                title: '推广员数据'
+                            },
+                            {
+                                index: '/memberPrice',
+                                title: '会员价'
+                            }
+                        ]
+                    },
+                    {
+                        icon: 'i-shezhi',
                         index: 'Setting',
                         title: '设置',
                         defaultOpen: ['MiniProgramSetting', 'CustomerSetting', 'AppointmentSetting'],
@@ -281,29 +281,6 @@
                             //     index: '/collectionConfirmation',
                             //     title: '确认收款'
                             // }
-                        ]
-                    },
-                    {
-                        icon: 'el-icon-present',
-                        index: 'FirstAgent',
-                        title: '营销',
-                        subs: [
-                            {
-                                index: '/firstAgent',
-                                title: '一级推广员列表'
-                            },
-                            {
-                                index: '/secondAgent',
-                                title: '二级推广员列表'
-                            },
-                            {
-                                index: '/agentData',
-                                title: '推广员数据'
-                            },
-                            {
-                                index: '/memberPrice',
-                                title: '会员价'
-                            }
                         ]
                     }
                 ],
@@ -415,5 +392,79 @@
     }
     .menu-popper /deep/ .el-menu {
         border-right: none !important;
+    }
+</style>
+<style>
+    .i-gaikuang{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/ic_equalizer@2x.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
+    }
+    .i-yuyue{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/yuyue_icon.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
+    }
+    .i-yuyue{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/yuyue_icon.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
+    }
+    .i-dianpu{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/dianpu_icon.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
+    }
+    .i-shangping{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/shangping_icon.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
+    }
+    .i-dingdan{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/i-dingdan.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
+    }
+    .i-kehu{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/i-kehu.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
+    }
+    .i-yingxiao{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/i-yingxiao.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
+    }
+    .i-shezhi{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("../../assets/img/i-shezhi.png") no-repeat center;
+        background-size: 100%;
+        margin-right: 10px;
     }
 </style>
