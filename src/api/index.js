@@ -707,6 +707,24 @@ export const archivesBabyRecord = query => {
     });
 };
 
+// 7.9.订单-开卡确认收款
+    export const worktableConfirmCard = query => {
+    return request({
+        url: `/admin/worktable/confirmCard`,
+        method: 'post',
+        data: query
+    });
+};
+
+// 7.7.订单-充值确认收款
+    export const worktableConfirmRecharge = query => {
+    return request({
+        url: `/admin/worktable/confirmRecharge`,
+        method: 'post',
+        data: query
+    });
+};
+
 
 // 10.1.发送验证码
     export const sendCode = query => {

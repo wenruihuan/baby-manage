@@ -13,7 +13,7 @@
                         <div class="grid-content grid-con-1">
                             <i><img src="../../assets/img/ic_account_balance_wallet.png" alt=""></i>
                             <div class="grid-cont-right">
-                                <div class="grid-num">实际收款金额</div>
+                                <div class="grid-num">成交总额</div>
                             </div>
                         </div>
                         <div class="t-data-value">{{indexData.today_total_turnover}}</div>
@@ -25,7 +25,7 @@
                         <div class="grid-content grid-con-1">
                             <i><img src="../../assets/img/ic_account_balance_wallet.png" alt=""></i>
                             <div class="grid-cont-right">
-                                <div class="grid-num">成交客户数</div>
+                                <div class="grid-num">实际收款金额</div>
                             </div>
                         </div>
                         <div class="t-data-value">{{indexData.today_actual_collection}}</div>
@@ -37,7 +37,7 @@
                         <div class="grid-content grid-con-2">
                             <i><img src="../../assets/img/ic_person_add.png" alt=""></i>
                             <div class="grid-cont-right">
-                                <div class="grid-num">新增客户数</div>
+                                <div class="grid-num">实际订单数</div>
                             </div>
                         </div>
                         <div class="t-data-value">{{indexData.today_actual_order}}</div>
@@ -49,7 +49,7 @@
                         <div class="grid-content grid-con-3">
                             <i><img src="../../assets/img/ic_assignment_turned_in.png" alt=""></i>
                             <div class="grid-cont-right">
-                                <div class="grid-num">今日订单数</div>
+                                <div class="grid-num">实际客户数</div>
                             </div>
                         </div>
                         <div class="t-data-value">{{indexData.today_actual_customer}}</div>

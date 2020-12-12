@@ -123,13 +123,19 @@
                 let params = {
                     id: this.id ? this.id : '',
                     ...this.ruleForm,
+                    auths: this.paiping(this.checkedCitiesList)
                 };
-                console.log($('input[type=checkbox]:checked').length);
+                console.log(this.paiping(this.checkedCitiesList));
                 await api.roleSave(params);
                 // this.$router.go(-1);
             },
             handleCancel () {
                 this.$router.go(-1);
+            },
+            paiping (arr) {
+                return arr.reduce((prev,cur)=>{
+                    return prev.concat(Array.isArray(cur)?this.paiping(cur):cur)
+                },[])
             }
         }
     };

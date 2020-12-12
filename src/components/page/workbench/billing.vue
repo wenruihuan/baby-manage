@@ -615,6 +615,7 @@ export default {
 }
 .billing .billing-content .info-box .consume-list .consume-item .row-bottom .rightList{
     display: flex;
+    margin-bottom: 0;
     justify-content: flex-end;
 }
 .billing .billing-content .info-box .consume-list .consume-item .row-bottom>div .jsitem {

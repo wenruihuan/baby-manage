@@ -72,6 +72,7 @@ export default {
     },
     created() {
         this.comeFrom = this.$route.query.comeFrom;
+        this.order_id = this.$route.query.order_id;
         this.getPaymentList();
     },
     methods: {
@@ -89,12 +90,24 @@ export default {
         // 确认收款
         async confirmReceipt () {
             let data = {};
+            let params = {
+                order_id: this.order_id,
+                pay_type_name: this.currentPayment,
+                checkout_price: this.price1,
+            };
             if (this.comeFrom === 'billing') {
-                data = await api.worktableConfirmService()
+                data = await api.worktableConfirmService(params)
+            }
+            if (this.comeFrom === 'recharge') {
+                data = await api.worktableConfirmRecharge(params)
+            }
+            if (this.comeFrom === 'activateCard') {
+                data = await api.worktableConfirmCard(params)
             }
             this.$router.push({ path: '/collectionConfirmation',query: {
                 payment: this.paymentList[this.currentPayment].name,
                 price: this.price,
+                orderId: this.order_id,
                 price1: this.price1
             } })
         },

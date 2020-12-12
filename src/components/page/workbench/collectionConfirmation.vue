@@ -22,14 +22,17 @@
             <div class="operation">
                 <el-button type="primary" v-if="info.price1 > info.price || info.price1 === info.price" @click="getLink">继续开单</el-button>
                 <el-button type="primary" v-else @click="getBack">继续收银</el-button>
-
-                <el-button >查看订单</el-button>
+                <el-button @click="watchOrder">查看订单</el-button>
 
                 <el-button @click="print">打印小票</el-button>
             </div>
-            <div class="orderInfo">
-                <order-info v-if="isShow"></order-info>
-            </div>
+            <el-dialog
+                    title="打印小票"
+                class="orderInfo1"
+                :visible.sync="isShow"
+            >
+                <order-info></order-info>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -50,6 +53,9 @@
             orderInfo
         },
         methods: {
+            watchOrder () {
+                this.$router.push(`/orderDetail/${this.info.orderId}`)
+            },
             print () {
                 this.isShow = true
             },
@@ -67,9 +73,9 @@
 
     .collectionConfirmation {
         width: 100%;
+        min-height: 100vh;
         height: auto;
         background: #fff;
-        padding: 100px 0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -108,9 +114,12 @@
         width: 100%;
     }
     .orderInfo{
-        position: fixed;
-        left: 50%;
-        top: 5%;
-        margin-left: -175px;
+    }
+    .orderInfo1>div{
+    }
+</style>
+<style>
+    .el-dialog{
+        width: 360px;
     }
 </style>
