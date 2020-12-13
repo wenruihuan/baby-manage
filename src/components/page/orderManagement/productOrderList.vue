@@ -10,7 +10,7 @@
             </el-form-item>
             <el-form-item>
               <el-select v-model="inputName">
-                <el-option label="订单编号" value="order_no"></el-option>
+                <el-option label="商品订单编号" value="order_no"></el-option>
                 <el-option label="会员名" value="member_name"></el-option>
                 <el-option label="会员手机号" value="member_phone"></el-option>
                 <el-option label="订单状态" value="order_status"></el-option>
