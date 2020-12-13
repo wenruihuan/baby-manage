@@ -79,26 +79,29 @@
             </div>
             <div class="info-box">
                 <div class="message">
-                    <span>消费明细({{checkedList.length}})</span>
+                    <span>消费明细({{consume.length}})</span>
                     <el-button @click="clearConsumeList">清空</el-button>
                 </div>
                 <div class="consume-list">
-                    <div class="consume-item" v-for="item in checkedList">
+                    <div class="consume-item" v-for="(item, index) in consume">
                         <div>
                             <div class="close" @click="clearConsumeItem(item)"><i class="el-icon-close"></i></div>
                             <div class="row">
                                 <div class="name">
-                                    <span>{{item.name}}</span>
+                                    <span v-if="item.service_time">{{item.name + item.service_time}}分钟</span>
+                                    <span v-else>{{item.name}}</span>
                                 </div>
                                 <el-input-number v-model="item.sort" :min="1" :max="10"></el-input-number>
                                 <div class="price">
-                                    <span>￥{{item.price * item.sort}}</span>
-                                    <el-button @click="clearConsumeList">改价</el-button>
+                                    <span v-if="item.originalOriceState === '0'">￥{{item.price * item.sort}}</span>
+                                    <span v-if="item.originalOriceState === '1'">￥ <el-input class="width85" v-model="item.price" ></el-input></span>
+                                    <el-button v-if="item.originalOriceState === '0'" @click="changePrice(index,'1')">改价</el-button>
+                                    <el-button v-if="item.originalOriceState === '1'" @click="changePrice(index, '0')">保存</el-button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="" @click="cardDialogVisible = true">赠送服务</div>
+                    <div class="mainColor" @click="cardDialogVisible = true">赠送服务</div>
                     <div class="consume-item consume-item1" v-for="item in giveCardDataList">
                         <div>
                             <div class="row">
@@ -110,6 +113,7 @@
                                     <div @click="clearGiveCardDataItem(item)">删除</div>
                                 </div>
                             </div>
+                            <div class="mainColor" @click="serviceDialogVisible = true">赠送服务</div>
                         </div>
                     </div>
                 </div>
@@ -222,13 +226,12 @@
                     discount_card: [], //  discount_card 折扣卡
                     recharge_card: []   //  recharge_card 储值卡
                 },
-                checkedList: [], // 选中的所有数据
+                consume: [], // 选中的所有数据
                 giveCardData: [], //赠送卡列表
                 selectValue: '',
                 tabValue1: '',
                 giveCardDataList: [],
                 listNoPageData: [],
-                consumeList: [],
                 addServiceList: [],
                 cardDataList: [
                     {
@@ -278,9 +281,6 @@
                 immediate: true,
                 deep: true
             },
-            commonBoxSelectList () {
-                this.operationConsumeList();
-            },
         },
         filters: {
             validityFilter (item) {
@@ -306,23 +306,53 @@
             handleSelectionChange (value) {
                 this.giveCardDataList = value;
             },
-            getCashier () {
-                this.$router.push({ path: '/cashier', query: { comeFrom: 'activateCard'}});
+            async getCashier (state) {
+                let consume = [];
+                this.consume.forEach(m => {
+                    consume.push({
+                        type: this.type,
+                        card_id: m.id,
+                        price: m.price,
+                        right_id: m.right_id,
+                        recharge_card_id: m.recharge_card_id,
+                    })
+                });
+                let gift = [];
+                this.addServiceList.forEach(m => {
+                    gift.push({
+                        type: m.type,
+                        service_id: m.id,
+                        time: m.service_time,
+                        validity: m.validity
+                    });
+                });;
+                let params = {
+                    member_id: this.memberId,
+                    consume: consume,
+                    gift: gift
+                };
+                const { data } = await api.worktableHangCard(params);
+                if (state === '0') {
+                    this.$router.go(0);
+                } else {
+                    this.$router.push({ path: '/cashier', query: { comeFrom: 'billing', order_id: data.order_id}});
+                }
             },
             // 选中卡时操作
             selectCardList (item, list) {
                 item.selectState = !item.selectState;
                 this.commonList[list] = this.listData[list].filter(m => {
                     if (m.selectState) {
-                       return item;
+                        this.$set(m, 'originalOriceState', '0');
+                        return item;
                     };
                 });
             },
             // 消费明细 及 待收款总额计算
             operationAllList () {
                 this.totalMoney = 0;
-                this.checkedList = this.commonList.time_card.concat(this.commonList.discount_card, this.commonList.recharge_card);
-                this.checkedList.forEach((m) => {
+                this.consume = this.commonList.time_card.concat(this.commonList.discount_card, this.commonList.recharge_card);
+                this.consume.forEach((m) => {
                     this.totalMoney = m.price*1 + this.totalMoney;
                 })
             },
@@ -383,13 +413,13 @@
                 return data;
             },
             handleChange () {
-                this.consumeList = [];
+                this.consume = [];
             },
             handleClose () {
-                this.consumeList = [];
+                this.consume = [];
             },
             clearConsumeList () {
-                this.consumeList = [];
+                this.consume = [];
             },
             // 选中包厢时操作
             handleBoxSelectList (item) {
@@ -400,27 +430,11 @@
                     };
                 });
             },
-            handleWorktableCommonServiceList (item) {
-                let rightSelect = {};
-                this.setWorktableRightSelect(item.id).then((res) => {
-                    rightSelect = res;
-                });
-                this.commonCardList = this.worktableCommonServiceList.filter(m => {
-                    if(m.selectState) {
-                        m.rightSelect = rightSelect;
-                        return m;
-                    };
-                });
-            },
-            // 包厢和服务选择时数组处理
-            operationConsumeList () {
-                this.consumeList = this.commonCardList.concat(this.commonBoxSelectList);
-            },
             //删除选中明细
             clearConsumeItem (item) {
-                this.consumeList.forEach((m, index) => {
+                this.consume.forEach((m, index) => {
                     if (item.id === m.id) {
-                        this.consumeList.splice(index, 1);
+                        this.consume.splice(index, 1);
                     }
                 });
                 this.worktableCommonServiceList.forEach((m) => {
@@ -428,22 +442,6 @@
                         item.selectState = false;
                     }
                 });
-            },
-            //显示技师弹窗
-            showStaffTechnicianDialogVisible () {
-                this.staffTechnicianDialogVisible = true;
-            },
-            // 设置明细需要技师
-            setStaffTechnician () {
-                this.staffTechnicianDialogVisible = false;
-                this.currentStaffTechnicianSelectList.forEach(m => {
-                    this.staffTechnicianSelectList.forEach(n => {
-                        if (m === n.id) {
-                            this.itemStaffTechnicianSelectList.push(n)
-                        }
-                    })
-                });
-                this.currentStaffTechnicianSelectList = [];
             },
             // 确认赠送服务
             serviceSelectListConfirm () {
@@ -462,6 +460,11 @@
             getLink (index) {
                 // this.$router.push(`/${link}`);
                 this.$emit('getNum', index);
+            },
+            // 改价
+            changePrice (index, state) {
+                this.$set(this.consume[index], 'price', this.consume[index].price);
+                this.$set(this.consume[index], 'originalOriceState', state);
             },
         }
     };

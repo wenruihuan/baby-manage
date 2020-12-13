@@ -186,21 +186,21 @@
             title="添加服务"
             :visible.sync="serviceDialogVisible"
             width="800px">
-            <div class="search" style="margin-bottom: 30px;">
-                <el-select
-                    v-model="memberId1"
-                    placeholder="请选择"
-                    @change="getServiceSelectList1"
-                >
-                    <el-option
-                        v-for="item in serviceKindList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                    >{{item.name}}
-                    </el-option>
-                </el-select>
-            </div>
+            <!--<div class="search" style="margin-bottom: 30px;">-->
+                <!--<el-select-->
+                    <!--v-model="memberId1"-->
+                    <!--placeholder="请选择"-->
+                    <!--@change="getServiceSelectList1"-->
+                <!--&gt;-->
+                    <!--<el-option-->
+                        <!--v-for="item in serviceKindList"-->
+                        <!--:key="item.id"-->
+                        <!--:label="item.name"-->
+                        <!--:value="item.id"-->
+                    <!--&gt;{{item.name}}-->
+                    <!--</el-option>-->
+                <!--</el-select>-->
+            <!--</div>-->
             <el-table
                 ref="multipleTable"
                 :data="serviceSelectList"
@@ -284,7 +284,7 @@ export default {
     },
     created () {
         this.getServiceKind();
-        // this.getServiceSelectList();
+        this.getServiceSelectList1();
         this.getWorktableMemberInfo();
         this.getWorktableCommonService();
         this.getStaffTechnicianSelect();
@@ -350,19 +350,20 @@ export default {
             this.tabOperation2 = ('1' + index);
             this.getServiceSelectList1(item);
         },
-        async getServiceSelectList1 (item) {
-            console.log(item);
-            const { data } = await api.serviceSelectList({ kind_id: item.id });
+        async getServiceSelectList1 () {
+            const { data } = await api.serviceSelectList();
             this.serviceSelectList = data;
         },
         async getWorktableMemberInfo (value) {
             const { data } = await api.worktableMemberInfo({ keyword: value });
             this.worktableMemberInfoList = data;
         },
+        // 3.1.4.获取服务分类列表
         async getServiceKind (value) {
             const { data } = await api.serviceKind({ keyword: value });
             this.serviceKindList = data;
         },
+        // 7.4.常用服务列表
         async getWorktableCommonService (value) {
             const { data } = await api.worktableCommonService({ keyword: value });
             this.worktableCommonServiceList = data.map(m => {
@@ -482,7 +483,6 @@ export default {
                 }
             });
         },
-
         // 改价
         changePrice (index, state) {
             if (state === '0') {

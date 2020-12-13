@@ -266,6 +266,14 @@ export const worktableRightSelect = query => {
         params: query
     });
 };
+// 3.1.13.服务列表
+export const serviceList = query => {
+    return request({
+        url: `/admin/service/list`,
+        method: 'get',
+        params: query
+    });
+};
 // 11.7.获取包厢列表
 export const boxSelectList = query => {
     return request({
@@ -680,6 +688,15 @@ export const archivesBabyRecord = query => {
         data: query
     });
 };
+
+// 7.5.创建订单--开卡
+    export const worktableHangCard= query => {
+    return request({
+        url: `/admin/worktable/hangCard`,
+        method: 'post',
+        data: query
+    });
+};
 // 7.12.创建订单--充值操作
     export const worktableHangRecharge = query => {
     return request({
@@ -689,14 +706,6 @@ export const archivesBabyRecord = query => {
     });
 };
 
-// 7.5.创建订单--开卡
-    export const worktableHangCard = query => {
-    return request({
-        url: `/admin/worktable/hangCard`,
-        method: 'post',
-        data: query
-    });
-};
 
 // 7.8.订单-服务确认收款
     export const worktableConfirmService = query => {

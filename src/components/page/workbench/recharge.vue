@@ -18,7 +18,7 @@
                             </div>
                         </div>
                         <div class="billing-tab-box-content-bottom">
-                            <div class="service-list clearfix">
+                            <div :class="memberId !== '' ? 'service-list clearfix active': 'service-list clearfix'">
                                 <div class="item"
                                      :class="item.selectState ? 'item active' : 'item'"
                                      @click="handleRechargeCardListFn(item)"
@@ -35,11 +35,11 @@
             </div>
             <div class="info-box">
                 <div class="message">
-                    <span>消费明细({{commonRechargeCardList.length}})</span>
+                    <span>消费明细({{consume.length}})</span>
                     <el-button @click="clearConsumeList">清空</el-button>
                 </div>
                 <div class="consume-list">
-                    <div class="consume-item" v-for="item in commonRechargeCardList">
+                    <div class="consume-item" v-for="item in consume">
                         <div>
                             <div class="close" @click="clearConsumeItem(item)"><i class="el-icon-close"></i></div>
                             <div class="row">
@@ -58,7 +58,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="" @click="serviceDialogVisible = true">赠送服务</div>
+                    <div class="mainColor" @click="serviceDialogVisible = true">添加赠送</div>
                     <div class="consume-item consume-item1" v-for="item in addServiceList">
                         <div>
                             <div class="row">
@@ -66,18 +66,20 @@
                                     <span>{{item.name}}</span>
                                 </div>
                                 <div>
-                                    <el-input class="shuru" v-model="item.sort"></el-input>次数
+                                    <el-input class="shuru" v-model="item.sort"></el-input>&nbsp;次数
                                 </div>
                                 <div>
                                     <el-date-picker
+                                            class="width120"
                                             v-model="item.date"
                                             type="date"
                                             placeholder="选择日期">
                                     </el-date-picker>
-                                    前有效
+                                    &nbsp;前有效
                                 </div>
                                 <div @click="clearConsumeServiceItem(item)">删除</div>
                             </div>
+                            <div class="mainColor" @click="serviceDialogVisible = true">赠送服务</div>
                         </div>
                     </div>
                 </div>
@@ -97,31 +99,31 @@
                     待收款：<span>￥{{totalMoney}}</span>
                 </div>
                 <div class="item">
-                    <el-button @click="clearConsumeList">挂单</el-button>
-                    <el-button type="primary" @click="getCashier">收款</el-button>
+                    <el-button @click="getCashier('0')">挂单</el-button>
+                    <el-button type="primary" @click="getCashier('1')">收款</el-button>
                 </div>
             </div>
         </div>
         <el-dialog
                 class="service-dialog"
-                title="添加赠送"
+                title="添加服务"
                 :visible.sync="serviceDialogVisible"
                 width="800px">
-              <!--          <div class="search" style="margin-bottom: 30px;">
-                            <el-select
-                                    v-model="memberId1"
-                                    placeholder="请选择"
-                                    @change="getServiceSelectList1"
-                            >
-                                <el-option
-                                        v-for="item in serviceKindList"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.id"
-                                >{{item.name}}
-                                </el-option>
-                            </el-select>
-                        </div>-->
+            <!--<div class="search" style="margin-bottom: 30px;">-->
+            <!--<el-select-->
+            <!--v-model="memberId1"-->
+            <!--placeholder="请选择"-->
+            <!--@change="getServiceSelectList1"-->
+            <!--&gt;-->
+            <!--<el-option-->
+            <!--v-for="item in serviceKindList"-->
+            <!--:key="item.id"-->
+            <!--:label="item.name"-->
+            <!--:value="item.id"-->
+            <!--&gt;{{item.name}}-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+            <!--</div>-->
             <el-table
                     ref="multipleTable"
                     :data="serviceSelectList"
@@ -132,11 +134,11 @@
                         width="55">
                 </el-table-column>
                 <el-table-column
-                        label="卡名称"
+                        label="服务名称"
                 >
                     <template slot-scope="scope">
                         <img :src="scope.row.img" width="40" height="40" alt="">
-                        {{ scope.row.right_name }}
+                        {{ scope.row.name }}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -182,7 +184,7 @@
                 rechargeCardList: [],
                 commonServiceList: [],
                 handleRechargeCardList: [],
-                commonRechargeCardList: [],
+                consume: [],
                 WorktableMemberAllRechargeCardList: [],
                 currentConsumeList: [],
                 serviceSelectList: [],
@@ -198,6 +200,7 @@
         },
         created () {
             this.setRechargeRight();
+            this.getServiceSelectList1();
             this.getWorktableMemberAllRechargeCard(this.memberId);
             // this.getServiceSelectList();
         },
@@ -214,6 +217,14 @@
             },
         },
         methods: {
+            // 确认赠送服务
+            serviceSelectListConfirm () {
+                console.log(this.$refs.multipleTable.selection);
+                console.log(this.currentServiceList);
+                // this.addServiceList = this.currentServiceList;
+                this.addServiceList = this.$refs.multipleTable.selection;
+                this.serviceDialogVisible = false;
+            },
             // 计算总额
             setTotalMoney () {
                 this.totalMoney = 0;
@@ -222,8 +233,37 @@
                     this.totalMoney = this.totalMoney + m.price1*1 ;
                 })
             },
-            getCashier () {
-                this.$router.push({ path: '/cashier', query: { comeFrom: 'recharge'}});
+            async getCashier (state) {
+                let consume = [];
+                this.consume.forEach(m => {
+                    console.log(m);
+                    consume.push({
+                        type: 'recharge',
+                        card_id: m.id,
+                        price: m.price1,
+                        gift_price: m.gift_price1,
+                    })
+                });
+                let gift = [];
+                this.addServiceList.forEach(m => {
+                    gift.push({
+                        type: m.type,
+                        service_id: m.id,
+                        time: m.service_time,
+                        validity: m.validity
+                    });
+                });;
+                let params = {
+                    member_id: this.memberId,
+                    consume: consume,
+                    gift: gift
+                };
+                const { data } = await api.worktableHangService(params);
+                if (state === '0') {
+                    this.$router.go(0);
+                } else {
+                    this.$router.push({ path: '/cashier', query: { comeFrom: 'billing', order_id: data.order_id}});
+                }
             },
             getInfo (val) {
                 console.log(val);
@@ -237,9 +277,8 @@
                 this.tabOperation2 = ('1' + index);
                 this.getServiceSelectList1(item);
             },
-            async getServiceSelectList1 (item) {
-                console.log(item);
-                const { data } = await api.serviceSelectList({ kind_id: item.id });
+            async getServiceSelectList1 () {
+                const { data } = await api.serviceSelectList();
                 this.serviceSelectList = data;
             },
             // 获取用户的所有充值卡
@@ -273,17 +312,17 @@
             // 选中服务时操作
             handleRechargeCardListFn (item) {
                 item.selectState = !item.selectState;
-                this.commonRechargeCardList = this.rechargeCardList.filter(m => {
+                this.consume = this.rechargeCardList.filter(m => {
                     if(m.selectState) {
                         return m;
                     };
                 });
-                console.log(this.commonRechargeCardList);
+                console.log(this.consume);
 
             },
             // 包厢和服务选择时数组处理
             operationConsumeList () {
-                this.$set(this, 'consumeList', this.commonRechargeCardList);
+                this.$set(this, 'consumeList', this.consume);
             },
             reselectUser () {
                 this.currentMemberInfo = {};
@@ -465,6 +504,12 @@
         right: 10px;
         top: 10px;
     }
+    .billing .billing-content .info-box .consume-list .consume-item .row .item{
+        flex: 1;
+    }
+    .billing .billing-content .info-box .consume-list .consume-item .row .name{
+        width: 250px;
+    }
     .billing .billing-content .info-box .consume-list .consume-item .row{
         display: flex;
         justify-content: space-between;
@@ -532,6 +577,9 @@
         flex-wrap: wrap;
         height: calc( 100vh - 283px);
         overflow-y: auto;
+    }
+    .billing .billing-tab-box-content-bottom .service-list.active{
+        height: calc( 100vh - 330px);
     }
     .billing .billing-tab-box-content-bottom .service-list .item{
         background: #F7F8FA;
