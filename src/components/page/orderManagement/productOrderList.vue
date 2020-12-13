@@ -9,7 +9,7 @@
               <span>多多亲子岁月一店</span>
             </el-form-item>
             <el-form-item>
-              <el-select v-model="inputName">
+              <el-select v-model="inputName" @change="handleChange">
                 <el-option label="商品订单编号" value="order_no"></el-option>
                 <el-option label="会员名" value="member_name"></el-option>
                 <el-option label="会员手机号" value="member_phone"></el-option>
@@ -434,6 +434,13 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+    handleChange() {
+      this.inputValue = ''
+      this.form.order_no = ''
+      this.form.memeber_name = ''
+      this.form.memeber_phone = ''
+      this.form.order_status = ''
     }
   },
   filters: {

@@ -9,7 +9,7 @@
               <el-button type="primary" @click="handleBilling">开单收银</el-button>
             </el-form-item>
             <el-form-item>
-              <el-select v-model="inputName">
+              <el-select v-model="inputName" @change="handleChange">
                 <el-option label="订单编号" value="order_no"></el-option>
                 <el-option label="会员名" value="memeber_name"></el-option>
                 <el-option label="会员手机号" value="memeber_phone"></el-option>
@@ -17,7 +17,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-input v-model="inputValue" prefix-icon="el-icon-search" placeholder="请输入"></el-input>
+              <el-input v-model="inputValue" prefix-icon="el-icon-search" placeholder="请输入" clearable></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSearch">搜索</el-button>
@@ -429,6 +429,13 @@ export default {
     },
     handleBilling() {
       this.$router.push('/workbench')
+    },
+    handleChange() {
+      this.inputValue = ''
+      this.form.order_no = ''
+      this.form.memeber_name = ''
+      this.form.memeber_phone = ''
+      this.form.technician_id = ''
     }
   },
   filters: {
