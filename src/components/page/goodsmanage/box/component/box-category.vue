@@ -82,6 +82,7 @@ export default {
                         type: 'success'
                     });
                     this.getCategoryList();
+                    this.$emit('save');
                 }
             } catch (e) {
                 console.log(`handleAdd error: ${e}`);
@@ -105,6 +106,7 @@ export default {
                             type: 'success'
                         });
                         this.getCategoryList();
+                        this.$emit('save');
                     }
                 } catch (e) {
                     console.log(`handleSecOpera-delete error: ${e}`);
@@ -119,6 +121,7 @@ export default {
                         });
                         this.isAdd = false;
                         this.getCategoryList();
+                        this.$emit('save');
                     }
                 } catch (e) {
                     console.log(`handleSecOpera-edit error: ${e}`);

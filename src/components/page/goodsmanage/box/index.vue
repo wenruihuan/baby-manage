@@ -112,7 +112,7 @@
                 </el-pagination>
             </div>
         </div>
-        <box-category v-if="boxCategoryVisible" ref="boxCategory" />
+        <box-category v-if="boxCategoryVisible" ref="boxCategory" @save="saveKind" />
     </div>
 </template>
 
@@ -249,6 +249,10 @@ export default {
             } catch (e) {
                 console.log(`handlePublish error: ${e}`);
             }
+        },
+
+        saveKind () {
+            this.getCategory();
         }
     }
 };

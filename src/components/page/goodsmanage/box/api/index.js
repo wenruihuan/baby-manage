@@ -68,7 +68,7 @@ export const getCategoryList = query => {
 /* 获取商品分类列表 */
 export const geBoxtCategoryList = query => {
     return request({
-        url: `/admin/box/selectList`,
+        url: `/admin/box/kind`,
         method: 'get',
         params: query
     });
