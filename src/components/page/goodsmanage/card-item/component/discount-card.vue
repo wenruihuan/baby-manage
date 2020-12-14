@@ -1,93 +1,96 @@
 <template>
-    <div class="cika-container">
-        <el-steps :active="activeStep" simple>
-            <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
-            <el-step title="详情介绍" ></el-step>
-        </el-steps>
-        <div v-show="activeStep === 1" class="content-container">
-            <div class="title">
-                <span class="text">卡信息</span>
-            </div>
-            <div class="content">
-                <el-form class="edit-form" ref="boxForm" :model="form" label-width="100px" :rules="rules">
-                    <el-form-item label="名称:" prop="name">
-                        <el-input class="card-input" maxlength="100" v-model="form.name"></el-input>
-                    </el-form-item>
-                    <el-form-item label="售价:" prop="price">
-                        <el-input class="card-input" v-model="form.price">
-                            <template slot="prepend">￥</template>
-                        </el-input>
-                    </el-form-item>
-                    <el-form-item label="权益:" prop="access">
-                        <edit-quanlity v-if="rightsList" :rights-list="rightsList" ref="editQuanlity" @save="saveRights" />
-                    </el-form-item>
-                    <el-form-item label="有效时间:" prop="isInfinity">
-                        <el-radio-group v-model="form.isInfinity" @change="changeValidity">
-                            <el-radio :label="1">永久有效</el-radio>
-                            <el-radio :label="0">
-                                <el-input style="width: 90px" :disabled="form.isInfinity === 1" v-model="form.validity" placeholder="自定义"></el-input>
-                                <span style="margin-left: 5px;">天</span>
-                            </el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item class="show-online" label="网店展示:" prop="is_show">
-                        <el-radio-group v-model="form.is_show">
-                            <el-radio :label="0">不展示</el-radio>
-                            <el-radio class="radio-label1" :label="1">展示</el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                </el-form>
-            </div>
-            <div class="title">
-                <span class="text">卡样式</span>
-            </div>
-            <div class="content">
-                <div class="left">
-                    <p class="card-start">卡片封面</p>
-                    <el-radio-group class="pic-choose" v-model="form.is_custom_cover" @change="changePic">
-                        <el-radio :label="0">默认背景图</el-radio>
-                        <el-radio :label="1">
-                            <span>自定义图片</span>
-                            <el-upload
-                                    :show-file-list="false"
-                                    action="http://up-z0.qiniu.com"
-                                    list-type="picture-card"
-                                    :data="uploadBody"
-                                    :before-upload="beforeUpload"
-                                    :on-success="handleUploadSuccess"
-                            >
-                                <i class="el-icon-plus"></i>
-                            </el-upload>
-                            <p class="tip2">1.网点展示如右图, 请按照该规范制作图片上传</p>
-                            <p class="tip2">2.建议尺寸：750 x 90像素，小于1M</p>
-                        </el-radio>
-                    </el-radio-group>
-                </div>
-                <div class="right">
-                    <div class="img-container">
-                        <img :src="form.img" alt="">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <edit-wechat ref="editWechat" :html="form.intr" v-if="form.intr !== null" v-show="activeStep === 2" />
-        <div class="btn-group">
-            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="nextStep">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
-            <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
-            <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
-            <el-popover
-                    ref="popover"
-                    v-if="activeStep === 2"
-                    placement="top-start"
-                    width="128"
-                    trigger="click"
-            >
-                <div id="SERVICE_QRCODE" class="service-card" style="width: 100%;"></div>
-                <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
-            </el-popover>
-            <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
-        </div>
-    </div>
+   <div>
+       <BreadcrumbList :breadcrumbList="breadcrumbList" />
+       <div class="cika-container">
+           <el-steps :active="activeStep" simple>
+               <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
+               <el-step title="详情介绍" ></el-step>
+           </el-steps>
+           <div v-show="activeStep === 1" class="content-container">
+               <div class="title">
+                   <span class="text">卡信息</span>
+               </div>
+               <div class="content">
+                   <el-form class="edit-form" ref="boxForm" :model="form" label-width="100px" :rules="rules">
+                       <el-form-item label="名称:" prop="name">
+                           <el-input class="card-input" maxlength="100" v-model="form.name"></el-input>
+                       </el-form-item>
+                       <el-form-item label="售价:" prop="price">
+                           <el-input class="card-input" v-model="form.price">
+                               <template slot="prepend">￥</template>
+                           </el-input>
+                       </el-form-item>
+                       <el-form-item label="权益:" prop="access">
+                           <edit-quanlity v-if="rightsList" :rights-list="rightsList" ref="editQuanlity" @save="saveRights" />
+                       </el-form-item>
+                       <el-form-item label="有效时间:" prop="isInfinity">
+                           <el-radio-group v-model="form.isInfinity" @change="changeValidity">
+                               <el-radio :label="1">永久有效</el-radio>
+                               <el-radio :label="0">
+                                   <el-input style="width: 90px" :disabled="form.isInfinity === 1" v-model="form.validity" placeholder="自定义"></el-input>
+                                   <span style="margin-left: 5px;">天</span>
+                               </el-radio>
+                           </el-radio-group>
+                       </el-form-item>
+                       <el-form-item class="show-online" label="网店展示:" prop="is_show">
+                           <el-radio-group v-model="form.is_show">
+                               <el-radio :label="0">不展示</el-radio>
+                               <el-radio class="radio-label1" :label="1">展示</el-radio>
+                           </el-radio-group>
+                       </el-form-item>
+                   </el-form>
+               </div>
+               <div class="title">
+                   <span class="text">卡样式</span>
+               </div>
+               <div class="content">
+                   <div class="left">
+                       <p class="card-start">卡片封面</p>
+                       <el-radio-group class="pic-choose" v-model="form.is_custom_cover" @change="changePic">
+                           <el-radio :label="0">默认背景图</el-radio>
+                           <el-radio :label="1">
+                               <span>自定义图片</span>
+                               <el-upload
+                                       :show-file-list="false"
+                                       action="http://up-z0.qiniu.com"
+                                       list-type="picture-card"
+                                       :data="uploadBody"
+                                       :before-upload="beforeUpload"
+                                       :on-success="handleUploadSuccess"
+                               >
+                                   <i class="el-icon-plus"></i>
+                               </el-upload>
+                               <p class="tip2">1.网点展示如右图, 请按照该规范制作图片上传</p>
+                               <p class="tip2">2.建议尺寸：750 x 90像素，小于1M</p>
+                           </el-radio>
+                       </el-radio-group>
+                   </div>
+                   <div class="right">
+                       <div class="img-container">
+                           <img :src="form.img" alt="">
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <edit-wechat ref="editWechat" :html="form.intr" v-if="form.intr !== null" v-show="activeStep === 2" />
+           <div class="btn-group">
+               <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="nextStep">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
+               <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
+               <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
+               <el-popover
+                       ref="popover"
+                       v-if="activeStep === 2"
+                       placement="top-start"
+                       width="128"
+                       trigger="click"
+               >
+                   <div id="SERVICE_QRCODE" class="service-card" style="width: 100%;"></div>
+                   <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
+               </el-popover>
+               <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
+           </div>
+       </div>
+   </div>
 </template>
 
 <script>
@@ -102,15 +105,18 @@ from '@/components/page/goodsmanage/card-item/api';
 import { getUploadToken } from '@/components/page/goodsmanage/goods/api';
 import { ERR_OK, getQrCode, removeCard, saveDiscount, setPublish } from '../api';
 import QRCode from 'qrcodejs2';
+import BreadcrumbList from '@/components/common/address.vue';
 
 export default {
     components: {
         editQuanlity,
         buyCard,
-        editWechat
+        editWechat,
+        BreadcrumbList
     },
     data () {
         return {
+            breadcrumbList: [],
             activeStep: 1,
             form: {
                 name: '',
@@ -153,6 +159,7 @@ export default {
         this.getDiscountDetail(id);
         this.getUploadToken();
         this.getDefaultImg(id);
+        this.breadcrumbList = [{ name: '添加/编辑卡项' }];
     },
     methods: {
         /* 获取上传图片的token */

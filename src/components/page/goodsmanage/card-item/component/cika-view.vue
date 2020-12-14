@@ -1,54 +1,235 @@
 <template>
-    <div class="cika-view">
-        <div class="top-container" v-if="!isHistory">
-            <el-button type="primary" @click="gotoEdit">编辑</el-button>
-            <el-button @click="setPublish">{{ isPublish ? '上架' : '下架' }}</el-button>
-        </div>
-        <div style="padding: 10px;">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item>卡项列表</el-breadcrumb-item>
-                <el-breadcrumb-item>卡项详情</el-breadcrumb-item>
-                <el-breadcrumb-item v-if="isHistory">历史卡项详情</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
-        <div class="content-container">
-            <div class="top">
-                <div class="left">
-                    <el-card class="box-card-left" shadow="never">
-                        <img class="card-img" :src="defaultPic" alt="">
-                        <ul class="card-detail">
-                            <li>
-                                <span class="key">卡类型:</span>
-                                <span class="val">次卡</span>
-                            </li>
-                            <li v-if="!isHistory">
-                                <span class="key">状态:</span>
-                                <span class="val">{{ isPublish ? '上架' : '下架' }}</span>
-                            </li>
-                            <li>
-                                <span class="key">售价:</span>
-                                <span class="val">￥{{ cardDetail.price }}</span>
-                            </li>
-                            <li>
-                                <span class="key">网店展示:</span>
-                                <span class="val">{{ cardDetail.is_show === 1 ? '展示' : '不展示' }}</span>
-                            </li>
-                            <li>
-                                <span class="key">服务产品:</span>
-                                <span class="val">尚未关联</span>
-                            </li>
-                            <li>
-                                <span class="key">卡包名称:</span>
-                                <span class="val">{{ cardDetail.name }}</span>
-                            </li>
-                        </ul>
-                    </el-card>
+    <div>
+        <BreadcrumbList :breadcrumbList="breadcrumbList" />
+        <div class="cika-view">
+            <div class="top-container" v-if="!isHistory">
+                <el-button type="primary" @click="gotoEdit">编辑</el-button>
+                <el-button @click="setPublish">{{ isPublish ? '上架' : '下架' }}</el-button>
+            </div>
+            <div class="content-container">
+                <div class="top">
+                    <div class="left">
+                        <el-card class="box-card-left" shadow="never">
+                            <img class="card-img" :src="defaultPic" alt="">
+                            <ul class="card-detail">
+                                <li>
+                                    <span class="key">卡类型:</span>
+                                    <span class="val">次卡</span>
+                                </li>
+                                <li v-if="!isHistory">
+                                    <span class="key">状态:</span>
+                                    <span class="val">{{ isPublish ? '上架' : '下架' }}</span>
+                                </li>
+                                <li>
+                                    <span class="key">售价:</span>
+                                    <span class="val">￥{{ cardDetail.price }}</span>
+                                </li>
+                                <li>
+                                    <span class="key">网店展示:</span>
+                                    <span class="val">{{ cardDetail.is_show === 1 ? '展示' : '不展示' }}</span>
+                                </li>
+                                <li>
+                                    <span class="key">服务产品:</span>
+                                    <span class="val">尚未关联</span>
+                                </li>
+                                <li>
+                                    <span class="key">卡包名称:</span>
+                                    <span class="val">{{ cardDetail.name }}</span>
+                                </li>
+                            </ul>
+                        </el-card>
+                    </div>
+                    <div class="right">
+                        <el-tabs type="border-card">
+                            <el-tab-pane label="卡项权益">
+                                <el-table
+                                        :data="cardDetail.right || []"
+                                >
+                                    <el-table-column prop="right_name" label="适用内容"></el-table-column>
+                                    <el-table-column prop="time" label="优惠规则">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.time }}次
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column header-align="right" align="right" prop="validity" label="有效期">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.validity }}天
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-tab-pane>
+                            <el-tab-pane label="赠送权益">
+                                <el-table
+                                        :data="cardDetail.gifts || []"
+                                >
+                                    <el-table-column prop="right_name" label="适用内容"></el-table-column>
+                                    <el-table-column prop="time" label="优惠规则">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.time }}次
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column header-align="right" align="right" prop="validity" label="有效期">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.validity }}天
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
                 </div>
-                <div class="right">
-                    <el-tabs type="border-card">
+                <div class="bottom">
+                    <el-tabs type="border-card" v-model="activeName" @tab-click="handleTabClick">
+                        <el-tab-pane :label="`已售(${ hasSellTotal })`" name="hasSold">
+                            <div class="search-container">
+                                <el-input
+                                        class="search-input"
+                                        placeholder="请输入客户手机号"
+                                        prefix-icon="el-icon-search"
+                                        v-model="searchVal">
+                                </el-input>
+                                <el-button class="search-btn" @click="handleSearch">搜索</el-button>
+                            </div>
+                            <el-table
+                                    :data="hasSellList"
+                                    @selection-change="handleSelectionChange"
+                            >
+                                <el-table-column type="selection" width="55"></el-table-column>
+                                <el-table-column prop="name" label="卡项名称"></el-table-column>
+                                <el-table-column prop="invalidName" label="状态">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.invalidName }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="validity" label="有效期">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.validity }}天
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="quanlity" label="权益">
+                                    <template slot-scope="scope">
+                                        <p>使用：{{ scope.row.rights_count }}项</p>
+                                        <p>赠送：{{ scope.row.gifts_count }}项</p>
+                                        <p>剩余：{{ scope.row.available_time }}次</p>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="quanlity" label="购买人">
+                                    <template slot-scope="scope">
+                                        <p>姓名：{{ scope.row.member && scope.row.member.member_name }}</p>
+                                        <p>{{ scope.row.member && scope.row.member.level_name }}</p>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="create_time" label="购买时间">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.create_time }}
+                                        <el-button type="text" @click="gotoorderDetail(scope.row)">查看订单详情</el-button>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="order" label="实付金">
+                                    <template slot-scope="scope">
+                                        ￥{{ scope.row.order && scope.row.order.total_price }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column>
+                                    <template slot-scope="scope">
+                                        <el-button type="text" @click="hanldeCardView(scope.row, scope.$index)">查看卡详情</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="pagination-cont">
+                                <div class="tool-btn">
+                                    <el-button :disabled="selection.length <= 0" @click="shixiao">使失效</el-button>
+                                    <el-button :disabled="selection.length <= 0" @click="updateExpire">修改有效期</el-button>
+                                </div>
+                                <el-pagination
+                                        :current-page="curPage2"
+                                        :page-sizes="[10, 20, 100, 200]"
+                                        :page-size="100"
+                                        layout="total, sizes, prev, pager, next, jumper"
+                                        :total="hasSellTotal"
+                                        @current-change="handleCurrentChange1"
+                                >
+                                </el-pagination>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="历史卡项" v-if="!isHistory" name="history">
+                            <el-table
+                                    :data="historyList"
+                            >
+                                <el-table-column prop="create_time" label="修改时间"></el-table-column>
+                                <el-table-column prop="editer_name" label="修改人"></el-table-column>
+                                <el-table-column prop="name" label="卡项名称"></el-table-column>
+                                <el-table-column prop="validity" label="有效期">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.validity }}天
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="price" label="售价"></el-table-column>
+                                <el-table-column prop="sell_count" label="销量"></el-table-column>
+                                <el-table-column>
+                                    <template slot-scope="scope">
+                                        <el-button type="text" @click="hanldeCardView(scope.row, scope.$index)">历史卡项详情</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="pagination-cont">
+                                <div class="tool-btn">
+                                </div>
+                                <el-pagination
+                                        :current-page="curPage2"
+                                        :page-sizes="[10, 20, 100, 200]"
+                                        :page-size="100"
+                                        layout="total, sizes, prev, pager, next, jumper"
+                                        :total="historyListTotal"
+                                        @current-change="handleCurrentChange2"
+                                >
+                                </el-pagination>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
+            <el-dialog
+                    custom-class="SPECIAL-DIALOG1"
+                    v-if="dialogVisible"
+                    :visible.sync="dialogVisible"
+                    width="40%"
+            >
+                <div class="img-container">
+                    <div>
+                        <span class="title">{{ cardItem.name }}</span>
+                        <el-tag class="tag">{{ cardItem.unlimit === 0 ? '有限次卡' : '无限次卡' }}</el-tag>
+                    </div>
+                    <div class="content-cont">
+                        <div class=" row">
+                            <div class="item">
+                                <span>卡编号：</span>
+                                <span>{{ cardItem.card_no }}</span>
+                            </div>
+                            <div class="item">
+                                <span>卡售价：</span>
+                                <span>￥{{ cardItem.price }}</span>
+                            </div>
+                        </div>
+                        <div class=" row">
+                            <div class="item">
+                                <span>有效期：</span>
+                                <span>{{ cardItem.validity }}天</span>
+                            </div>
+                            <div class="item">
+                                <span>适用门店：</span>
+                                <span>{{ cardItem.shop_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-container">
+                    <div class="el-breadcrumb-container">
+                    </div>
+                    <el-tabs type="border-card" @tab-click="handleTabClick">
                         <el-tab-pane label="卡项权益">
                             <el-table
-                                :data="cardDetail.right || []"
+                                    :data="cardItem.right || []"
                             >
                                 <el-table-column prop="right_name" label="适用内容"></el-table-column>
                                 <el-table-column prop="time" label="优惠规则">
@@ -56,7 +237,7 @@
                                         {{ scope.row.time }}次
                                     </template>
                                 </el-table-column>
-                                <el-table-column header-align="right" align="right" prop="validity" label="有效期">
+                                <el-table-column prop="validity" label="有效期">
                                     <template slot-scope="scope">
                                         {{ scope.row.validity }}天
                                     </template>
@@ -65,7 +246,7 @@
                         </el-tab-pane>
                         <el-tab-pane label="赠送权益">
                             <el-table
-                                :data="cardDetail.gifts || []"
+                                    :data="cardItem.gifts || []"
                             >
                                 <el-table-column prop="right_name" label="适用内容"></el-table-column>
                                 <el-table-column prop="time" label="优惠规则">
@@ -73,7 +254,7 @@
                                         {{ scope.row.time }}次
                                     </template>
                                 </el-table-column>
-                                <el-table-column header-align="right" align="right" prop="validity" label="有效期">
+                                <el-table-column prop="validity" label="有效期">
                                     <template slot-scope="scope">
                                         {{ scope.row.validity }}天
                                     </template>
@@ -82,234 +263,49 @@
                         </el-tab-pane>
                     </el-tabs>
                 </div>
-            </div>
-            <div class="bottom">
-                <el-tabs type="border-card" v-model="activeName" @tab-click="handleTabClick">
-                    <el-tab-pane :label="`已售(${ hasSellTotal })`" name="hasSold">
-                        <div class="search-container">
-                            <el-input
-                                class="search-input"
-                                placeholder="请输入客户手机号"
-                                prefix-icon="el-icon-search"
-                                v-model="searchVal">
-                            </el-input>
-                            <el-button class="search-btn" @click="handleSearch">搜索</el-button>
-                        </div>
-                        <el-table
-                            :data="hasSellList"
-                            @selection-change="handleSelectionChange"
-                        >
-                            <el-table-column type="selection" width="55"></el-table-column>
-                            <el-table-column prop="name" label="卡项名称"></el-table-column>
-                            <el-table-column prop="invalidName" label="状态">
-                                <template slot-scope="scope">
-                                    {{ scope.row.invalidName }}
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="validity" label="有效期">
-                                <template slot-scope="scope">
-                                    {{ scope.row.validity }}天
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="quanlity" label="权益">
-                                <template slot-scope="scope">
-                                    <p>使用：{{ scope.row.rights_count }}项</p>
-                                    <p>赠送：{{ scope.row.gifts_count }}项</p>
-                                    <p>剩余：{{ scope.row.available_time }}次</p>
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="quanlity" label="购买人">
-                                <template slot-scope="scope">
-                                    <p>姓名：{{ scope.row.member && scope.row.member.member_name }}</p>
-                                    <p>{{ scope.row.member && scope.row.member.level_name }}</p>
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="create_time" label="购买时间">
-                                <template slot-scope="scope">
-                                    {{ scope.row.create_time }}
-                                    <el-button type="text" @click="gotoorderDetail(scope.row)">查看订单详情</el-button>
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="order" label="实付金">
-                                <template slot-scope="scope">
-                                    ￥{{ scope.row.order && scope.row.order.total_price }}
-                                </template>
-                            </el-table-column>
-                            <el-table-column>
-                                <template slot-scope="scope">
-                                    <el-button type="text" @click="hanldeCardView(scope.row, scope.$index)">查看卡详情</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                        <div class="pagination-cont">
-                            <div class="tool-btn">
-                                <el-button :disabled="selection.length <= 0" @click="shixiao">使失效</el-button>
-                                <el-button :disabled="selection.length <= 0" @click="updateExpire">修改有效期</el-button>
-                            </div>
-                            <el-pagination
-                                :current-page="curPage2"
-                                :page-sizes="[10, 20, 100, 200]"
-                                :page-size="100"
-                                layout="total, sizes, prev, pager, next, jumper"
-                                :total="hasSellTotal"
-                                @current-change="handleCurrentChange1"
-                            >
-                            </el-pagination>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="历史卡项" v-if="!isHistory" name="history">
-                        <el-table
-                            :data="historyList"
-                        >
-                            <el-table-column prop="create_time" label="修改时间"></el-table-column>
-                            <el-table-column prop="editer_name" label="修改人"></el-table-column>
-                            <el-table-column prop="name" label="卡项名称"></el-table-column>
-                            <el-table-column prop="validity" label="有效期">
-                                <template slot-scope="scope">
-                                    {{ scope.row.validity }}天
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="price" label="售价"></el-table-column>
-                            <el-table-column prop="sell_count" label="销量"></el-table-column>
-                            <el-table-column>
-                                <template slot-scope="scope">
-                                    <el-button type="text" @click="hanldeCardView(scope.row, scope.$index)">历史卡项详情</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                        <div class="pagination-cont">
-                            <div class="tool-btn">
-                            </div>
-                            <el-pagination
-                                :current-page="curPage2"
-                                :page-sizes="[10, 20, 100, 200]"
-                                :page-size="100"
-                                layout="total, sizes, prev, pager, next, jumper"
-                                :total="historyListTotal"
-                                @current-change="handleCurrentChange2"
-                            >
-                            </el-pagination>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
-            </div>
-        </div>
-        <el-dialog
-            custom-class="SPECIAL-DIALOG1"
-            v-if="dialogVisible"
-            :visible.sync="dialogVisible"
-            width="40%"
-        >
-            <div class="img-container">
-                <div>
-                    <span class="title">{{ cardItem.name }}</span>
-                    <el-tag class="tag">{{ cardItem.unlimit === 0 ? '有限次卡' : '无限次卡' }}</el-tag>
-                </div>
-                <div class="content-cont">
-                   <div class=" row">
-                       <div class="item">
-                           <span>卡编号：</span>
-                           <span>{{ cardItem.card_no }}</span>
-                       </div>
-                       <div class="item">
-                           <span>卡售价：</span>
-                           <span>￥{{ cardItem.price }}</span>
-                       </div>
-                   </div>
-                    <div class=" row">
-                        <div class="item">
-                            <span>有效期：</span>
-                            <span>{{ cardItem.validity }}天</span>
-                        </div>
-                        <div class="item">
-                            <span>适用门店：</span>
-                            <span>{{ cardItem.shop_name }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-container">
-                <div class="el-breadcrumb-container">
-                </div>
-                <el-tabs type="border-card" @tab-click="handleTabClick">
-                    <el-tab-pane label="卡项权益">
-                        <el-table
-                            :data="cardItem.right || []"
-                        >
-                            <el-table-column prop="right_name" label="适用内容"></el-table-column>
-                            <el-table-column prop="time" label="优惠规则">
-                                <template slot-scope="scope">
-                                    {{ scope.row.time }}次
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="validity" label="有效期">
-                                <template slot-scope="scope">
-                                    {{ scope.row.validity }}天
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-tab-pane>
-                    <el-tab-pane label="赠送权益">
-                        <el-table
-                            :data="cardItem.gifts || []"
-                        >
-                            <el-table-column prop="right_name" label="适用内容"></el-table-column>
-                            <el-table-column prop="time" label="优惠规则">
-                                <template slot-scope="scope">
-                                    {{ scope.row.time }}次
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="validity" label="有效期">
-                                <template slot-scope="scope">
-                                    {{ scope.row.validity }}天
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-tab-pane>
-                </el-tabs>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="修改有效期"
-            :visible.sync="isExpireShow"
-            width="40%"
-        >
-            <el-form :model="expireForm">
-                <el-form-item label="有效期至:" prop="validity">
-                    <el-radio-group v-model="isInifinate">
-                        <el-radio :label="-1">无限次</el-radio>
-                        <el-radio :label="0">
-                            <el-input
-                                    v-model="expireForm.validity"
-                                    :disabled="isInifinate === -1"
-                                    placeholder="请填写有效期">
-                                <template slot="append">
-                                    天
-                                </template>
-                            </el-input>
-                        </el-radio>
-                    </el-radio-group>
-                </el-form-item>
-            </el-form>
-            <span slot="footer">
+            </el-dialog>
+            <el-dialog
+                    title="修改有效期"
+                    :visible.sync="isExpireShow"
+                    width="40%"
+            >
+                <el-form :model="expireForm">
+                    <el-form-item label="有效期至:" prop="validity">
+                        <el-radio-group v-model="isInifinate">
+                            <el-radio :label="-1">无限次</el-radio>
+                            <el-radio :label="0">
+                                <el-input
+                                        v-model="expireForm.validity"
+                                        :disabled="isInifinate === -1"
+                                        placeholder="请填写有效期">
+                                    <template slot="append">
+                                        天
+                                    </template>
+                                </el-input>
+                            </el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer">
                 <el-button @click="isExpireShow = false">取 消</el-button>
                 <el-button type="primary" @click="saveExpire">确 定</el-button>
             </span>
-        </el-dialog>
-        <el-dialog
-            title="使失效"
-            :visible.sync="isValidShow"
-            width="40%"
-        >
-            <div>
-                <p>确认使选中的卡失效？</p>
-                <p style="color: #dddddd;">*仅可对状态对“使用中”的卡有效</p>
-            </div>
-            <span slot="footer">
+            </el-dialog>
+            <el-dialog
+                    title="使失效"
+                    :visible.sync="isValidShow"
+                    width="40%"
+            >
+                <div>
+                    <p>确认使选中的卡失效？</p>
+                    <p style="color: #dddddd;">*仅可对状态对“使用中”的卡有效</p>
+                </div>
+                <span slot="footer">
                 <el-button @click="isValidShow = false">取 消</el-button>
                 <el-button type="primary" @click="saveValid">确 定</el-button>
             </span>
-        </el-dialog>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -326,8 +322,12 @@ import {
 } from '@/components/page/goodsmanage/card-item/api';
 import { CARD__KIND_GRP, CARD_STATUS_MAP, gettime } from '@/components/page/goodsmanage/utils';
 import moment from 'moment';
+import BreadcrumbList from '@/components/common/address.vue';
 
 export default {
+    components: {
+        BreadcrumbList
+    },
     data () {
         return {
             cardDetail: {},
@@ -350,7 +350,8 @@ export default {
             validForm: {},
             isInifinate: -1,
             isHistory: false,
-            activeName: 'hasSold'
+            activeName: 'hasSold',
+            breadcrumbList: []
         };
     },
     created() {
@@ -363,6 +364,7 @@ export default {
         }
         this.getDefaultImg();
         this.getSoldList();
+        this.breadcrumbList = this.isHistory ? [{ name: '历史卡项详情' }] : [{ name: '卡项详情' }];
     },
     computed: {
         cardId () {
@@ -379,6 +381,7 @@ export default {
             }
             this.getDefaultImg();
             this.getSoldList();
+            this.breadcrumbList = this.isHistory ? [{ name: '历史卡项详情' }] : [{ name: '卡项详情' }];
         }
     },
     methods: {

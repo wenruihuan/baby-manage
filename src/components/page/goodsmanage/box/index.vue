@@ -1,119 +1,122 @@
 <template>
-    <div class="box-container">
-        <div class="top-container">
-            <div class="tool">
-                <div class="btn-group">
-                    <el-button type="primary" @click="addBox">添加包厢</el-button>
-                    <el-button @click="handleAddCategory">管理分类</el-button>
+    <div>
+        <BreadcrumbList :breadcrumbList="breadcrumbList" />
+        <div class="box-container">
+            <div class="top-container">
+                <div class="tool">
+                    <div class="btn-group">
+                        <el-button type="primary" @click="addBox">添加包厢</el-button>
+                        <el-button @click="handleAddCategory">管理分类</el-button>
+                    </div>
+                    <div class="search-container">
+                        <el-input
+                                placeholder="请输入名称"
+                                prefix-icon="el-icon-search"
+                                v-model="searchVal">
+                        </el-input>
+                        <el-button class="search-btn" @click="handleSearch">搜索</el-button>
+                    </div>
                 </div>
-                <div class="search-container">
-                    <el-input
-                            placeholder="请输入名称"
-                            prefix-icon="el-icon-search"
-                            v-model="searchVal">
-                    </el-input>
-                    <el-button class="search-btn" @click="handleSearch">搜索</el-button>
+                <div class="select-container">
+                    <span class="key">选择分类：</span>
+                    <el-select class="category-select" v-model="selected" placeholder="选择包厢分类" @change="selectCategory">
+                        <el-option
+                                v-for="item in categoryList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
                 </div>
             </div>
-            <div class="select-container">
-                <span class="key">选择分类：</span>
-                <el-select class="category-select" v-model="selected" placeholder="选择包厢分类" @change="selectCategory">
-                    <el-option
-                        v-for="item in categoryList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                    </el-option>
-                </el-select>
-            </div>
-        </div>
-        <div class="table-container">
-            <el-table
-                    :data="tableData"
-                    stripe
-                    style="width: 100%"
-                    @selection-change="selection => this.selection = selection"
-            >
-                <el-table-column
-                        type="selection"
-                        width="55">
-                </el-table-column>
-                <el-table-column
-                        prop="kind_name"
-                        label="包厢">
-                    <template slot-scope="scope">
-                        <div class="box-column">
-                            <img class="img-wrapper" :src="scope.row.img && scope.row.img.split(',')[0]" alt="">
-                            <span class="category-text">{{ scope.row.name }}</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        prop="kind_name"
-                        label="分类">
-                </el-table-column>
-                <el-table-column
-                        prop="people_count"
-                        label="人数">
-                </el-table-column>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <el-button
-                                size="mini"
-                                type="text"
-                                class="operate-btn"
-                                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button
-                                size="mini"
-                                type="text"
-                                class="operate-btn"
-                                @click="handleView(scope.$index, scope.row)">详情</el-button>
-                        <el-popover
-                                popper-class="POPOVER1"
-                                placement="top-start"
-                                width="80"
-                                trigger="click"
-                        >
-                            <el-button @click="handlePublish(scope.row.id, scope.row.is_publish == '1' ? '0' : '1')">{{ scope.row.is_publish == '1' ? '下架' : '上架' }}</el-button>
+            <div class="table-container">
+                <el-table
+                        :data="tableData"
+                        stripe
+                        style="width: 100%"
+                        @selection-change="selection => this.selection = selection"
+                >
+                    <el-table-column
+                            type="selection"
+                            width="55">
+                    </el-table-column>
+                    <el-table-column
+                            prop="kind_name"
+                            label="包厢">
+                        <template slot-scope="scope">
+                            <div class="box-column">
+                                <img class="img-wrapper" :src="scope.row.img && scope.row.img.split(',')[0]" alt="">
+                                <span class="category-text">{{ scope.row.name }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="kind_name"
+                            label="分类">
+                    </el-table-column>
+                    <el-table-column
+                            prop="people_count"
+                            label="人数">
+                    </el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
                             <el-button
-                                    style="margin-left: 8px;"
-                                    slot="reference"
                                     size="mini"
                                     type="text"
+                                    class="operate-btn"
+                                    @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                            <el-button
+                                    size="mini"
+                                    type="text"
+                                    class="operate-btn"
+                                    @click="handleView(scope.$index, scope.row)">详情</el-button>
+                            <el-popover
+                                    popper-class="POPOVER1"
+                                    placement="top-start"
+                                    width="80"
+                                    trigger="click"
                             >
-                                <i class="el-icon-more"></i>
-                            </el-button>
-                        </el-popover>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="page-container">
-                <el-popover
-                        popper-class="POPOVER1"
-                        placement="top-start"
-                        width="80"
-                        trigger="click"
-                >
-                    <div>
-                        <el-button style="margin-top: 5px;" @click="handlePublish('', '1')">上架</el-button>
-                        <el-button style="margin-top: 5px;" @click="handlePublish('', '0')">下架</el-button>
-                        <el-button style="margin-top: 5px;" @click="removeBox">删除</el-button>
-                    </div>
-                    <el-button :disabled="selection.length <= 0" slot="reference" type="primary">批量操作</el-button>
-                </el-popover>
-                <el-pagination
-                        :current-page="curPage"
-                        :page-sizes="[10, 20, 100, 200]"
-                        :page-size="100"
-                        background
-                        layout="total, prev, pager, next, jumper"
-                        :total="tableData.length"
-                        @current-change="handleCurrentChange"
-                >
-                </el-pagination>
+                                <el-button @click="handlePublish(scope.row.id, scope.row.is_publish == '1' ? '0' : '1')">{{ scope.row.is_publish == '1' ? '下架' : '上架' }}</el-button>
+                                <el-button
+                                        style="margin-left: 8px;"
+                                        slot="reference"
+                                        size="mini"
+                                        type="text"
+                                >
+                                    <i class="el-icon-more"></i>
+                                </el-button>
+                            </el-popover>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="page-container">
+                    <el-popover
+                            popper-class="POPOVER1"
+                            placement="top-start"
+                            width="80"
+                            trigger="click"
+                    >
+                        <div>
+                            <el-button style="margin-top: 5px;" @click="handlePublish('', '1')">上架</el-button>
+                            <el-button style="margin-top: 5px;" @click="handlePublish('', '0')">下架</el-button>
+                            <el-button style="margin-top: 5px;" @click="removeBox">删除</el-button>
+                        </div>
+                        <el-button :disabled="selection.length <= 0" slot="reference" type="primary">批量操作</el-button>
+                    </el-popover>
+                    <el-pagination
+                            :current-page="curPage"
+                            :page-sizes="[10, 20, 100, 200]"
+                            :page-size="100"
+                            background
+                            layout="total, prev, pager, next, jumper"
+                            :total="tableData.length"
+                            @current-change="handleCurrentChange"
+                    >
+                    </el-pagination>
+                </div>
             </div>
+            <box-category v-if="boxCategoryVisible" ref="boxCategory" @save="saveKind" />
         </div>
-        <box-category v-if="boxCategoryVisible" ref="boxCategory" @save="saveKind" />
     </div>
 </template>
 
@@ -121,10 +124,13 @@
 import { ERR_OK, getBoxList, geBoxtCategoryList, removeBox, setPublish } from './api';
 import BoxCategory from './component/box-category';
 import EditView from './component/edit-view';
+import BreadcrumbList from '@/components/common/address.vue';
+
 export default {
     components: {
         BoxCategory,
-        EditView
+        EditView,
+        BreadcrumbList
     },
     data () {
         return {
@@ -141,7 +147,10 @@ export default {
             curPage: 1,
             selection: [],
             boxCategoryVisible: false,
-            isEditViewShow: false
+            isEditViewShow: false,
+            breadcrumbList: [
+                { name: '包厢列表' }
+            ]
         };
     },
     created () {

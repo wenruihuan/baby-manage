@@ -1,69 +1,72 @@
 <template>
-    <div class="edit-view">
-        <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
-            <el-form-item label="名称:" prop="name">
-                <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
-                <span v-else>{{ form.name }}</span>
-            </el-form-item>
-            <el-form-item label="编号:" prop="box_no">
-                <el-input v-if="isEdit" v-model="form.box_no" placehodler="例如：bx001"></el-input>
-                <span v-else>{{ form.box_no }}</span>
-            </el-form-item>
-            <el-form-item label="分类:" prop="kind_id">
-                <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
-                    <el-option
-                        v-for="item in categoryList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                    </el-option>
-                </el-select>
-                <span v-else>{{ form.kind_name }}</span>
-                <p class="tips" v-if="isEdit">一个商品对应一个分类，用于后台设置</p>
-                <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理包厢分类</el-button>
-            </el-form-item>
-            <el-form-item label="图片:" prop="img">
-                <el-upload
-                    v-if="isEdit"
-                    multiple
-                    action="http://up-z0.qiniu.com"
-                    list-type="picture-card"
-                    :data="uploadBody"
-                    :before-upload="beforeUpload"
-                    :on-success="handleUploadSuccess"
-                    :before-remove="() => false"
-                    :disabled="!isEdit"
-                    :show-file-list="false"
-                >
-                    <i class="el-icon-plus"></i>
-                </el-upload>
-                <ul class="img-list">
-                    <li v-for="(item, index) in files"
-                        :key="index"
-                        class="img-item"
+    <div>
+        <BreadcrumbList :breadcrumbList="breadcrumbList" />
+        <div class="edit-view">
+            <el-form class="edit-form" ref="boxForm" :model="form" label-width="80px" :rules="isEdit ? rules : {}">
+                <el-form-item label="名称:" prop="name">
+                    <el-input v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
+                    <span v-else>{{ form.name }}</span>
+                </el-form-item>
+                <el-form-item label="编号:" prop="box_no">
+                    <el-input v-if="isEdit" v-model="form.box_no" placehodler="例如：bx001"></el-input>
+                    <span v-else>{{ form.box_no }}</span>
+                </el-form-item>
+                <el-form-item label="分类:" prop="kind_id">
+                    <el-select v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择包厢分类">
+                        <el-option
+                                v-for="item in categoryList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <span v-else>{{ form.kind_name }}</span>
+                    <p class="tips" v-if="isEdit">一个商品对应一个分类，用于后台设置</p>
+                    <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理包厢分类</el-button>
+                </el-form-item>
+                <el-form-item label="图片:" prop="img">
+                    <el-upload
+                            v-if="isEdit"
+                            multiple
+                            action="http://up-z0.qiniu.com"
+                            list-type="picture-card"
+                            :data="uploadBody"
+                            :before-upload="beforeUpload"
+                            :on-success="handleUploadSuccess"
+                            :before-remove="() => false"
+                            :disabled="!isEdit"
+                            :show-file-list="false"
                     >
-                        <span class="el-icon-circle-close remove-icon" @click="removeImg(index)"></span>
-                        <img :src="item" alt=''>
-                    </li>
-                </ul>
-            </el-form-item>
-            <el-form-item label="人数:" prop="people_count">
-                <el-input v-if="isEdit" v-model="form.people_count"></el-input>
-                <span v-else>{{ form.people_count }}</span>
-            </el-form-item>
-            <el-form-item label="价格:" prop="price">
-                <el-input v-if="isEdit" v-model="form.price">
-                    <template slot="prepend">￥</template>
-                </el-input>
-                <span v-else>{{ form.price }}</span>
-            </el-form-item>
-        </el-form>
-        <div class="btn-group" v-if="isEdit">
-            <el-button type="primary" @click="handleSave">保存</el-button>
-            <el-button @click="setPublishStatus">{{ this.isPublish ? '下架' : '上架' }}</el-button>
-            <el-button v-if="this.form.id" @click="handleRemove">删除</el-button>
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <ul class="img-list">
+                        <li v-for="(item, index) in files"
+                            :key="index"
+                            class="img-item"
+                        >
+                            <span class="el-icon-circle-close remove-icon" @click="removeImg(index)"></span>
+                            <img :src="item" alt=''>
+                        </li>
+                    </ul>
+                </el-form-item>
+                <el-form-item label="人数:" prop="people_count">
+                    <el-input v-if="isEdit" v-model="form.people_count"></el-input>
+                    <span v-else>{{ form.people_count }}</span>
+                </el-form-item>
+                <el-form-item label="价格:" prop="price">
+                    <el-input v-if="isEdit" v-model="form.price">
+                        <template slot="prepend">￥</template>
+                    </el-input>
+                    <span v-else>{{ form.price }}</span>
+                </el-form-item>
+            </el-form>
+            <div class="btn-group" v-if="isEdit">
+                <el-button type="primary" @click="handleSave">保存</el-button>
+                <el-button @click="setPublishStatus">{{ this.isPublish ? '下架' : '上架' }}</el-button>
+                <el-button v-if="this.form.id" @click="handleRemove">删除</el-button>
+            </div>
+            <box-category v-if="boxCategoryVisible" ref="boxCategory" />
         </div>
-        <box-category v-if="boxCategoryVisible" ref="boxCategory" />
     </div>
 </template>
 
@@ -76,10 +79,12 @@ import {
     getDetail,
     getUploadToken, removeBox, setPublish
 } from '@/components/page/goodsmanage/box/api';
+import BreadcrumbList from '@/components/common/address.vue';
 
 export default {
     components: {
-        BoxCategory
+        BoxCategory,
+        BreadcrumbList
     },
     data () {
         return {
@@ -113,7 +118,8 @@ export default {
             categoryList: [],
             isEdit: '',
             isPublish: false,
-            files: []
+            files: [],
+            breadcrumbList: []
         };
     },
     created() {
@@ -123,6 +129,8 @@ export default {
         this.getDetail(id);
         this.getCategory();
         this.getUploadToken();
+        this.breadcrumbList = this.isEdit ?
+            [{ name: '添加/编辑包厢' }] : [{ name: '包厢详情' }];
     },
     methods: {
         /* 获取上传图片的token */
