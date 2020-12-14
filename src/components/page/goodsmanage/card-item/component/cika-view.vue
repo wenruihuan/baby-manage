@@ -432,7 +432,8 @@ export default {
         },
         /* 去编辑页 */
         gotoEdit () {
-            this.$router.push(`/cika`);
+            const id = this.$route.query.id;
+            this.$router.push(`/cika-card?id=${ id }`);
         },
         /* 下架 */
         async setPublish () {
