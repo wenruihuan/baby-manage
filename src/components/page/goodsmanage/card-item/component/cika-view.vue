@@ -2,7 +2,7 @@
     <div class="cika-view">
         <div class="top-container" v-if="!isHistory">
             <el-button type="primary" @click="gotoEdit">编辑</el-button>
-            <el-button @click="setDownPublish">下架</el-button>
+            <el-button @click="setPublish">{{ isPublish ? '上架' : '下架' }}</el-button>
         </div>
         <div style="padding: 10px;">
             <el-breadcrumb separator="/">
@@ -321,7 +321,8 @@ import {
     getTimeSoldList,
     getTimeSoldDetail,
     getTimeHisList,
-    getTimeHisDetail, setExpires, setInvalid
+    getTimeHisDetail, setExpires, setInvalid,
+    setPublish
 } from '@/components/page/goodsmanage/card-item/api';
 import { CARD__KIND_GRP, CARD_STATUS_MAP, gettime } from '@/components/page/goodsmanage/utils';
 import moment from 'moment';
@@ -434,8 +435,20 @@ export default {
             this.$router.push(`/cika`);
         },
         /* 下架 */
-        setDownPublish () {
-
+        async setPublish () {
+            const id = this.$route.query.id;
+            try {
+                const data = await setPublish({ id, is_publish: !this.isPublish });
+                if (data.code === ERR_OK) {
+                    this.isPublish = !this.isPublish;
+                    this.$message({
+                        message: data.msg,
+                        type: 'success'
+                    });
+                }
+            } catch (e) {
+                console.log(`error: ${ e }`);
+            }
         },
         /* 查看卡详情 */
         hanldeCardView (row, index) {
