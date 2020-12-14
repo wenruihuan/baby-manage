@@ -154,7 +154,7 @@ export default {
         async handleCorrectSort (row) {
             try {
                 const data = await setSort({
-                    id: row.id,
+                    id: row.card_id,
                     sort: row.sort,
                 });
                 if (data.code === ERR_OK) {
