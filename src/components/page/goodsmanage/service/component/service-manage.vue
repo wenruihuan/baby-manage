@@ -89,6 +89,7 @@ export default {
                         type: 'success'
                     });
                     this.getTagList();
+                    this.$emit('save');
                 }
             } catch (e) {
                 console.log(`service service-manage handleAdd error: ${e}`);
@@ -112,6 +113,7 @@ export default {
                             type: 'success'
                         });
                         this.getTagList();
+                        this.$emit('save');
                     }
                 } catch (e) {
                     console.log(`service service-manage handleSecOpera error: ${e}`);
@@ -126,6 +128,7 @@ export default {
                         });
                         this.isAdd = false;
                         this.getTagList();
+                        this.$emit('save');
                     }
                 } catch (e) {
                     console.log(`service service-manage handleSecOpera-edit error: ${e}`);

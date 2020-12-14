@@ -154,8 +154,8 @@
             </el-popover>
             <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
         </div>
-        <box-category v-if="boxCategoryVisible" ref="boxCategory" />
-        <service-manage v-if="serviceManageVisible" ref="serviceManage" />
+        <box-category v-if="boxCategoryVisible" ref="boxCategory" @save="getCategory" />
+        <service-manage v-if="serviceManageVisible" ref="serviceManage" @save="getTags" />
     </div>
 </template>
 
