@@ -216,6 +216,7 @@ export default {
                }
             } else {
                 this.rightsList = [];
+                this.buyList = [];
                 this.form.intr = '';
             }
         },
