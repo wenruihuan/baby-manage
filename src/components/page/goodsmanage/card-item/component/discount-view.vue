@@ -330,25 +330,35 @@ export default {
             isValidShow: false,
             validForm: {},
             isInifinate: -1,
-            isHistory: false,
             activeName: 'hasSold'
         };
     },
     computed: {
         cardId () {
             return this.$route.query.id || '';
+        },
+        isHistory () {
+            return this.$route.query.isHis == '1';
         }
     },
     watch: {
         cardId (newVal, oldVal) {
+            if (this.isHistory) {
+                this.getHistoryDetail(newVal);
+            } else {
+                this.getDiscountDetail(newVal);
+            }
             this.getDefaultImg();
-            this.getDiscountDetail(newVal);
             this.getSoldList();
         }
     },
     created() {
         const id = this.$route.query.id;
-        this.getDiscountDetail(id);
+        if (this.isHistory) {
+            this.getHistoryDetail(id);
+        } else {
+            this.getDiscountDetail(id);
+        }
         this.getDefaultImg();
         this.getSoldList();
     },
@@ -365,9 +375,28 @@ export default {
                             ...item,
                             typeName: CARD__KIND_GRP[item.rel_type]
                         }));
-                        if (this.isHistory) {
-                            this.activeName = 'hasSold';
-                        }
+                    }
+                } catch (e) {
+                    console.log(`goodsmanage/card-item/component/discount-view.vue getInsertDetail error: ${e}`);
+                }
+            }
+        },
+        /* 获取充值卡详情 */
+        async getHistoryDetail (card_id = '') {
+            if (card_id) {
+                this.activeTab = '';
+                if (this.isHistory) {
+                    this.activeName = 'hasSold';
+                }
+                try {
+                    const data = await getDiscountHisDetail({ card_id });
+                    if (data.code === ERR_OK) {
+                        this.insertDetail = data.data;
+                        this.isPublish = this.insertDetail.is_publish;
+                        this.quanlityList = (this.insertDetail.right || []).map(item => ({
+                            ...item,
+                            typeName: CARD__KIND_GRP[item.rel_type]
+                        }));
                     }
                 } catch (e) {
                     console.log(`goodsmanage/card-item/component/discount-view.vue getInsertDetail error: ${e}`);
@@ -425,10 +454,9 @@ export default {
         },
         /* 查看历史卡详情 */
         async hanldeCardView2 (row, index) {
-            this.isHistory = true;
             const card_discount_id = row.card_discount_id;
             if (card_discount_id) {
-                this.$router.push('/discount-card-view?id=' + card_discount_id);
+                this.$router.push('/discount-card-view?isHis=1&id=' + card_discount_id);
             }
         },
         /* 已售 */
@@ -508,9 +536,6 @@ export default {
                     });
 
                     this.hasSellTotal = Number(data.data.all_count);
-                    if (this.isHistory) {
-                        this.activeName = 'hasSold';
-                    }
                 }
             } catch (e) {
                 console.log(`/card-item/component/insert-card-view.vue getRechargeHistoryDetail error: ${ e }`);
