@@ -354,8 +354,13 @@ export default {
     },
     created() {
         const id = this.$route.query.id;
+        this.isHistory = this.$route.query.isHis == '1';
+        if (this.isHistory) {
+            this.getHistoryDetail(id);
+        } else {
+            this.getTimeDetail(id);
+        }
         this.getDefaultImg();
-        this.getTimeDetail(id);
         this.getSoldList();
     },
     computed: {
@@ -365,8 +370,13 @@ export default {
     },
     watch: {
         cardId (newVal, oldVal) {
+            this.isHistory = this.$route.query.isHis == '1';
+            if (this.isHistory) {
+                this.getHistoryDetail(newVal);
+            } else {
+                this.getTimeDetail(newVal);
+            }
             this.getDefaultImg();
-            this.getTimeDetail(newVal);
             this.getSoldList();
         }
     },
@@ -390,12 +400,29 @@ export default {
                     if (data.code === ERR_OK) {
                         this.cardDetail = data.data;
                         this.isPublish = data.data.is_publish == 1;
+                    }
+                } catch (e) {
+                    console.log(`/page/goodsmanage/card-item/component/cika-edit.vue getTimeDetail error: ${e}`);
+                }
+            } else {
+                this.rightsList = [];
+                this.buyList = [];
+            }
+        },
+        /* 历史详情 */
+        async getHistoryDetail (id = '') {
+            if (id) {
+                try {
+                    const data = await getTimeHisDetail({ id });
+                    if (data.code === ERR_OK) {
+                        this.cardDetail = data.data;
+                        this.isPublish = data.data.is_publish == 1;
                         if (this.isHistory) {
                             this.activeName = 'hasSold';
                         }
                     }
                 } catch (e) {
-                    console.log(`/page/goodsmanage/card-item/component/cika-edit.vue getTimeDetail error: ${e}`);
+                    console.log(`/page/goodsmanage/card-item/component/cika-edit.vue getHistoryDetail error: ${e}`);
                 }
             } else {
                 this.rightsList = [];
@@ -413,7 +440,7 @@ export default {
         /* 查看卡详情 */
         hanldeCardView (row, index) {
             if (this.activeTab === '历史卡项') {
-                this.getHistoryDetail(row.card_time_id);
+                this.gotoHistory(row.card_time_id);
             } else {
                 this.dialogVisible = true;
                 this.getSoldDetail(row.member_card_id);
@@ -543,15 +570,16 @@ export default {
                         this.cardItem = data.data;
                     }
                 } catch (e) {
-                    console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue getHistoryDetail error: ${e}`);
+                    console.log(`src/components/page/goodsmanage/card-item/component/cika-view.vue getSoldDetail error: ${e}`);
                 }
             }
         },
         /* 获取历史详情 */
-        async getHistoryDetail (card_time_id = '') {
+        async gotoHistory (card_time_id = '') {
             this.isHistory = true;
             if (card_time_id) {
-                this.$router.push('/cika-card-view?id=' + card_time_id);
+                this.activeTab = '';
+                this.$router.push('/cika-card-view?isHis=1&id=' + card_time_id);
             }
         }
     }
