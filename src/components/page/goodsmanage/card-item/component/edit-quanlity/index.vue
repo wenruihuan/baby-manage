@@ -35,6 +35,7 @@
                     </el-input>
 
                     <el-tree
+                        check-strictly
                         class="filter-tree"
                         :data="treeData"
                         node-key="right_id"
@@ -135,7 +136,7 @@ export default {
         checkTree (data, { checkedNodes, checkedKeys }) {
             const newIds = checkedNodes.map(item => item.right_id);
             const oldArr = this.ruleData.filter(item => newIds.includes(item.right_id));
-            let newArr = checkedNodes.filter(item => !item.children && !this.ruleData
+            let newArr = checkedNodes.filter(item => !this.ruleData
                                                         .map(oldItem => oldItem.right_id)
                                                         .includes(item.right_id));
             newArr = newArr.map(item => ({ ...item, discount: '' }));
