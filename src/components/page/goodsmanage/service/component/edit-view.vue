@@ -1,161 +1,164 @@
 <template>
-    <div class="edit-view">
-        <el-steps v-if="isEdit" :active="activeStep" simple>
-            <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
-            <el-step title="详情介绍" ></el-step>
-        </el-steps>
-        <el-form v-show="activeStep === 1" class="edit-form" ref="boxForm" :model="form" label-width="100px" :rules="isEdit ? rules : {}">
-            <el-form-item label="名称:" prop="name">
-                <el-input style="width: 300px;" v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
-                <span v-else>{{ form.name }}</span>
-            </el-form-item>
-            <el-form-item label="分类:" prop="kind_id">
-                <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择服务分类">
-                    <el-option
-                        v-for="item in categoryList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                    </el-option>
-                </el-select>
-                <span v-else>{{ form.kind_name }}</span>
-                <p class="tips" v-if="isEdit">一个商品对应一个分类，用于后台设置</p>
-                <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理服务分类</el-button>
-            </el-form-item>
-            <el-form-item label="标签:" prop="box_no">
-                <el-select style="width: 300px;" v-if="isEdit" multiple class="category-select" v-model="form.tag_ids" placeholder="选择服务标签">
-                    <el-option
-                        v-for="item in tagList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                    </el-option>
-                </el-select>
-                <span v-else>{{ form.tag_name }}</span>
-                <p class="tips" v-if="isEdit">一个商品可以打多个标签，用于小程序端查找商品</p>
-                <el-button v-if="isEdit" class="category-manage" type="text" @click="openTagDialog">管理服务标签</el-button>
-            </el-form-item>
-            <el-form-item label="图片:" prop="img">
-                <el-upload
-                    v-if="isEdit"
-                    multiple
-                    action="http://up-z0.qiniu.com"
-                    list-type="picture-card"
-                    :data="uploadBody"
-                    :before-upload="beforeUpload"
-                    :on-success="handleUploadSuccess"
-                    :before-remove="() => false"
-                    :disabled="!isEdit"
-                    :show-file-list="false"
-                >
-                    <i class="el-icon-plus"></i>
-                </el-upload>
-                <ul class="img-list">
-                    <li v-for="(item, index) in files"
-                        :key="index"
-                        class="img-item"
+    <div>
+        <BreadcrumbList :breadcrumbList="breadcrumbList" />
+        <div class="edit-view">
+            <el-steps v-if="isEdit" :active="activeStep" simple>
+                <el-step title="编辑基本信息" icon="el-icon-edit"></el-step>
+                <el-step title="详情介绍" ></el-step>
+            </el-steps>
+            <el-form v-show="activeStep === 1" class="edit-form" ref="boxForm" :model="form" label-width="100px" :rules="isEdit ? rules : {}">
+                <el-form-item label="名称:" prop="name">
+                    <el-input style="width: 300px;" v-if="isEdit" maxlength="100" v-model="form.name"></el-input>
+                    <span v-else>{{ form.name }}</span>
+                </el-form-item>
+                <el-form-item label="分类:" prop="kind_id">
+                    <el-select style="width: 300px;" v-if="isEdit" class="category-select" v-model="form.kind_id" placeholder="选择服务分类">
+                        <el-option
+                                v-for="item in categoryList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <span v-else>{{ form.kind_name }}</span>
+                    <p class="tips" v-if="isEdit">一个商品对应一个分类，用于后台设置</p>
+                    <el-button v-if="isEdit" class="category-manage" type="text" @click="openDialog">管理服务分类</el-button>
+                </el-form-item>
+                <el-form-item label="标签:" prop="box_no">
+                    <el-select style="width: 300px;" v-if="isEdit" multiple class="category-select" v-model="form.tag_ids" placeholder="选择服务标签">
+                        <el-option
+                                v-for="item in tagList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <span v-else>{{ form.tag_name }}</span>
+                    <p class="tips" v-if="isEdit">一个商品可以打多个标签，用于小程序端查找商品</p>
+                    <el-button v-if="isEdit" class="category-manage" type="text" @click="openTagDialog">管理服务标签</el-button>
+                </el-form-item>
+                <el-form-item label="图片:" prop="img">
+                    <el-upload
+                            v-if="isEdit"
+                            multiple
+                            action="http://up-z0.qiniu.com"
+                            list-type="picture-card"
+                            :data="uploadBody"
+                            :before-upload="beforeUpload"
+                            :on-success="handleUploadSuccess"
+                            :before-remove="() => false"
+                            :disabled="!isEdit"
+                            :show-file-list="false"
                     >
-                        <span class="el-icon-circle-close remove-icon" @click="removeImg(index)"></span>
-                        <img :src="item" alt=''>
-                    </li>
-                </ul>
-            </el-form-item>
-            <el-form-item label="规格:" prop="unit">
-                <div class="size-group">
-                    <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="index">
-                        <div class="size-name">
-                            <span>规格名：</span>
-                            <el-input v-model="item.name"></el-input>
-                        </div>
-                        <div v-if="item.value && item.value.length > 0" class="size-value">
-                            <span>规格值：</span>
-                            <el-input
-                                    :key="index"
-                                    v-for="(innerItem, index) in item.value"
-                                    v-model="innerItem.value"
-                                    class="size-input"
-                            >
-                            </el-input>
-                            <el-button type="text" @click="addSizeValue(item)">添加规格值</el-button>
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <ul class="img-list">
+                        <li v-for="(item, index) in files"
+                            :key="index"
+                            class="img-item"
+                        >
+                            <span class="el-icon-circle-close remove-icon" @click="removeImg(index)"></span>
+                            <img :src="item" alt=''>
+                        </li>
+                    </ul>
+                </el-form-item>
+                <el-form-item label="规格:" prop="unit">
+                    <div class="size-group">
+                        <div v-if="sizeGroup && sizeGroup.length > 0 && isEdit" v-for="(item, index) in sizeGroup" :key="index">
+                            <div class="size-name">
+                                <span>规格名：</span>
+                                <el-input v-model="item.name"></el-input>
+                            </div>
+                            <div v-if="item.value && item.value.length > 0" class="size-value">
+                                <span>规格值：</span>
+                                <el-input
+                                        :key="index"
+                                        v-for="(innerItem, index) in item.value"
+                                        v-model="innerItem.value"
+                                        class="size-input"
+                                >
+                                </el-input>
+                                <el-button type="text" @click="addSizeValue(item)">添加规格值</el-button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div v-if="isEdit" class="add-size">
-                    <el-button @click="addSize">添加规格</el-button>
-                </div>
-                <ul v-if="!isEdit" class="size-readonly">
-                    <li
-                            class="item"
-                            v-for="(item, index) in sizeGroup"
-                            :key="index"
-                    >
-                        <span>{{ item.name }}:</span>
-                        <ul class="size-value-readonly">
-                            <li class="item" v-for="(innerItem, index) in item.value" :key="index">
-                                {{ innerItem.value }}
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </el-form-item>
-            <el-form-item label="售价:" prop="price">
-                <el-input style="width: 300px;" v-if="isEdit" v-model="form.price">
-                    <template slot="prepend">￥</template>
-                </el-input>
-                <span v-else>￥{{ form.price }}</span>
-            </el-form-item>
-            <el-form-item label="划线价:" prop="original_price">
-                <el-input style="width: 300px;" v-if="isEdit" v-model="form.original_price" placeholder="原价：￥99.99"></el-input>
-                <span v-else>￥{{ form.original_price }}</span>
-            </el-form-item>
-            <el-form-item label="服务时长:" prop="service_time">
-                <el-input style="width: 300px;" v-if="isEdit" v-model="form.service_time">
-                    <template slot="suffix">分钟</template>
-                </el-input>
-                <span v-else>{{ form.service_time }}分钟</span>
-            </el-form-item>
-            <el-form-item label="线上预约:" prop="is_needpay">
-                <el-radio-group v-if="isEdit" v-model="form.is_needpay">
-                    <el-radio label="0">无需支付</el-radio>
-                    <el-radio label="1">需支付</el-radio>
-                </el-radio-group>
-                <span v-else>{{ form.is_needpay === '1' ? '需支付' : '无需支付' }}</span>
-            </el-form-item>
-            <el-form-item label="服务方式:" prop="is_todoor">
-                <el-radio-group v-if="isEdit" v-model="form.is_todoor">
-                    <el-radio label="0">到店</el-radio>
-                    <el-radio label="1">上门</el-radio>
-                </el-radio-group>
-                <span v-else>{{ form.is_todoor === '1' ? '上门' : '到店' }}</span>
-            </el-form-item>
-            <el-form-item label="网店展示:" prop="is_show">
-                <el-radio-group v-if="isEdit" v-model="form.is_show">
-                    <el-radio label="0">不展示</el-radio>
-                    <el-radio label="1">展示</el-radio>
-                </el-radio-group>
-                <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
-            </el-form-item>
-        </el-form>
-        <edit-wechat v-show="activeStep === 2" ref="editWechat" :intr="form.intr" />
-        <div class="btn-group" v-if="isEdit">
-            <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="nextStep">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
-            <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
-            <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
-            <el-popover
-                ref="popover"
-                width="128"
-                placement="top-start"
-                trigger="click"
-                v-if="activeStep === 2"
-                :popper-options="{ boundariesElement: 'viewport', removeOnDestroy: true }"
-            >
-                <div id="SERVICE_QRCODE" class="service-card"></div>
-                <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
-            </el-popover>
-            <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
+                    <div v-if="isEdit" class="add-size">
+                        <el-button @click="addSize">添加规格</el-button>
+                    </div>
+                    <ul v-if="!isEdit" class="size-readonly">
+                        <li
+                                class="item"
+                                v-for="(item, index) in sizeGroup"
+                                :key="index"
+                        >
+                            <span>{{ item.name }}:</span>
+                            <ul class="size-value-readonly">
+                                <li class="item" v-for="(innerItem, index) in item.value" :key="index">
+                                    {{ innerItem.value }}
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </el-form-item>
+                <el-form-item label="售价:" prop="price">
+                    <el-input style="width: 300px;" v-if="isEdit" v-model="form.price">
+                        <template slot="prepend">￥</template>
+                    </el-input>
+                    <span v-else>￥{{ form.price }}</span>
+                </el-form-item>
+                <el-form-item label="划线价:" prop="original_price">
+                    <el-input style="width: 300px;" v-if="isEdit" v-model="form.original_price" placeholder="原价：￥99.99"></el-input>
+                    <span v-else>￥{{ form.original_price }}</span>
+                </el-form-item>
+                <el-form-item label="服务时长:" prop="service_time">
+                    <el-input style="width: 300px;" v-if="isEdit" v-model="form.service_time">
+                        <template slot="suffix">分钟</template>
+                    </el-input>
+                    <span v-else>{{ form.service_time }}分钟</span>
+                </el-form-item>
+                <el-form-item label="线上预约:" prop="is_needpay">
+                    <el-radio-group v-if="isEdit" v-model="form.is_needpay">
+                        <el-radio label="0">无需支付</el-radio>
+                        <el-radio label="1">需支付</el-radio>
+                    </el-radio-group>
+                    <span v-else>{{ form.is_needpay === '1' ? '需支付' : '无需支付' }}</span>
+                </el-form-item>
+                <el-form-item label="服务方式:" prop="is_todoor">
+                    <el-radio-group v-if="isEdit" v-model="form.is_todoor">
+                        <el-radio label="0">到店</el-radio>
+                        <el-radio label="1">上门</el-radio>
+                    </el-radio-group>
+                    <span v-else>{{ form.is_todoor === '1' ? '上门' : '到店' }}</span>
+                </el-form-item>
+                <el-form-item label="网店展示:" prop="is_show">
+                    <el-radio-group v-if="isEdit" v-model="form.is_show">
+                        <el-radio label="0">不展示</el-radio>
+                        <el-radio label="1">展示</el-radio>
+                    </el-radio-group>
+                    <span v-else>{{ form.is_show === '1' ? '展示' : '不展示' }}</span>
+                </el-form-item>
+            </el-form>
+            <edit-wechat v-show="activeStep === 2" ref="editWechat" :intr="form.intr" />
+            <div class="btn-group" v-if="isEdit">
+                <el-button :type="activeStep === 1 ? 'primary' : 'default'" @click="nextStep">{{ activeStep === 1 ? '下一步' : '上一步' }}</el-button>
+                <el-button v-if="activeStep === 2" type="primary" @click="handleSave">保存</el-button>
+                <el-button class="btn-item" v-if="activeStep === 2" @click="setPublishStatus">{{ isPublish ? '下架' : '上架' }}</el-button>
+                <el-popover
+                        ref="popover"
+                        width="128"
+                        placement="top-start"
+                        trigger="click"
+                        v-if="activeStep === 2"
+                        :popper-options="{ boundariesElement: 'viewport', removeOnDestroy: true }"
+                >
+                    <div id="SERVICE_QRCODE" class="service-card"></div>
+                    <el-button class="btn-item" slot="reference" @click="handleView">预览</el-button>
+                </el-popover>
+                <el-button class="btn-item" v-if="activeStep === 2" @click="handleRemove">删除</el-button>
+            </div>
+            <box-category v-if="boxCategoryVisible" ref="boxCategory" @save="getCategory" />
+            <service-manage v-if="serviceManageVisible" ref="serviceManage" @save="getTags" />
         </div>
-        <box-category v-if="boxCategoryVisible" ref="boxCategory" @save="getCategory" />
-        <service-manage v-if="serviceManageVisible" ref="serviceManage" @save="getTags" />
     </div>
 </template>
 
@@ -174,15 +177,18 @@ import {
     qrCodeView
 } from '@/components/page/goodsmanage/service/api';
 import QRCode from 'qrcodejs2';
+import BreadcrumbList from '@/components/common/address.vue';
 
 export default {
     components: {
         BoxCategory,
         ServiceManage,
-        editWechat
+        editWechat,
+        BreadcrumbList
     },
     data () {
         return {
+            breadcrumbList: [],
             activeStep: 1,
             baseUrl: '',
             uploadBody: {
@@ -237,6 +243,7 @@ export default {
         this.getCategory();
         this.getTags();
         this.getUploadToken();
+        this.breadcrumbList = this.isEdit ? [{ name: '添加/编辑服务' }] : [{ name: '服务详情' }];
     },
     methods: {
         /* 获取上传图片的token */
