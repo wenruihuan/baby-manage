@@ -269,23 +269,25 @@
                     :visible.sync="isExpireShow"
                     width="40%"
             >
-                <el-form :model="expireForm">
-                    <el-form-item label="有效期至:" prop="validity">
-                        <el-radio-group v-model="isInifinate">
-                            <el-radio :label="-1">无限次</el-radio>
-                            <el-radio :label="0">
-                                <el-input
-                                        v-model="expireForm.validity"
-                                        :disabled="isInifinate === -1"
-                                        placeholder="请填写有效期">
-                                    <template slot="append">
-                                        天
-                                    </template>
-                                </el-input>
-                            </el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                </el-form>
+                <div class="update-expire-form">
+                    <el-form :model="expireForm">
+                        <el-form-item label="有效期至:" prop="validity">
+                            <el-radio-group v-model="isInifinate">
+                                <el-radio :label="-1">无限期</el-radio>
+                                <el-radio :label="0">
+                                    <el-input
+                                            v-model="expireForm.validity"
+                                            :disabled="isInifinate === -1"
+                                            placeholder="请填写有效期">
+                                        <template slot="append">
+                                            天
+                                        </template>
+                                    </el-input>
+                                </el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                    </el-form>
+                </div>
                 <span slot="footer">
                 <el-button @click="isExpireShow = false">取 消</el-button>
                 <el-button type="primary" @click="saveExpire">确 定</el-button>
@@ -604,6 +606,11 @@ export default {
 </script>
 
 <style lang="css" scoped>
+/deep/ .el-radio-group, .el-radio {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
 .el-breadcrumb-container {
     margin: 10px 0;
 }

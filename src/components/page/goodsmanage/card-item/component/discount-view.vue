@@ -248,7 +248,7 @@
                 <el-form :model="expireForm">
                     <el-form-item label="有效期至:" prop="validity">
                         <el-radio-group v-model="isInifinate">
-                            <el-radio :label="-1">无限次</el-radio>
+                            <el-radio :label="-1">无限期</el-radio>
                             <el-radio :label="0">
                                 <el-input
                                         v-model="expireForm.validity"
@@ -583,6 +583,11 @@ export default {
 </script>
 
 <style lang="css" scoped>
+/deep/ .el-radio-group, .el-radio {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
 .el-breadcrumb-container {
     margin: 10px 0;
 }
