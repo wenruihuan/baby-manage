@@ -81,7 +81,7 @@
                 <el-table-column prop="name" label="服务名称" align="center">
                     <template slot-scope="scope">
                         <div class="table-name">
-                            <el-image style="width: 30px; height: 30px" :src="scope.row.img" fit="cover"></el-image>
+                            <el-image style="width: 80px; height: 40px" :src="scope.row.img" fit="contain"></el-image>
                             <div class="info">
                                 <p>{{ scope.row.name }}</p>
                             </div>
@@ -132,7 +132,7 @@
                 <el-table-column prop="name" label="商品名称" align="center">
                     <template slot-scope="scope">
                         <div class="table-name">
-                            <el-image style="width: 30px; height: 30px" :src="scope.row.name" fit="cover"></el-image>
+                            <el-image style="width: 80px; height: 40px" :src="scope.row.img" fit="contain"></el-image>
                             <div class="info">
                                 <p>{{ scope.row.name }}</p>
                             </div>

@@ -66,7 +66,7 @@
                 </el-pagination>
             </div>
         </div>
-        <informationSettingDetail ref="detail"></informationSettingDetail>
+        <informationSettingDetail ref="detail" @on-success="handleSearch"></informationSettingDetail>
     </div>
 </template>
 <script>
