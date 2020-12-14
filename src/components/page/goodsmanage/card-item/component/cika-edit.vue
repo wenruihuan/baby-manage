@@ -229,7 +229,7 @@ export default {
                    const data = await getTimeDetial({ id });
                    if (data.code === ERR_OK) {
                        this.form.intr = '';
-                       data.data.isInfinity = data.data.validity ? 0 : 1;
+                       data.data.isInfinity = data.data.validity == -1 ? 0 : 1;
                        this.form = data.data;
                        this.rightsList = this.form.right || [];
                        this.buyList = this.form.gifts || [];

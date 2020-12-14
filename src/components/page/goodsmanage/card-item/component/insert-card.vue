@@ -213,7 +213,7 @@ export default {
                    const data = await getInsertDetail({ card_id });
                    if (data.code === ERR_OK) {
                        this.form.intr = '';
-                       data.data.data.isInfinity = this.form.validity ? 0 : 1;
+                       data.data.data.isInfinity = this.form.validity == -1 ? 0 : 1;
                        this.form = data.data.data;
                        this.rightsList = this.form.right || [];
                        this.buyList = this.form.gifts || [];

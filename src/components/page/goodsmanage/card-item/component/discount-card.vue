@@ -195,7 +195,7 @@ export default {
                     const data = await getDiscountDetail({ card_id });
                     if (data.code === ERR_OK) {
                         this.form.intr = '';
-                        data.data.isInfinity = data.data.validity === -1 ? 1 : 0;
+                        data.data.isInfinity = data.data.validity == -1 ? 1 : 0;
                         this.form = data.data;
                         this.rightsList = this.form.right || [];
                         this.customImg = this.form.img || '';
