@@ -113,6 +113,7 @@
                     :current-page="curPage"
                     :page-sizes="[10, 20, 100, 200]"
                     :page-size="100"
+                    background
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
                     @current-change="handleCurrentChange"
