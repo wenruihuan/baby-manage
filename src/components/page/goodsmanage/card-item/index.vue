@@ -155,7 +155,7 @@ export default {
             try {
                 const data = await setSort({
                     id: row.card_id,
-                    sort: row.sort,
+                    sort: row.sort
                 });
                 if (data.code === ERR_OK) {
                     this.getList();
