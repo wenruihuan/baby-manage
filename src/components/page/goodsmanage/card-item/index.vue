@@ -1,5 +1,6 @@
 <template>
     <div class="card-item">
+        <BreadcrumbList :breadcrumbList="breadcrumbList" />
         <div class="top-container">
             <el-popover
                     popper-class="POPPER3"
@@ -84,14 +85,15 @@ import DiscountCard from './component/discount-card';
 import InsertCard from './component/insert-card';
 import CardTable from './component/card-table';
 import { ERR_OK, getBoxList, getCategoryList, removeBox, removeCard, setPublish, setShow, setSort } from './api';
-import { tableData1 } from '@/components/page/goodsmanage/card-item/mock';
+import BreadcrumbList from '@/components/common/address.vue';
 
 export default {
     components: {
         CardTable,
         CikaEdit,
         DiscountCard,
-        InsertCard
+        InsertCard,
+        BreadcrumbList
     },
     data () {
         return {
@@ -101,7 +103,10 @@ export default {
             isDiscountShow: false,
             isInsertShow: false,
             total: 0,
-            activeTab: ''
+            activeTab: '',
+            breadcrumbList: [
+                { name: '卡项列表' }
+            ]
         };
     },
     created () {
