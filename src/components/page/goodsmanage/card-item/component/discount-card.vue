@@ -245,6 +245,7 @@ export default {
                         type: 'success',
                         message: data.msg
                     });
+                    this.$router.push('/card-item');
                 }
             });
         },
