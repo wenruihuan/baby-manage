@@ -84,7 +84,7 @@
                             </el-radio>
                         </el-radio-group>
                     </div>
-                    <div class="right">
+                    <div class="right-img-container">
                         <div class="img-container">
                             <img :src="form.img" alt="">
                         </div>
@@ -477,6 +477,9 @@ export default {
     display: flex;
     justify-content: space-around;
     align-items: start;
+}
+.right-img-container {
+    width: 300px;
 }
 .content1 .img-container img {
     max-width: 400px;
