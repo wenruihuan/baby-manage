@@ -346,7 +346,6 @@ export default {
             }
         },
         saveRights (list) {
-            console.log(list);
             this.rightsList = list;
             this.form.right = list;
         },
