@@ -50,6 +50,7 @@
       ></el-pagination>
     </div>
     <el-dialog
+      class="member-dialog"
       v-if="dialogShow"
       :visible.sync="dialogShow"
       :title="dialogTitle"
@@ -190,7 +191,11 @@ export default {
   }
 }
 </script>
-
+<style lang="css">
+  .member-dialog .el-dialog {
+    min-width: 650px;
+  }
+</style>
 <style lang="css" scoped>
   .main-body {
     background-color: #ffffff;
