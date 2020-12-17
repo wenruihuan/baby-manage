@@ -123,7 +123,7 @@
                         router: 'CustomerSetting'
                     },
                     {
-                        name: '标签设置',
+                        name: '用户标签设置',
                         router: 'TagSetting'
                     }
                 ],
