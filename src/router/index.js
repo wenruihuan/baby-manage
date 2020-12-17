@@ -177,7 +177,7 @@ export default new Router({
                 {
                     path: '/TagSetting',
                     component: () => import(/* webpackChunkName: "setting" */ '../components/page/setting/tagSetting.vue'),
-                    meta: { title: '标签设置' }
+                    meta: { title: '用户标签设置' }
                 },
                 {
                     path: '/GlobalSetting',
