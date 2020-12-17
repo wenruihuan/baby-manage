@@ -228,7 +228,7 @@
                                     },
                                     {
                                         index: '/TagSetting',
-                                        title: '标签设置'
+                                        title: '用户标签设置'
                                     }
                                 ]
                             },
