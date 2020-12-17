@@ -212,6 +212,7 @@
       </el-tabs>
     </div>
     <el-dialog
+      class="delivery-dialog"
       title="发货"
       :close-on-click-modal="false"
       :visible.sync="dialogShow"
@@ -229,7 +230,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="快递单号：" prop="express_no">
-          <div style="width: 300px;">
+          <div style="width: 215px;">
             <el-input v-model="sendForm.express_no"></el-input>
           </div>
         </el-form-item>
@@ -345,6 +346,7 @@ export default {
           this.form.end_time = now
           break
       }
+      this.dateArr = [this.form.start_time, this.form.end_time ]
     },
     getTableData(page) {
       this.form.page_no = page
@@ -454,7 +456,11 @@ export default {
   }
 }
 </script>
-
+<style lang="css">
+  .delivery-dialog .el-dialog {
+    width: 500px;
+  }
+</style>
 <style lang="css" scoped>
   .header-bar, .main-body {
     background-color: #ffffff;

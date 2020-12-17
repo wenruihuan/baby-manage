@@ -166,6 +166,7 @@ export default {
           this.form.end_time = now
           break
       }
+      this.dateArr = [this.form.start_time, this.form.end_time ]
     },
     handleSearch() {
       this.getTableData(0)
